@@ -1,0 +1,64 @@
+<%- include("../partials/header") %>
+<% const bugs = alle.filter(m => m.soort === "bug"), wensen = alle.filter(m => m.soort === "wens"); const openN = (l) => l.filter(m => m.status === "open" || m.status === "in_behandeling").length; const kaart = (l, soort) => l.length ? l.slice(0, 5).map(m => `<div><span><strong>#${m.id}</strong> ${h.esc ? h.esc(m.titel) : m.titel}</span><span class="v"><span class="pill ${m.status === 'opgelost' ? 'ok' : m.status === 'open' ? 'warn' : m.status === 'afgewezen' ? 'grey' : ''}">${STATUS[m.status]}</span></span></div>`).join("") : `<div class="muted">${admin ? "Nog niets gemeld." : soort === "bug" ? "Je hebt nog geen bug gemeld." : "Je hebt nog geen wens ingediend."}</div>`; %>
+<div class="grid-2" style="grid-template-columns:5fr 3fr">
+  <div>
+    <div class="page-head" style="margin-bottom:12px">
+      <div><div class="muted small">Over deze versie</div><h1>Hero Wagenpark <%= huidige %></h1><div class="sub">omgeving <%= omgeving %><% if (commit) { %> · commit <%= commit %><% } %> · elke commit verhoogt het laatste cijfer</div></div>
+      <span class="pill ok"><span class="msr" style="font-size:15px">check</span> Nieuwste versie</span>
+    </div>
+    <div class="chips" style="margin-bottom:12px">
+      <a class="chip <%= tab === 'nieuw' ? 'on' : '' %>" href="/versie">Wat is er nieuw</a>
+      <a class="chip <%= tab === 'bugs' ? 'on' : '' %>" href="/versie?tab=bugs">Gemelde bugs<% if (openN(bugs)) { %> (<%= openN(bugs) %>)<% } %></a>
+      <a class="chip <%= tab === 'wensen' ? 'on' : '' %>" href="/versie?tab=wensen">Wensen<% if (openN(wensen)) { %> (<%= openN(wensen) %>)<% } %></a>
+    </div>
+
+    <% if (tab === "nieuw") { %>
+    <div class="card">
+      <% VERSIES.forEach((v, i) => { %>
+        <div style="display:flex;align-items:baseline;gap:10px;margin:<%= i ? '18px' : '0' %> 0 8px"><h2 style="font-size:20px"><%= v.versie %></h2><% if (i === 0) { %><span class="muted">(deze versie)</span><% } %><span class="muted small"><%= v.datum %></span></div>
+        <% v.punten.forEach(p => { %>
+          <div class="versie-punt"><span class="pill <%= p.soort === 'opgelost' ? 'ok' : p.soort === 'verbeterd' ? '' : 'blue-soft' %>"><%= SOORT[p.soort] %></span><span><%= p.tekst %><% if (p.commit) { %> <span class="muted">(<%= p.commit %>)</span><% } %></span></div>
+        <% }) %>
+      <% }) %>
+    </div>
+    <% } else { const lijst = tab === "bugs" ? bugs : wensen; %>
+    <div class="card">
+      <% if (!lijst.length) { %><div class="empty"><%= tab === "bugs" ? "Nog geen bugs gemeld." : "Nog geen wensen ingediend." %></div><% } %>
+      <% lijst.forEach((m, i) => { %>
+        <div style="padding:12px 0;border-top:<%= i ? '1px solid var(--grijs-thin)' : '0' %>">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+            <div><strong>#<%= m.id %> <%= m.titel %></strong><% if (m.omschrijving) { %><div style="margin-top:4px;white-space:pre-wrap"><%= m.omschrijving %></div><% } %>
+              <div class="muted small" style="margin-top:6px"><%= m.door || "onbekend" %> · <%= h.formatDate(m.created_at, true) %> · versie <%= m.versie || "?" %><% if (m.scherm) { %> · <%= m.scherm %><% } %><% if (m.apparaat) { %> · <%= m.apparaat %><% } %></div>
+              <% if (m.antwoord) { %><div class="small" style="margin-top:6px;padding:8px 10px;background:var(--blauw-hair);border-radius:8px"><strong>Antwoord:</strong> <%= m.antwoord %><% if (m.afgehandeld_door_naam) { %> <span class="muted">(<%= m.afgehandeld_door_naam %>, <%= h.formatDate(m.afgehandeld_op) %>)</span><% } %></div><% } %>
+            </div>
+            <span class="pill <%= m.status === 'opgelost' ? 'ok' : m.status === 'open' ? 'warn' : m.status === 'afgewezen' ? 'grey' : '' %>"><%= STATUS[m.status] %></span>
+          </div>
+          <% if (admin) { %>
+          <form method="POST" action="/versie/meldingen/<%= m.id %>" class="actions" style="margin-top:8px">
+            <select name="status" style="padding:6px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><% Object.entries(STATUS).forEach(([k, l]) => { %><option value="<%= k %>" <%= m.status === k ? "selected" : "" %>><%= l %></option><% }) %></select>
+            <input name="antwoord" value="<%= m.antwoord || "" %>" placeholder="antwoord aan de melder" style="flex:1;min-width:200px;padding:6px 8px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px">
+            <button class="btn small" type="submit">Opslaan</button>
+          </form>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+  <div>
+    <div class="card">
+      <div class="card-head"><h2>Gemelde bugs</h2><span class="muted small"><%= openN(bugs) %> open</span></div>
+      <div class="rows"><%- kaart(bugs, "bug") %></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Wensen</h2><span class="muted small"><%= openN(wensen) %> open</span></div>
+      <div class="rows"><%- kaart(wensen, "wens") %></div>
+    </div>
+    <div class="actions" style="margin-top:16px">
+      <a href="/versie/melden?soort=bug" class="btn blue" style="flex:1;justify-content:center"><span class="msr">edit</span>Bug melden</a>
+      <a href="/versie/melden?soort=wens" class="btn" style="flex:1;justify-content:center">Wens indienen</a>
+    </div>
+    <p class="muted small" style="margin-top:12px">Een melding neemt automatisch je versie, apparaat en het scherm mee waar je vandaan kwam.</p>
+  </div>
+</div>
+<%- include("../partials/footer") %>

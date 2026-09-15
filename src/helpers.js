@@ -87,5 +87,7 @@ const LABELS = {
   wachtlijst: { open: "Wacht", gekoppeld: "Gekoppeld", vervallen: "Vervallen" },
 };
 const label = (group, key) => (LABELS[group] && LABELS[group][key]) || key || "";
+// Voor tekst die een template met <%- %> invoegt
+const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label };
+module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label, esc };

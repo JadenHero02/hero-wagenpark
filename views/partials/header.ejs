@@ -63,6 +63,12 @@
         <div class="sidenav-sep"></div>
         <a href="/mijn-auto" class="side-link <%= isActive('/mijn-auto') %>"><span class="msr">person_pin_circle</span><span class="label">Mijn auto</span></a>
       <% } %>
+      <% if (user) { %>
+      <div class="sidenav-foot">
+        <div class="versie-bubble" id="versie-bubble" hidden>Klik op het versienummer om bugs en wensen door te geven.</div>
+        <a href="/versie" class="versie-link <%= isActive('/versie') %>" id="versie-link">Versie <%= versie.huidige %> · vernieuwt vanzelf bij rust</a>
+      </div>
+      <% } %>
     </nav>
     <main class="main">
       <% if (typeof flash !== "undefined" && flash) { %><div class="flash <%= flashKind %>"><span class="msr"><%= flashKind === "error" ? "error" : "check_circle" %></span><%= flash %></div><% } %>

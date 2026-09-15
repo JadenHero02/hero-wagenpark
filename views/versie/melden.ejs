@@ -1,0 +1,14 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/versie">Over deze versie</a> › <%= soort === "bug" ? "Bug melden" : "Wens indienen" %></div>
+<div class="page-head"><div><div class="eyebrow">Versie <%= versieNr %></div><h1><%= soort === "bug" ? "Bug melden" : "Wens indienen" %></h1><div class="sub"><%= soort === "bug" ? "Wat ging er mis, en wat had je verwacht? Hoe preciezer, hoe sneller het opgelost is." : "Wat zou de app moeten kunnen, en waarom helpt dat jou?" %></div></div></div>
+<div class="card" style="max-width:640px">
+<form method="POST" action="/versie/melden" class="form" style="grid-template-columns:1fr">
+  <input type="hidden" name="soort" value="<%= soort %>">
+  <input type="hidden" name="scherm" value="<%= scherm || "" %>">
+  <label>In één zin<input name="titel" required autofocus placeholder="<%= soort === "bug" ? "Bijvoorbeeld: kilometerstand opslaan geeft een foutmelding" : "Bijvoorbeeld: export van het wagenpark naar Excel" %>"></label>
+  <label>Toelichting <span class="hint">optioneel</span><textarea name="omschrijving" style="min-height:120px" placeholder="<%= soort === "bug" ? "Wat deed je, wat gebeurde er, wat had je verwacht?" : "Waar loop je nu tegenaan?" %>"></textarea></label>
+  <div class="muted small">Gaat automatisch mee: versie <%= versieNr %><% if (scherm) { %> · scherm <%= scherm %><% } %> · <%= apparaat %> · jouw naam.</div>
+  <div class="buttons"><a href="/versie" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">send</span><%= soort === "bug" ? "Bug melden" : "Wens indienen" %></button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

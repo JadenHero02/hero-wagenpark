@@ -1,5 +1,27 @@
     </main>
   </div>
 </div>
+<div class="versie-nieuw" id="versie-nieuw" hidden><span class="msr">system_update</span>Er staat een nieuwe versie klaar.<button type="button" onclick="location.reload()">Vernieuwen</button></div>
+<script>
+(function () {
+  // Versienummer: eenmalig het tekstballonnetje, tot je erop klikt
+  try {
+    var b = document.getElementById("versie-bubble"), l = document.getElementById("versie-link");
+    if (b && l && !localStorage.getItem("wp_versie_gezien")) { b.hidden = false; l.addEventListener("click", function () { localStorage.setItem("wp_versie_gezien", "1"); }); }
+  } catch (e) {}
+  // Nieuwe versie: elke minuut kijken; bij rust (tabblad niet zichtbaar, of 5 minuten niets aangeraakt) vanzelf vernieuwen, anders een balkje
+  var huidige = <%- JSON.stringify(typeof versie !== "undefined" ? versie.huidige : "") %>, laatst = Date.now(), nieuw = false;
+  ["click", "keydown", "scroll", "touchstart"].forEach(function (ev) { document.addEventListener(ev, function () { laatst = Date.now(); }, { passive: true }); });
+  function vernieuw() { if (document.hidden || Date.now() - laatst > 5 * 60000) { if (!document.querySelector("form input:focus, form textarea:focus")) location.reload(); } }
+  function check() {
+    fetch("/version.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || !huidige || j.versie === huidige) return;
+      nieuw = true; document.getElementById("versie-nieuw").hidden = false; vernieuw();
+    }).catch(function () {});
+  }
+  setInterval(check, 60000);
+  document.addEventListener("visibilitychange", function () { if (nieuw) vernieuw(); else if (!document.hidden) check(); });
+})();
+</script>
 </body>
 </html>

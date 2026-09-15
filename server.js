@@ -8,6 +8,7 @@ const express = require("express");
 const db = require("./src/db");
 const auth = require("./src/auth");
 const helpers = require("./src/helpers");
+const versies = require("./src/versies");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
   res.locals.h = helpers;
   res.locals.title = "Wagenpark";
   res.locals.badges = {};
+  res.locals.versie = { huidige: versies.huidige(), commit: versies.commit(), omgeving: versies.omgeving() };
   next();
 });
 
@@ -86,6 +88,7 @@ app.use("/boetes", require("./src/routes/boetes").router);
 app.use("/incidenten", require("./src/routes/incidenten").router);
 app.use("/wachtlijst", require("./src/routes/wachtlijst").router);
 app.use("/instellingen", require("./src/routes/instellingen").router);
+app.use("/", require("./src/routes/versie").router);
 
 // 404 en fouten
 app.use((req, res) => res.status(404).render("error", { title: "Niet gevonden", message: "Deze pagina bestaat niet." }));
