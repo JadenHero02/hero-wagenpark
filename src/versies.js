@@ -4,8 +4,11 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.17", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "licht en donker thema: kies in het menu rechtsboven voor licht, donker of het systeem volgen. De keuze wordt per apparaat onthouden; de blauwe balk en de kentekens blijven zoals ze zijn", commit: "" },
+  ] },
   { versie: "0.2.16", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "op de pagina Rollen een inklapbare rechtenmatrix: per rol (admin, directie, beheerder, bestuurder) wat je mag zien, doen en beheren", commit: "" },
+    { soort: "nieuw", tekst: "op de pagina Rollen een inklapbare rechtenmatrix: per rol (admin, directie, beheerder, bestuurder) wat je mag zien, doen en beheren", commit: "b2e0282" },
   ] },
   { versie: "0.2.15", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "pagina Rollen voor de admin: één tabel met iedereen per rol (admin, directie, beheerder, bestuurder), met functie, vestiging, auto en of iemand al is ingelogd; rol toekennen of wijzigen per regel, ook voor wie nog nooit heeft ingelogd", commit: "dbaf8e6" },

@@ -4,6 +4,19 @@
 <div class="versie-nieuw" id="versie-nieuw" hidden><span class="msr">system_update</span>Er staat een nieuwe versie klaar.<button type="button" onclick="location.reload()">Vernieuwen</button></div>
 <script>
 (function () {
+  // Weergave: licht, donker of systeem. Keuze in localStorage; bij "systeem" volgt de app de instelling van het apparaat
+  var knoppen = document.querySelectorAll("[data-thema-knop]");
+  function pas(keuze) {
+    var donker = keuze === "donker" || (keuze === "systeem" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-thema", donker ? "donker" : "licht");
+    knoppen.forEach(function (k) { k.classList.toggle("on", k.getAttribute("data-thema-knop") === keuze); });
+  }
+  var huidig = "systeem"; try { huidig = localStorage.getItem("wp_thema") || "systeem"; } catch (e) {}
+  pas(huidig);
+  knoppen.forEach(function (k) { k.addEventListener("click", function () { var v = k.getAttribute("data-thema-knop"); try { localStorage.setItem("wp_thema", v); } catch (e) {} pas(v); }); });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { var v = "systeem"; try { v = localStorage.getItem("wp_thema") || "systeem"; } catch (e) {} if (v === "systeem") pas(v); });
+})();
+(function () {
   // Zoeken terwijl je typt: vanaf twee tekens, resultaten onder het zoekveld; pijltjes en Enter, Escape sluit
   var veld = document.getElementById("topzoek"), lijst = document.getElementById("zoek-lijst");
   if (!veld || !lijst) return;
