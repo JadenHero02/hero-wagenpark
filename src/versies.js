@@ -4,9 +4,13 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.3", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "de naam Wagenpark staat in de blauwe balk naast het logo en niet meer boven het menu; dat leek te veel op de menuregel Wagenpark (feedback Huub)", commit: "" },
+    { soort: "verbeterd", tekst: "op de telefoon geen tekstballon meer bij het versienummer", commit: "" },
+  ] },
   { versie: "0.2.2", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "versiebeheer: versienummer onderin het menu, pagina Over deze versie met wat er nieuw is, bugs melden en wensen indienen met automatisch versie, scherm en apparaat erbij", commit: "" },
-    { soort: "nieuw", tekst: "de app vernieuwt vanzelf zodra er een nieuwe versie staat en het scherm even niet gebruikt wordt", commit: "" },
+    { soort: "nieuw", tekst: "versiebeheer: versienummer onderin het menu, pagina Over deze versie met wat er nieuw is, bugs melden en wensen indienen met automatisch versie, scherm en apparaat erbij", commit: "ad93172" },
+    { soort: "nieuw", tekst: "de app vernieuwt vanzelf zodra er een nieuwe versie staat en het scherm even niet gebruikt wordt", commit: "ad93172" },
   ] },
   { versie: "0.2.1", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "bovenbalk in Hero-blauw met het witte logo; zoekveld wordt wit zodra je erin klikt", commit: "24ff3e6" },

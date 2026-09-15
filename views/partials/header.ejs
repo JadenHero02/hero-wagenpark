@@ -32,7 +32,7 @@
 %>
 <div class="shell">
   <header class="topbar">
-    <a href="/" class="brand"><img src="/img/Hero_logo_wit.svg" alt="Hero" width="46" height="39"></a>
+    <a href="/" class="brand"><img src="/img/Hero_logo_wit.svg" alt="Hero" width="46" height="39"><span class="brand-app"><span class="msr">directions_car</span>Wagenpark</span></a>
     <form class="topsearch" method="GET" action="/voertuigen" role="search">
       <span class="msr">search</span>
       <input type="search" name="q" placeholder="Zoeken op kenteken, bestuurder, merk..." aria-label="Zoeken">
@@ -52,7 +52,6 @@
   </header>
   <div class="body">
     <nav class="sidenav">
-      <div class="sidenav-title"><span class="msr">directions_car</span>Wagenpark</div>
       <% menu.forEach((m) => { if (!can(m.min)) return; %>
         <a href="<%= m.href %>" class="side-link <%= isActive(m.href) %>">
           <span class="msr"><%= m.icon %></span><span class="label"><%= m.label %></span>
