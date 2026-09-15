@@ -113,6 +113,11 @@ table.list td.num, table.list th.num { text-align: right; }
 .rows > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--grijs-thin); font-size: 13.5px; }
 .rows > div:first-child { border-top: 0; }
 .rows .k { color: var(--grijs); } .rows .v { text-align: right; }
+.rows.dash > div { align-items: center; gap: 10px; }
+.rows.dash .dash-tekst { flex: 1; min-width: 0; line-height: 1.5; }
+.rows.dash .dash-tekst .msr { margin-right: 2px; }
+.rows.dash .dash-knop { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.rows.dash .btn.small { min-width: 96px; justify-content: center; }
 .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 13.5px; }
 .kv dt { color: var(--grijs); } .kv dd { margin: 0; }
 .empty { color: var(--grijs); padding: 24px; text-align: center; }

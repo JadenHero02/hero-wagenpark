@@ -2,111 +2,101 @@
 <div class="page-head">
   <div>
     <div class="eyebrow">Wagenpark</div>
-    <h1>Dashboard</h1>
-    <div class="sub"><%= new Date().toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" }) %> · <%= vId ? vestigingen.find(v => v.id === vId).naam : "alle vestigingen" %></div>
+    <h1><%= vestigingNaam || "Alle vestigingen" %></h1>
+    <div class="sub"><%= new Date().toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" }) %> · <%= vandaag.length ? vandaag.length + (vandaag.length === 1 ? " ding" : " dingen") + " voor vandaag" : "niets voor vandaag" %></div>
   </div>
   <div class="actions">
     <form method="GET" class="filters" style="margin:0">
       <select name="vestiging" onchange="this.form.submit()">
-        <option value="">Alle vestigingen</option>
+        <option value="alle" <%= !vId ? "selected" : "" %>>Alle vestigingen</option>
         <% vestigingen.forEach(v => { %><option value="<%= v.id %>" <%= vId === v.id ? "selected" : "" %>><%= v.naam %></option><% }) %>
       </select>
     </form>
-    <% if (can("beheerder")) { %><a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a><% } %>
   </div>
-</div>
-
-<div class="tiles">
-  <a class="tile" href="/voertuigen?status=actief<%= vId ? "&vestiging=" + vId : "" %>">
-    <div class="lbl">Actief</div>
-    <div class="row"><span class="big"><%= counts.actief %></span><span class="muted">van <%= counts.totaal %></span></div>
-    <div class="muted small"><%= perVestiging.map(p => p.naam + " " + p.n).join(" · ") %></div>
-  </a>
-  <a class="tile" href="/voertuigen?status=besteld">
-    <div class="lbl">Besteld</div>
-    <div class="row"><span class="big"><%= counts.besteld %></span></div>
-    <div class="muted small">Nog zonder kenteken</div>
-  </a>
-  <a class="tile" href="/voertuigen?status=op_voorraad">
-    <div class="lbl">Op voorraad, te leen</div>
-    <div class="row"><span class="big"><%= counts.op_voorraad %></span><span class="muted">auto's</span><% if (counts.uitgeleend) { %><span class="pill warn"><%= counts.uitgeleend %> uitgeleend</span><% } %></div>
-    <div class="muted small">Elke auto op voorraad is op verzoek te leen</div>
-  </a>
-  <a class="tile" href="/taken">
-    <div class="lbl">Open taken</div>
-    <div class="row"><span class="big warn"><%= openTaken.n %></span><% if (openTaken.te_laat) { %><span class="pill soft"><%= openTaken.te_laat %> te laat</span><% } %></div>
-    <div class="muted small">APK, banden, contract, leenauto's, handmatig</div>
-  </a>
 </div>
 
 <div class="grid-2">
-  <div class="card">
-    <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">flag</span> Vandaag voor jou</h2><a href="/taken" class="small">Naar taken →</a></div>
-    <div class="rows">
-      <% apk.forEach(a => { %>
-        <div>
-          <span><span class="msr" style="color:<%= a.dagen < 0 ? 'var(--rood)' : 'var(--oranje)' %>"><%= a.dagen < 0 ? "error" : "event" %></span> <a href="/voertuigen/<%= a.id %>"><span class="plate"><%= a.kenteken || "besteld" %></span></a> APK <%= a.dagen < 0 ? "verstreken" : "vervalt" %> · <%= a.merk %> <%= a.model || "" %> · <%= a.vestiging || "" %><%= a.bestuurder ? " · " + a.bestuurder : "" %></span>
-          <span class="pill <%= a.dagen < 0 ? 'bad' : 'warn' %>"><%= a.dagen < 0 ? h.relativeDate(a.apk_vervaldatum).replace("geleden", "te laat") : h.relativeDate(a.apk_vervaldatum) %></span>
-        </div>
-      <% }) %>
-      <% uitleenTeLaat.forEach(u => { %>
-        <div>
-          <span><span class="msr" style="color:var(--oranje)">key</span> <a href="/voertuigen/<%= u.id %>"><span class="plate"><%= u.kenteken %></span></a> Leenauto over retourdatum · <%= u.wie || "" %> · <%= u.vestiging || "" %></span>
-          <span class="pill warn"><%= u.dagen %> dagen</span>
-        </div>
-      <% }) %>
-      <% nietVerzekerd.forEach(n => { %>
-        <div>
-          <span><span class="msr" style="color:var(--rood)">gpp_bad</span> <a href="/voertuigen/<%= n.id %>"><span class="plate"><%= n.kenteken %></span></a> Volgens de RDW niet WA-verzekerd · <%= n.merk %> <%= n.model || "" %> · <%= n.vestiging || "" %></span>
-          <span class="pill bad">controleren</span>
-        </div>
-      <% }) %>
-      <% verzoeken.forEach(l => { %>
-        <div>
-          <span><span class="msr" style="color:var(--oranje)">key</span> Leenverzoek van <strong><%= l.wie %></strong><% if (l.soort === "verlenging") { %> (meer tijd)<% } %><% if (l.kenteken) { %> · <span class="plate"><%= l.kenteken %></span><% } %> · <%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %></span>
-          <a href="/uitleen/verzoeken/<%= l.id %>" class="btn small primary">Beoordelen</a>
-        </div>
-      <% }) %>
-      <% rapporten.forEach(r => { %>
-        <div>
-          <span><span class="msr" style="color:var(--oranje)">verified</span> APK-rapport te beoordelen · <a href="/voertuigen/<%= r.voertuig_id %>"><span class="plate"><%= r.kenteken %></span></a> · geüpload <%= h.relativeDate(r.created_at) %></span>
-          <a href="/voertuigen/<%= r.voertuig_id %>/documenten" class="btn small">Beoordelen</a>
-        </div>
-      <% }) %>
-      <% takenWeek.forEach(t => { %>
-        <div>
-          <span><span class="msr" style="color:<%= t.dagen < 0 ? 'var(--rood)' : 'var(--oranje)' %>">task_alt</span> <%= t.titel %></span>
-          <span class="pill <%= t.dagen < 0 ? 'bad' : 'warn' %>"><%= h.relativeDate(t.deadline) %></span>
-        </div>
-      <% }) %>
-      <% if (bandenwissel) { %>
-        <div>
-          <span><span class="msr" style="color:var(--blauw)">ac_unit</span> <span class="pill">SEIZOEN</span> Winterbanden monteren · <%= bandenwissel %> auto's</span>
-          <span class="pill">vanaf 1 oktober</span>
-        </div>
-      <% } %>
-      <% if (!apk.length && !uitleenTeLaat.length && !bandenwissel && !verzoeken.length && !rapporten.length && !takenWeek.length && !nietVerzekerd.length) { %><div class="empty">Niets dat vandaag aandacht vraagt.</div><% } %>
-    </div>
-  </div>
   <div>
     <div class="card">
-      <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">pending_actions</span> Nog te doen</h2></div>
-      <div class="rows">
-        <div><span class="k">Uitleen zonder retourdatum</span><a class="v" href="/uitleen"><strong><%= uitleenOpen %></strong></a></div>
-        <div><span class="k">Op de wachtlijst</span><a class="v" href="/wachtlijst"><strong><%= wachtlijst %></strong></a></div>
-        <div><span class="k">Besteld</span><a class="v" href="/voertuigen?status=besteld"><strong><%= counts.besteld %></strong></a></div>
-        <div><span class="k">Kilometerstand onbekend of ouder dan 60 dagen</span><a class="v" href="/voertuigen?km=oud"><strong style="color:var(--rood)"><%= kmOntbreekt %></strong></a></div>
-        <div><span class="k">Boetes te bevestigen</span><a class="v" href="/boetes?status=nieuw"><strong><%= boetesOpen.nieuw %></strong><% if (boetesOpen.uitzondering) { %> <span class="pill soft"><%= boetesOpen.uitzondering %> uitzondering</span><% } %></a></div>
-        <div><span class="k">Incidenten open</span><a class="v" href="/incidenten"><strong><%= incidentenOpen %></strong></a></div>
-        <div><span class="k">APK-rapporten te beoordelen</span><a class="v" href="/taken?soort=apk_rapport"><strong><%= rapporten.length %></strong></a></div>
+      <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">flag</span> Vandaag voor jou</h2><span class="muted small"><%= vandaag.length %></span></div>
+      <div class="rows dash">
+        <% vandaag.forEach(r => { %>
+          <div>
+            <span class="dash-tekst"><span class="msr" style="color:var(--<%= r.kleur %>)"><%= r.icoon %></span><% if (r.plaat) { %> <span class="plate"><%= r.plaat %></span><% } %> <%= r.tekst %></span>
+            <span class="v dash-knop"><% if (r.pill) { %><span class="pill <%= r.pill.klasse %>"><%= r.pill.tekst %></span><% } %><a href="<%= r.knop.url %>" class="btn small <%= r.kleur === 'rood' ? 'primary' : '' %>"><%= r.knop.tekst %></a></span>
+          </div>
+        <% }) %>
+        <% if (!vandaag.length) { %><div class="empty"><span class="msr" style="color:var(--groen);font-size:28px">check_circle</span><br>Niets dat vandaag aandacht vraagt.</div><% } %>
       </div>
     </div>
+
     <div class="card">
-      <div class="card-head"><h2><span class="msr" style="color:var(--groen)">eco</span> Verduurzaming</h2></div>
+      <div class="card-head"><h2><span class="msr" style="color:var(--blauw)">upcoming</span> Komende weken</h2><a href="/taken" class="small">Alle taken →</a></div>
+      <div class="rows dash">
+        <% komend.forEach(r => { %>
+          <div>
+            <span class="dash-tekst"><span class="msr" style="color:var(--grijs)"><%= r.icoon %></span><% if (r.plaat) { %> <span class="plate"><%= r.plaat %></span><% } %> <a href="<%= r.url %>" style="color:inherit"><%= r.tekst %></a></span>
+            <span class="v muted small nowrap"><%= r.wanneer %></span>
+          </div>
+        <% }) %>
+        <% if (besteld.length) { %>
+          <div>
+            <span class="dash-tekst"><span class="msr" style="color:var(--grijs)">local_shipping</span> <%= besteld.length %> auto's besteld<% const groepen = {}; besteld.forEach(b => { const k = `${b.merk} ${b.model || ""}`.trim() + (b.verwachte_levering ? ` (${b.verwachte_levering})` : ""); groepen[k] = (groepen[k] || 0) + 1; }); const lijst = Object.entries(groepen).map(([k, n]) => (n > 1 ? `${n}× ` : "") + k); %>: <%= lijst.slice(0, 4).join(", ") %><%= lijst.length > 4 ? ", ..." : "" %></span>
+            <span class="v"><a href="/voertuigen?status=besteld" class="small">bekijken</a></span>
+          </div>
+        <% } %>
+        <% if (!komend.length && !besteld.length) { %><div class="muted">Niets gepland de komende weken.</div><% } %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="tiles" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+      <a class="tile" href="/voertuigen<%= vId ? "?vestiging=" + vId : "" %>">
+        <div class="lbl">Wagenpark</div>
+        <div class="row"><span class="big"><%= counts.actief + counts.uitgeleend %></span><span class="muted">rijden</span></div>
+        <div class="muted small"><%= counts.op_voorraad %> op voorraad · <%= counts.besteld %> besteld<% if (!vId) { %><br><%= perVestiging.map(p => p.naam + " " + p.n).join(" · ") %><% } %></div>
+      </a>
+      <a class="tile" href="/voertuigen?sort=apk<%= vId ? "&vestiging=" + vId : "" %>">
+        <div class="lbl">APK op orde</div>
+        <div class="row"><span class="big <%= counts.apk_ok < counts.met_kenteken ? 'warn' : '' %>"><%= counts.apk_ok %></span><span class="muted">van <%= counts.met_kenteken %></span></div>
+        <div class="muted small"><%= counts.apk_ok < counts.met_kenteken ? (counts.met_kenteken - counts.apk_ok) + " verlopen of onbekend" : "geldige APK, via de RDW" %></div>
+      </a>
+      <a class="tile" href="/voertuigen?km=oud<%= vId ? "&vestiging=" + vId : "" %>">
+        <div class="lbl">Km-stand actueel</div>
+        <div class="row"><span class="big <%= counts.km_ok < counts.rijdend ? 'warn' : '' %>"><%= counts.km_ok %></span><span class="muted">van <%= counts.rijdend %></span></div>
+        <div class="muted small">stand jonger dan 60 dagen</div>
+      </a>
+      <a class="tile" href="/uitleen">
+        <div class="lbl">Leenverzoeken</div>
+        <div class="row"><span class="big"><%= leensnelheid.n ? leensnelheid.dagen : "–" %></span><span class="muted"><%= leensnelheid.n ? "dagen" : "" %></span></div>
+        <div class="muted small"><%= leensnelheid.n ? "gemiddeld tot besluit, laatste 90 dagen" : "nog geen verzoeken beantwoord" %></div>
+      </a>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Snel</h2></div>
+      <div class="actions">
+        <% if (can("beheerder")) { %>
+          <a href="/uitleen/toewijzen" class="btn"><span class="msr">person_add</span>Toewijzen</a>
+          <a href="/uitleen/toewijzen?soort=uitleen" class="btn"><span class="msr">key</span>Uitlenen</a>
+          <a href="/boetes/nieuw" class="btn"><span class="msr">receipt_long</span>Boete</a>
+          <a href="/incidenten/nieuw" class="btn"><span class="msr">car_crash</span>Incident</a>
+          <a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a>
+        <% } else { %>
+          <a href="/uitleen/aanvragen" class="btn"><span class="msr">key</span>Leenverzoek</a>
+          <a href="/export" class="btn"><span class="msr">download</span>Export</a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2><span class="msr" style="color:var(--groen)">eco</span> Verduurzaming</h2><a href="/export" class="small">Export →</a></div>
       <% const tot = milieu.reduce((s, m) => s + m.n, 0) || 1; %>
       <div class="rows">
         <% milieu.forEach(m => { %><div><span class="k"><%= h.label("milieu", m.milieu) || m.milieu %></span><span class="v"><strong><%= Math.round(m.n * 100 / tot) %>%</strong> <span class="muted small">(<%= m.n %>)</span></span></div><% }) %>
       </div>
+      <div class="muted small" style="margin-top:8px">Gegevens compleet: <%= counts.doc_ok %> van <%= counts.met_kenteken %> auto's hebben een kentekenbewijs in de app.</div>
     </div>
   </div>
 </div>

@@ -4,8 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.14", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "dashboard opnieuw ingedeeld na de ATS-feedback: bovenaan \"Vandaag voor jou\" met per regel één knop (afspraak, beoordelen, innemen, bevestigen), daaronder wat er de komende weken aankomt (APK, leenauto's terug, contracten, rijbewijzen, wachtlijst, bestelde auto's), rechts vier stuurgetallen (rijdend, APK op orde, km-stand actueel, snelheid leenverzoeken) en de snelle acties. Opent op je eigen vestiging", commit: "" },
+    { soort: "verbeterd", tekst: "bandenwissel staat alleen in het seizoen op het dashboard, als voortgang; APK's met een afspraak vragen geen actie meer", commit: "" },
+  ] },
   { versie: "0.2.13", datum: "2026-09-15", punten: [
-    { soort: "verbeterd", tekst: "\"wie bel je waarvoor\" in Mijn auto: dezelfde persoon met meer rollen staat op één regel (Niels: wagenparkbeheer en celdirecteur Wognum), zonder dubbele tekst", commit: "" },
+    { soort: "verbeterd", tekst: "\"wie bel je waarvoor\" in Mijn auto: dezelfde persoon met meer rollen staat op één regel (Niels: wagenparkbeheer en celdirecteur Wognum), zonder dubbele tekst", commit: "7fd7e45" },
   ] },
   { versie: "0.2.12", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "past nu op telefoon, tablet en computer: op de telefoon een scrollend menu in één rij, het zoekveld in de balk, alles in één kolom en tabellen die zijwaarts schuiven; op de tablet twee kolommen en een smaller menu", commit: "70ab035" },
