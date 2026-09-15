@@ -1,0 +1,23 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/processen">Processen</a> › Starten</div>
+<div class="page-head"><div><div class="eyebrow">Processen</div><h1>Proces starten</h1></div></div>
+<div class="card" style="max-width:720px">
+<form method="POST" action="/processen/start" class="form">
+  <label class="full">Auto
+    <select name="voertuig_id" required>
+      <option value="">– kies –</option>
+      <% voertuigen.forEach(x => { %><option value="<%= x.id %>" <%= v && v.id === x.id ? "selected" : "" %>><%= x.kenteken || "besteld" %> · <%= x.merk %> <%= x.model || "" %> (<%= h.label("status", x.status) %>)</option><% }) %>
+    </select>
+  </label>
+  <div class="full" style="display:grid;gap:10px">
+    <% Object.entries(STAPPEN).forEach(([key, stappen]) => { const bezig = lopend.includes(key); %>
+      <label style="flex-direction:row;align-items:flex-start;gap:10px;font-size:14px;font-weight:400;color:var(--blauw-black);padding:12px;border:1px solid var(--grijs-thin);border-radius:10px">
+        <input type="radio" name="soort" value="<%= key %>" <%= soort === key ? "checked" : "" %> <%= bezig ? "disabled" : "" %> style="margin-top:3px">
+        <span><strong><%= NAMEN[key] %></strong><% if (bezig) { %> <span class="pill warn">loopt al</span><% } %><br><span class="muted small"><%= stappen.filter(s => !s.auto).length %> stappen, <%= stappen.filter(s => s.auto).length %> doet de app. <% if (key === "uitgifte") { %>Start vanzelf bij toewijzen.<% } else if (key === "inname") { %>Start vanzelf bij innemen van een vaste auto.<% } %></span></span>
+      </label>
+    <% }) %>
+  </div>
+  <div class="buttons"><a href="<%= v ? "/voertuigen/" + v.id : "/processen" %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">play_arrow</span>Starten</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

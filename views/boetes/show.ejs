@@ -1,0 +1,69 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= can("directie") ? "/boetes" : "/mijn-auto" %>"><%= can("directie") ? "Boetes" : "Mijn auto" %></a> › Boete</div>
+<div class="page-head">
+  <div><div class="eyebrow">Boete</div><h1><%= h.euro(b.bedrag) || "Bedrag onbekend" %> · <span class="plate big"><%= b.kenteken || "besteld" %></span></h1><div class="sub"><%= b.merk %> <%= b.model || "" %> · overtreding op <%= h.formatDate(b.datum) %><% if (b.omschrijving) { %> · <%= b.omschrijving %><% } %></div></div>
+  <span class="pill <%= b.status === 'doorbelast' ? 'ok' : b.status === 'nieuw' ? 'warn' : b.status === 'uitzondering_gevraagd' ? 'soft' : 'grey' %>" style="font-size:13px"><%= h.label("boete", b.status) %></span>
+</div>
+<div class="grid-2">
+  <div>
+    <div class="card">
+      <dl class="kv">
+        <dt>Bestuurder</dt><dd><% if (b.bestuurder) { %><% if (can("directie")) { %><a href="/bestuurders/<%= b.bestuurder_id %>"><%= b.bestuurder %></a><% } else { %><%= b.bestuurder %><% } %><% } else { %><span class="pill soft">onbekend</span><% } %></dd>
+        <dt>Auto</dt><dd><% if (can("directie")) { %><a href="/voertuigen/<%= b.voertuig_id %>"><%= b.kenteken %></a><% } else { %><%= b.kenteken %><% } %> · <%= b.merk %> <%= b.model || "" %><%= b.vestiging ? " · " + b.vestiging : "" %></dd>
+        <dt>Datum</dt><dd><%= h.formatDate(b.datum) %></dd>
+        <dt>Bedrag</dt><dd><%= h.euro(b.bedrag) || "onbekend" %></dd>
+        <dt>Omschrijving</dt><dd><%= b.omschrijving || "–" %></dd>
+        <dt>Ingevoerd</dt><dd><%= h.formatDate(b.created_at, true) %></dd>
+        <% if (b.uitzondering_reden) { %><dt>Uitzondering</dt><dd><%= b.uitzondering_reden %><div class="muted small">gevraagd door <%= b.gevraagd_door_naam || "onbekend" %> op <%= h.formatDate(b.uitzondering_gevraagd_op, true) %></div></dd><% } %>
+        <% if (b.bevestigd_op) { %><dt>Besluit</dt><dd><%= h.label("boete", b.status) %> door <%= b.bevestigd_door_naam || "onbekend" %> op <%= h.formatDate(b.bevestigd_op, true) %><% if (b.hr_gemaild_op) { %><div class="muted small">HR gemaild <%= h.formatDate(b.hr_gemaild_op, true) %></div><% } %></dd><% } %>
+      </dl>
+    </div>
+    <% if (logboek.length) { %>
+    <div class="card"><div class="card-head"><div class="lbl"><span class="msr">history</span>Logboek</div></div>
+      <div class="log"><% logboek.forEach(l => { %><div><span class="when"><%= h.formatDate(l.created_at, true) %></span><span><%= l.omschrijving %></span></div><% }) %></div>
+    </div>
+    <% } %>
+  </div>
+  <div>
+    <% if (can("beheerder") && b.status === "nieuw") { %>
+    <div class="card">
+      <div class="lbl"><span class="msr">edit</span>Controleren</div>
+      <form method="POST" action="/boetes/<%= b.id %>/bestuurder" class="form" style="grid-template-columns:1fr;margin-top:10px">
+        <label>Bestuurder<select name="bestuurder_id"><option value="">– onbekend –</option><% bestuurders.forEach(x => { %><option value="<%= x.id %>" <%= b.bestuurder_id === x.id ? "selected" : "" %>><%= x.naam %></option><% }) %></select></label>
+        <label>Bedrag (€)<input type="number" name="bedrag" step="0.01" min="0" value="<%= b.bedrag ?? "" %>"></label>
+        <label>Omschrijving<input name="omschrijving" value="<%= b.omschrijving || "" %>"></label>
+        <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn small">Opslaan</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <div class="lbl"><span class="msr">gavel</span>Doorbelasten</div>
+      <p style="margin-top:8px">Conform het personeelsbeleid wordt de boete doorbelast aan <strong><%= b.bestuurder || "de bestuurder" %></strong>. Na je bevestiging krijgt HR een mail en verwerkt de inhouding; bestuurder en celdirecteur krijgen een kopie.</p>
+      <form method="POST" action="/boetes/<%= b.id %>/bevestigen" onsubmit="return confirm('Doorbelasten bevestigen? HR krijgt direct een mail.')"><button type="submit" class="btn primary" <%= b.bestuurder_id ? "" : "disabled" %>><span class="msr">check</span>Bevestigen: doorbelasten</button></form>
+      <details style="margin-top:14px"><summary class="small" style="cursor:pointer;color:var(--blauw)">Eén keer niet doorbelasten? Vraag een uitzondering</summary>
+        <form method="POST" action="/boetes/<%= b.id %>/uitzondering" class="form" style="grid-template-columns:1fr;margin-top:8px">
+          <label>Reden<textarea name="reden" required placeholder="Waarom deze keer niet? Een andere beheerder of de admin beslist, het besluit wordt gelogd."></textarea></label>
+          <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn ghost small">Uitzondering vragen</button></div>
+        </form>
+      </details>
+    </div>
+    <% } else if (can("beheerder") && b.status === "uitzondering_gevraagd") { %>
+    <div class="card">
+      <div class="lbl"><span class="msr">gavel</span>Uitzondering beoordelen</div>
+      <p style="margin-top:8px"><strong><%= b.gevraagd_door_naam || "Een beheerder" %></strong> vraagt om deze boete niet door te belasten: <em><%= b.uitzondering_reden %></em></p>
+      <% if (b.uitzondering_gevraagd_door === currentUser.id && !can("admin")) { %><p class="muted small">Je kunt je eigen verzoek niet beoordelen. Een andere beheerder of de admin beslist.</p><% } else { %>
+      <form method="POST" action="/boetes/<%= b.id %>/uitzondering/goedkeuren" class="form" style="grid-template-columns:1fr">
+        <label>Toelichting <span class="hint">optioneel, komt in het logboek</span><input name="toelichting"></label>
+        <div class="actions"><button type="submit" class="btn primary"><span class="msr">check</span>Goedkeuren: niet doorbelasten</button><button type="submit" class="btn ghost" formaction="/boetes/<%= b.id %>/uitzondering/afwijzen"><span class="msr">close</span>Afwijzen: toch doorbelasten</button></div>
+      </form>
+      <% } %>
+    </div>
+    <% } else if (b.status === "doorbelast") { %>
+    <div class="card"><div class="lbl"><span class="msr">check_circle</span>Afgehandeld</div><p style="margin-top:8px">Deze boete is doorbelast. HR verwerkt de inhouding in het salaris.</p></div>
+    <% } else if (b.status === "niet_doorbelast") { %>
+    <div class="card"><div class="lbl"><span class="msr">info</span>Uitzondering</div><p style="margin-top:8px">Deze boete wordt bij uitzondering niet doorbelast. Het besluit staat in het logboek.</p></div>
+    <% } else if (!can("beheerder")) { %>
+    <div class="card"><p class="muted">Een beheerder handelt deze boete af. Volgens het personeelsbeleid worden boetes doorbelast.</p></div>
+    <% } %>
+  </div>
+</div>
+<%- include("../partials/footer") %>

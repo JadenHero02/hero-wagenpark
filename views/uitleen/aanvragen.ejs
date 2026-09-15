@@ -1,0 +1,25 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= can("directie") ? "/uitleen" : "/mijn-auto" %>"><%= can("directie") ? "Uitleen" : "Mijn auto" %></a> › Leenauto aanvragen</div>
+<div class="page-head"><div><div class="eyebrow">Uitleen</div><h1>Leenauto aanvragen</h1><div class="sub">Elke auto op voorraad is te leen. Een beheerder keurt je verzoek goed of wijst het af; je krijgt een mail.</div></div></div>
+<div class="card" style="max-width:640px">
+<form method="POST" action="/uitleen/aanvragen" class="form">
+  <label class="full">Welke auto
+    <select name="voertuig_id">
+      <option value="">Geen voorkeur, de beheerder kiest</option>
+      <% vrij.forEach(v => { %><option value="<%= v.id %>" <%= voertuig && voertuig.id === v.id ? "selected" : "" %>><%= v.kenteken || "besteld" %> · <%= v.merk %> <%= v.model || "" %><%= v.vestiging ? " · " + v.vestiging : "" %></option><% }) %>
+    </select>
+  </label>
+  <label>Van<input type="date" name="van" value="<%= form.van %>" required></label>
+  <label>Tot en met<input type="date" name="tot" value="<%= form.tot %>" required></label>
+  <label class="full">Waarvoor<input name="reden" required placeholder="Eigen auto in de garage, klantbezoek, ..."></label>
+  <% if (can("beheerder")) { %>
+    <label>Voor een collega <span class="hint">laat leeg als het voor jezelf is</span>
+      <select name="bestuurder_id"><option value="">– ikzelf –</option><% bestuurders.forEach(b => { %><option value="<%= b.id %>"><%= b.naam %></option><% }) %></select>
+    </label>
+    <label>Of een externe<input name="extern_naam" placeholder="naam"></label>
+    <label>Vestiging <span class="hint">welke beheerders krijgen de mail</span><select name="vestiging_id"><option value="">– via de auto –</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>"><%= ve.naam %></option><% }) %></select></label>
+  <% } %>
+  <div class="buttons"><a href="<%= can("directie") ? "/uitleen" : "/mijn-auto" %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">send</span>Verzoek versturen</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

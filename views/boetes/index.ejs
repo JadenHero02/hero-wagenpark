@@ -1,0 +1,31 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Boetes</div><h1>Boetes en eigen risico</h1><div class="sub"><%= counts.nieuw %> te bevestigen · <%= counts.uitzondering %> uitzondering gevraagd · <%= h.euro(counts.doorbelast_jaar) %> doorbelast dit jaar</div></div>
+  <% if (can("beheerder")) { %><div class="actions"><a href="/boetes/nieuw" class="btn primary"><span class="msr">add</span>Boete invoeren</a></div><% } %>
+</div>
+<div class="filters">
+  <div class="chips">
+    <a class="chip <%= !status ? "on" : "" %>" href="/boetes">Alles</a>
+    <% Object.entries(LABELS.boete).forEach(([k, l]) => { %><a class="chip <%= status === k ? "on" : "" %>" href="/boetes?status=<%= k %>"><%= l %></a><% }) %>
+  </div>
+</div>
+<div class="card" style="padding:0">
+  <table class="list">
+    <thead><tr><th>Datum</th><th>Kenteken</th><th>Bestuurder</th><th class="num">Bedrag</th><th>Omschrijving</th><th>Status</th></tr></thead>
+    <tbody>
+    <% rows.forEach(b => { %>
+      <tr class="click" onclick="location.href='/boetes/<%= b.id %>'">
+        <td><%= h.formatDate(b.datum) %></td>
+        <td><span class="plate"><%= b.kenteken || "besteld" %></span><div class="muted small"><%= b.merk %> <%= b.model || "" %><%= b.vestiging ? " · " + b.vestiging : "" %></div></td>
+        <td><%= b.bestuurder || "" %><% if (!b.bestuurder) { %><span class="pill soft">onbekend</span><% } %></td>
+        <td class="num"><%= h.euro(b.bedrag) %></td>
+        <td class="small"><%= b.omschrijving || "" %></td>
+        <td><span class="pill <%= b.status === 'doorbelast' ? 'ok' : b.status === 'nieuw' ? 'warn' : b.status === 'uitzondering_gevraagd' ? 'soft' : 'grey' %>"><%= h.label("boete", b.status) %></span><% if (b.bevestigd_door_naam) { %><div class="muted small"><%= b.bevestigd_door_naam %> · <%= h.formatDate(b.bevestigd_op) %></div><% } %></td>
+      </tr>
+    <% }) %>
+    <% if (!rows.length) { %><tr><td colspan="6" class="empty">Geen boetes.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<p class="muted small" style="margin-top:12px">Personeelsbeleid: boetes en eigen risico worden altijd doorbelast. De beheerder bevestigt, HR verwerkt de inhouding. Eén keer niet doorbelasten kan alleen na goedkeuring, met reden, gelogd.</p>
+<%- include("../partials/footer") %>

@@ -1,0 +1,26 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Incidenten</div><h1>Schade, ongevallen, pech</h1><div class="sub">Gemeld door bestuurders op de telefoon of ingevoerd door de beheerder. Elk incident is ook een taak.</div></div>
+  <div class="actions"><a href="/incidenten/nieuw" class="btn primary"><span class="msr">car_crash</span>Incident invoeren</a></div>
+</div>
+<div class="filters"><div class="chips"><a class="chip <%= !status ? "on" : "" %>" href="/incidenten">Alles</a><% Object.entries(LABELS.incident_status).forEach(([k, l]) => { %><a class="chip <%= status === k ? "on" : "" %>" href="/incidenten?status=<%= k %>"><%= l %></a><% }) %></div></div>
+<div class="card" style="padding:0">
+  <table class="list">
+    <thead><tr><th>Datum</th><th>Kenteken</th><th>Soort</th><th>Wat</th><th>Bestuurder</th><th class="num">Kosten</th><th>Status</th></tr></thead>
+    <tbody>
+    <% rows.forEach(i => { %>
+      <tr class="click" onclick="location.href='/incidenten/<%= i.id %>'">
+        <td><%= h.formatDate(i.datum) %></td>
+        <td><span class="plate"><%= i.kenteken || "besteld" %></span><div class="muted small"><%= i.merk %> <%= i.model || "" %><%= i.vestiging ? " · " + i.vestiging : "" %></div></td>
+        <td><%= h.label("incident_soort", i.soort) %></td>
+        <td class="small"><%= i.omschrijving || "" %><% if (i.fotos) { %> <span class="pill grey"><%= i.fotos %> foto<%= i.fotos === 1 ? "" : "'s" %></span><% } %></td>
+        <td><%= i.bestuurder || "" %></td>
+        <td class="num"><%= h.euro(i.kosten) %></td>
+        <td><span class="pill <%= i.status === 'afgerond' ? 'ok' : i.status === 'gemeld' ? 'warn' : '' %>"><%= h.label("incident_status", i.status) %></span></td>
+      </tr>
+    <% }) %>
+    <% if (!rows.length) { %><tr><td colspan="7" class="empty">Geen incidenten.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include("../partials/footer") %>

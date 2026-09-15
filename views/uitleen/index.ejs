@@ -1,0 +1,85 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Uitleen</div><h1>Leenauto's</h1><div class="sub"><%= verzoeken.length %> open <%= verzoeken.length === 1 ? "verzoek" : "verzoeken" %> · <%= lopend.length %> uitgeleend · <%= vrij.length %> op voorraad, te leen</div></div>
+  <div class="actions">
+    <a href="/uitleen/aanvragen" class="btn"><span class="msr">key</span>Leenverzoek doen</a>
+    <% if (can("beheerder")) { %><a href="/uitleen/toewijzen" class="btn primary"><span class="msr">person_add</span>Toewijzen</a><% } %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">pending_actions</span> Wacht op een beheerder</h2></div>
+  <table class="list">
+    <thead><tr><th>Wie</th><th>Auto</th><th>Periode</th><th>Reden</th><th>Gevraagd</th><th></th></tr></thead>
+    <tbody>
+    <% verzoeken.forEach(l => { %>
+      <tr class="click" onclick="location.href='/uitleen/verzoeken/<%= l.id %>'">
+        <td><strong><%= l.wie %></strong><% if (l.extern_naam) { %> <span class="muted small">extern</span><% } %><% if (l.soort === "verlenging") { %> <span class="pill warn">meer tijd</span><% } %></td>
+        <td><% if (l.kenteken) { %><span class="plate"><%= l.kenteken %></span> <%= l.merk %> <%= l.model || "" %><% } else { %><span class="muted">geen voorkeur</span><% } %></td>
+        <td><%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %></td>
+        <td class="small"><%= l.reden || "" %></td>
+        <td class="small muted"><%= h.relativeDate(l.created_at) %></td>
+        <td><% if (can("beheerder")) { %><a href="/uitleen/verzoeken/<%= l.id %>" class="btn small primary" onclick="event.stopPropagation()">Beoordelen</a><% } %></td>
+      </tr>
+    <% }) %>
+    <% if (!verzoeken.length) { %><tr><td colspan="6" class="empty">Geen open verzoeken.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">key</span> Nu uitgeleend</h2></div>
+  <table class="list">
+    <thead><tr><th>Kenteken</th><th>Auto</th><th>Lener</th><th>Van</th><th>Retour</th><th>Reden</th><th></th></tr></thead>
+    <tbody>
+    <% lopend.forEach(t => { %>
+      <tr class="click" onclick="location.href='/voertuigen/<%= t.voertuig_id %>'">
+        <td><span class="plate"><%= t.kenteken %></span></td>
+        <td><%= t.merk %> <%= t.model || "" %><div class="muted small"><%= t.vestiging || "" %></div></td>
+        <td><% if (t.bestuurder_id) { %><a href="/bestuurders/<%= t.bestuurder_id %>" onclick="event.stopPropagation()"><%= t.wie %></a><% } else { %><%= t.wie || "" %> <span class="muted small">extern</span><% } %></td>
+        <td><%= h.formatDate(t.van) %></td>
+        <td><% if (t.tot) { %><span class="pill <%= t.dagen < 0 ? 'bad' : t.dagen <= 1 ? 'warn' : 'grey' %>"><%= h.formatDate(t.tot) %></span><% } else { %><span class="pill warn">geen retourdatum</span><% } %></td>
+        <td class="small"><%= t.reden || "" %></td>
+        <td><% if (can("beheerder")) { %><a href="/uitleen/innemen?voertuig=<%= t.voertuig_id %>" class="btn small" onclick="event.stopPropagation()">Innemen</a><% } %></td>
+      </tr>
+    <% }) %>
+    <% if (!lopend.length) { %><tr><td colspan="7" class="empty">Er is nu niets uitgeleend.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<div class="grid-2" style="margin-top:16px">
+  <div class="card">
+    <div class="card-head"><h2><span class="msr" style="color:var(--groen)">garage</span> Op voorraad, te leen</h2></div>
+    <table class="list">
+      <tbody>
+      <% vrij.forEach(v => { %>
+        <tr class="click" onclick="location.href='/voertuigen/<%= v.id %>'">
+          <td><span class="plate"><%= v.kenteken || "besteld" %></span></td>
+          <td><%= v.merk %> <%= v.model || "" %><% if (v.is_leenauto) { %> <span class="pill grey">leenauto</span><% } %></td>
+          <td class="muted small"><%= v.vestiging || "" %></td>
+          <td><% if (can("beheerder")) { %><a href="/uitleen/toewijzen?voertuig=<%= v.id %>&soort=uitleen" class="btn small" onclick="event.stopPropagation()">Uitlenen</a><% } else { %><a href="/uitleen/aanvragen?voertuig=<%= v.id %>" class="btn small" onclick="event.stopPropagation()">Aanvragen</a><% } %></td>
+        </tr>
+      <% }) %>
+      <% if (!vrij.length) { %><tr><td class="empty">Niets op voorraad.</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <div class="card">
+      <div class="card-head"><h2>Laatste besluiten</h2></div>
+      <div class="rows">
+        <% besloten.forEach(l => { %><div><span><a href="/uitleen/verzoeken/<%= l.id %>"><%= l.wie %></a><% if (l.kenteken) { %> · <span class="plate"><%= l.kenteken %></span><% } %> <span class="muted small"><%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %></span></span><span class="v"><span class="pill <%= l.status === 'goedgekeurd' ? 'ok' : 'soft' %>"><%= h.label("leenverzoek", l.status) %></span></span></div><% }) %>
+        <% if (!besloten.length) { %><div class="muted">Nog geen besluiten.</div><% } %>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Eerder uitgeleend</h2></div>
+      <div class="rows">
+        <% historie.forEach(t => { %><div><span><a href="/voertuigen/<%= t.voertuig_id %>"><span class="plate"><%= t.kenteken %></span></a> <%= t.wie || "" %></span><span class="v muted small"><%= h.formatDate(t.van) %> – <%= h.formatDate(t.tot) %></span></div><% }) %>
+        <% if (!historie.length) { %><div class="muted">Nog geen historie.</div><% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include("../partials/footer") %>

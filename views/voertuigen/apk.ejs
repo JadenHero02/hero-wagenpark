@@ -1,0 +1,28 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= mijn ? "/mijn-auto" : "/voertuigen/" + v.id %>"><%= mijn ? "Mijn auto" : (v.kenteken || v.merk) %></a> › APK</div>
+<% const d = h.daysUntil(v.apk_vervaldatum); %>
+<div class="page-head"><div><div class="eyebrow">APK</div><h1><span class="plate big"><%= v.kenteken || "besteld" %></span> <%= v.merk %> <%= v.model || "" %></h1><div class="sub">APK <% if (v.apk_vervaldatum) { %>vervalt <%= h.formatDate(v.apk_vervaldatum) %> (<%= h.relativeDate(v.apk_vervaldatum) %>)<% } else { %>datum onbekend<% } %></div></div></div>
+<div class="grid-2">
+  <div class="card">
+    <div class="lbl"><span class="msr">event</span>Afspraak vastleggen</div>
+    <p style="margin-top:8px">Plan de keuring bij de garage en zet hier de datum. Na die dag vraagt de app om het keuringsrapport; een beheerder keurt het goed en zet de nieuwe APK-datum.</p>
+    <% if (v.apk_afspraak) { %><p><strong>Afspraak staat op <%= h.formatDate(v.apk_afspraak) %>.</strong> <% if (h.daysUntil(v.apk_afspraak) < 0) { %>Die is geweest: <a href="/voertuigen/<%= v.id %>/documenten?soort=apk_rapport">upload het rapport</a>.<% } %></p><% } %>
+    <form method="POST" action="/voertuigen/<%= v.id %>/apk" class="form" style="grid-template-columns:1fr;max-width:360px">
+      <label>Datum van de afspraak<input type="date" name="apk_afspraak" value="<%= v.apk_afspraak || "" %>" required></label>
+      <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">event_available</span>Vastleggen</button><% if (v.apk_afspraak && can("beheerder")) { %><button type="submit" name="wissen" value="1" class="btn ghost">Afspraak wissen</button><% } %></div>
+    </form>
+  </div>
+  <div class="card">
+    <div class="lbl"><span class="msr">garage</span>Garage voor <%= v.merk %></div>
+    <% if (garage) { %>
+      <h3 style="margin-top:8px"><%= garage.naam %></h3>
+      <% if (garage.adres) { %><p class="muted"><%= garage.adres %></p><% } %>
+      <div class="actions">
+        <% if (garage.telefoon) { %><a href="tel:<%= garage.telefoon.replace(/\s/g, "") %>" class="btn"><span class="msr">call</span><%= garage.telefoon %></a><% } %>
+        <% if (garage.website) { %><a href="<%= garage.website.startsWith("http") ? garage.website : "https://" + garage.website %>" target="_blank" class="btn ghost"><span class="msr">open_in_new</span>Website</a><% } %>
+      </div>
+      <% if (garage.opmerking) { %><p class="muted small" style="margin-top:10px"><%= garage.opmerking %></p><% } %>
+    <% } else { %><p class="muted" style="margin-top:8px">Geen garage voor dit merk in de contacten. Bel wagenparkbeheer.</p><% } %>
+  </div>
+</div>
+<%- include("../partials/footer") %>

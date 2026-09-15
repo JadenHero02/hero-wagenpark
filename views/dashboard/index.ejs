@@ -35,7 +35,7 @@
   <a class="tile" href="/taken">
     <div class="lbl">Open taken</div>
     <div class="row"><span class="big warn"><%= openTaken.n %></span><% if (openTaken.te_laat) { %><span class="pill soft"><%= openTaken.te_laat %> te laat</span><% } %></div>
-    <div class="muted small">Taken komen woensdag</div>
+    <div class="muted small">APK, banden, contract, leenauto's, handmatig</div>
   </a>
 </div>
 
@@ -55,13 +55,31 @@
           <span class="pill warn"><%= u.dagen %> dagen</span>
         </div>
       <% }) %>
+      <% verzoeken.forEach(l => { %>
+        <div>
+          <span><span class="msr" style="color:var(--oranje)">key</span> Leenverzoek van <strong><%= l.wie %></strong><% if (l.soort === "verlenging") { %> (meer tijd)<% } %><% if (l.kenteken) { %> · <span class="plate"><%= l.kenteken %></span><% } %> · <%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %></span>
+          <a href="/uitleen/verzoeken/<%= l.id %>" class="btn small primary">Beoordelen</a>
+        </div>
+      <% }) %>
+      <% rapporten.forEach(r => { %>
+        <div>
+          <span><span class="msr" style="color:var(--oranje)">verified</span> APK-rapport te beoordelen · <a href="/voertuigen/<%= r.voertuig_id %>"><span class="plate"><%= r.kenteken %></span></a> · geüpload <%= h.relativeDate(r.created_at) %></span>
+          <a href="/voertuigen/<%= r.voertuig_id %>/documenten" class="btn small">Beoordelen</a>
+        </div>
+      <% }) %>
+      <% takenWeek.forEach(t => { %>
+        <div>
+          <span><span class="msr" style="color:<%= t.dagen < 0 ? 'var(--rood)' : 'var(--oranje)' %>">task_alt</span> <%= t.titel %></span>
+          <span class="pill <%= t.dagen < 0 ? 'bad' : 'warn' %>"><%= h.relativeDate(t.deadline) %></span>
+        </div>
+      <% }) %>
       <% if (bandenwissel) { %>
         <div>
           <span><span class="msr" style="color:var(--blauw)">ac_unit</span> <span class="pill">SEIZOEN</span> Winterbanden monteren · <%= bandenwissel %> auto's</span>
           <span class="pill">vanaf 1 oktober</span>
         </div>
       <% } %>
-      <% if (!apk.length && !uitleenTeLaat.length && !bandenwissel) { %><div class="empty">Niets dat vandaag aandacht vraagt.</div><% } %>
+      <% if (!apk.length && !uitleenTeLaat.length && !bandenwissel && !verzoeken.length && !rapporten.length && !takenWeek.length) { %><div class="empty">Niets dat vandaag aandacht vraagt.</div><% } %>
     </div>
   </div>
   <div>
@@ -72,6 +90,9 @@
         <div><span class="k">Op de wachtlijst</span><a class="v" href="/wachtlijst"><strong><%= wachtlijst %></strong></a></div>
         <div><span class="k">Besteld</span><a class="v" href="/voertuigen?status=besteld"><strong><%= counts.besteld %></strong></a></div>
         <div><span class="k">Kilometerstand onbekend of ouder dan 60 dagen</span><a class="v" href="/voertuigen?km=oud"><strong style="color:var(--rood)"><%= kmOntbreekt %></strong></a></div>
+        <div><span class="k">Boetes te bevestigen</span><a class="v" href="/boetes?status=nieuw"><strong><%= boetesOpen.nieuw %></strong><% if (boetesOpen.uitzondering) { %> <span class="pill soft"><%= boetesOpen.uitzondering %> uitzondering</span><% } %></a></div>
+        <div><span class="k">Incidenten open</span><a class="v" href="/incidenten"><strong><%= incidentenOpen %></strong></a></div>
+        <div><span class="k">APK-rapporten te beoordelen</span><a class="v" href="/taken?soort=apk_rapport"><strong><%= rapporten.length %></strong></a></div>
       </div>
     </div>
     <div class="card">

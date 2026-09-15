@@ -1,0 +1,42 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= can("directie") ? "/uitleen" : "/mijn-auto" %>"><%= can("directie") ? "Uitleen" : "Mijn auto" %></a> › Leenverzoek</div>
+<div class="page-head">
+  <div><div class="eyebrow"><%= l.soort === "verlenging" ? "Verzoek om meer tijd" : "Leenverzoek" %></div><h1><%= l.wie %></h1><div class="sub">Gevraagd <%= h.formatDate(l.created_at, true) %></div></div>
+  <span class="pill <%= l.status === 'open' ? 'warn' : l.status === 'goedgekeurd' ? 'ok' : 'soft' %>" style="font-size:13px"><%= h.label("leenverzoek", l.status) %></span>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <dl class="kv">
+      <dt>Wie</dt><dd><%= l.wie %><% if (l.extern_naam) { %> <span class="muted small">extern</span><% } %></dd>
+      <dt>Auto</dt><dd><% if (l.kenteken) { %><a href="/voertuigen/<%= l.voertuig_id %>"><span class="plate"><%= l.kenteken %></span></a> <%= l.merk %> <%= l.model || "" %> <span class="muted small"><%= h.label("status", l.voertuig_status) %></span><% } else { %><span class="muted">geen voorkeur</span><% } %></dd>
+      <% if (l.soort === "verlenging") { %><dt>Nu tot</dt><dd><%= h.formatDate(l.huidige_tot || l.van) %></dd><dt>Gevraagd tot</dt><dd><strong><%= h.formatDate(l.tot) %></strong></dd><% } else { %><dt>Periode</dt><dd><%= h.formatDate(l.van) %> tot en met <%= h.formatDate(l.tot) %></dd><% } %>
+      <dt>Reden</dt><dd><%= l.reden || "–" %></dd>
+      <dt>Vestiging</dt><dd><%= l.vestiging || "–" %></dd>
+      <% if (l.status !== "open") { %><dt>Besluit</dt><dd><%= h.label("leenverzoek", l.status) %> door <%= l.besloten_door_naam || "onbekend" %> op <%= h.formatDate(l.besloten_op, true) %><% if (l.antwoord) { %><br><span class="muted"><%= l.antwoord %></span><% } %></dd><% } %>
+    </dl>
+  </div>
+  <% if (l.status === "open" && can("beheerder")) { %>
+  <div class="card">
+    <div class="lbl"><span class="msr">gavel</span>Beslissen</div>
+    <form method="POST" action="/uitleen/verzoeken/<%= l.id %>/goedkeuren" class="form" style="grid-template-columns:1fr;margin-top:10px">
+      <% if (l.soort !== "verlenging") { %>
+      <label>Auto
+        <select name="voertuig_id">
+          <% if (l.voertuig_id && l.voertuig_status === "op_voorraad") { %><option value="<%= l.voertuig_id %>" selected><%= l.kenteken %> · <%= l.merk %> <%= l.model || "" %> (gevraagd)</option><% } %>
+          <% vrij.filter(v => v.id !== l.voertuig_id).forEach(v => { %><option value="<%= v.id %>"><%= v.kenteken || "besteld" %> · <%= v.merk %> <%= v.model || "" %><%= v.vestiging ? " · " + v.vestiging : "" %></option><% }) %>
+        </select>
+        <% if (l.voertuig_id && l.voertuig_status !== "op_voorraad") { %><span class="hint" style="color:var(--rood)">De gevraagde auto is niet meer op voorraad; kies een andere.</span><% } %>
+      </label>
+      <% } %>
+      <label>Antwoord aan de aanvrager <span class="hint">bijvoorbeeld waar de sleutel ligt, of waarom niet</span><input name="antwoord" placeholder="Sleutel ligt bij de receptie in Wognum"></label>
+      <div class="actions">
+        <button type="submit" class="btn primary"><span class="msr">check</span>Goedkeuren</button>
+        <button type="submit" class="btn ghost" formaction="/uitleen/verzoeken/<%= l.id %>/afwijzen"><span class="msr">close</span>Afwijzen</button>
+      </div>
+    </form>
+  </div>
+  <% } else if (l.status === "open") { %>
+  <div class="card"><p class="muted">Een beheerder beoordeelt je verzoek. Je krijgt een mail met het besluit.</p></div>
+  <% } %>
+</div>
+<%- include("../partials/footer") %>

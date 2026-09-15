@@ -1,0 +1,35 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/uitleen">Uitleen</a> › Toewijzen</div>
+<div class="page-head"><div><div class="eyebrow">Uitgifte</div><h1>Auto toewijzen</h1><div class="sub">Vast: de bestuurder krijgt de auto op naam en de uitgifte-checklist start. Leenauto: tijdelijk, met retourdatum.</div></div></div>
+<div class="card">
+<form method="POST" action="/uitleen/toewijzen" class="form">
+  <label>Auto
+    <select name="voertuig_id" required>
+      <option value="">– kies een auto op voorraad –</option>
+      <% if (voertuig && !vrij.find(v => v.id === voertuig.id)) { %><option value="<%= voertuig.id %>" selected><%= voertuig.kenteken || "besteld" %> · <%= voertuig.merk %> <%= voertuig.model || "" %> (<%= h.label("status", voertuig.status) %>)</option><% } %>
+      <% vrij.forEach(v => { %><option value="<%= v.id %>" <%= form.voertuig_id === v.id ? "selected" : "" %>><%= v.kenteken || "besteld" %> · <%= v.merk %> <%= v.model || "" %><%= v.vestiging ? " · " + v.vestiging : "" %></option><% }) %>
+    </select>
+  </label>
+  <label>Soort
+    <select name="soort">
+      <option value="vast" <%= form.soort === "vast" ? "selected" : "" %>>Vast (op naam van de medewerker)</option>
+      <option value="uitleen" <%= form.soort === "uitleen" ? "selected" : "" %>>Leenauto (tijdelijk)</option>
+    </select>
+  </label>
+  <label>Bestuurder
+    <select name="bestuurder_id">
+      <option value="">– kies –</option>
+      <% bestuurders.forEach(b => { %><option value="<%= b.id %>" <%= form.bestuurder_id === b.id ? "selected" : "" %>><%= b.naam %><%= b.huidige_auto ? " (rijdt " + b.huidige_auto + ")" : "" %></option><% }) %>
+    </select>
+  </label>
+  <label>Of een externe <span class="hint">naam, als het geen collega is</span><input name="extern_naam" placeholder="Bijvoorbeeld een verhuurder of klant"></label>
+  <label>Ingangsdatum<input type="date" name="van" value="<%= form.van %>" required></label>
+  <label>Retourdatum <span class="hint">verplicht bij een leenauto</span><input type="date" name="tot"></label>
+  <label>Kilometerstand bij uitgifte<input type="number" name="km" min="0" placeholder="optioneel"></label>
+  <label>Reden <span class="hint">bij een leenauto</span><input name="reden" placeholder="Eigen auto in de garage, nieuwe collega, ..."></label>
+  <label class="full">Opmerking<input name="opmerking"></label>
+  <label class="check"><input type="checkbox" name="forceer"> Toch toewijzen als de bestuurder al een vaste auto heeft</label>
+  <div class="buttons"><a href="<%= voertuig ? "/voertuigen/" + voertuig.id : "/uitleen" %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">person_add</span>Toewijzen</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

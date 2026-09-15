@@ -63,10 +63,29 @@ app.use("/", require("./src/routes/msauth").router);
 
 // ---- Alles hierna is alleen voor ingelogde gebruikers ----
 app.use(auth.requireLogin);
+// Tellers in het keuzemenu: open taken en leenverzoeken (alleen voor wie het menu ziet)
+app.use(async (req, res, next) => {
+  if (req.method !== "GET" || !res.locals.can("directie")) return next();
+  try {
+    const t = await db.one("SELECT (SELECT COUNT(*) FROM taken WHERE status = 'open' AND voor = 'beheerder') AS taken, (SELECT COUNT(*) FROM leenverzoeken WHERE status = 'open') AS uitleen, (SELECT COUNT(*) FROM wachtlijst WHERE status = 'open') AS wachtlijst, (SELECT COUNT(*) FROM boetes WHERE status IN ('nieuw','uitzondering_gevraagd')) AS boetes, (SELECT COUNT(*) FROM incidenten WHERE status = 'gemeld') AS incidenten");
+    res.locals.badges = { taken: t.taken || "", uitleen: t.uitleen || "", wachtlijst: t.wachtlijst || "", boetes: t.boetes || "", incidenten: t.incidenten || "" };
+  } catch (err) { console.error("Tellers menu:", err.message); }
+  next();
+});
 app.use("/", require("./src/routes/dashboard").router);
-app.use("/voertuigen", require("./src/routes/voertuigen").router);
+app.use("/", require("./src/routes/documenten").router);
+const voertuigen = require("./src/routes/voertuigen");
+app.use("/voertuigen", voertuigen.router);
+app.use("/archief", voertuigen.archief);
 app.use("/bestuurders", require("./src/routes/bestuurders").router);
 app.use("/contacten", require("./src/routes/contacten").router);
+app.use("/uitleen", require("./src/routes/uitleen").router);
+app.use("/taken", require("./src/routes/taken").router);
+app.use("/processen", require("./src/routes/processen").router);
+app.use("/boetes", require("./src/routes/boetes").router);
+app.use("/incidenten", require("./src/routes/incidenten").router);
+app.use("/wachtlijst", require("./src/routes/wachtlijst").router);
+app.use("/instellingen", require("./src/routes/instellingen").router);
 
 // 404 en fouten
 app.use((req, res) => res.status(404).render("error", { title: "Niet gevonden", message: "Deze pagina bestaat niet." }));
@@ -81,5 +100,7 @@ db.init()
     app.listen(PORT, () => console.log(`Hero Wagenpark draait op http://localhost:${PORT}`));
     auth.cleanupSessions();
     setInterval(auth.cleanupSessions, 6 * 60 * 60 * 1000);
+    // De takenmotor: automatische taken en mails (APK, banden, contract, rijbewijs, leenauto's, dagmail)
+    if ((process.env.TAKEN_RONDE || "on") !== "off") require("./src/taken").start();
   })
   .catch((err) => { console.error("Starten mislukt:", err.message); process.exit(1); });

@@ -1,0 +1,39 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/processen">Processen</a> › <a href="/voertuigen/<%= p.voertuig_id %>"><%= p.kenteken || p.merk %></a> › <%= p.naam %></div>
+<div class="page-head">
+  <div><div class="eyebrow">Checklist</div><h1><%= p.naam %></h1><div class="sub"><span class="plate"><%= p.kenteken || "besteld" %></span> <%= p.merk %> <%= p.model || "" %> · <%= h.label("status", p.voertuig_status) %><% if (tw) { %> · <%= tw.bestuurder || tw.extern_naam %><% if (tw.van) { %> per <%= h.formatDate(tw.van) %><% } %><% if (tw.tot) { %> tot <%= h.formatDate(tw.tot) %><% } %><% } %></div></div>
+  <div class="actions">
+    <span class="pill <%= p.afgerond_op ? 'ok' : 'warn' %>" style="font-size:13px"><%= p.afgerond_op ? "Afgerond " + h.formatDate(p.afgerond_op) : p.klaar + " van " + p.stappen.length %></span>
+    <a href="/voertuigen/<%= p.voertuig_id %>" class="btn ghost small">Naar de auto</a>
+  </div>
+</div>
+<div class="card" style="max-width:820px">
+  <% let wacht = false; %>
+  <% p.stappen.forEach((s, i) => { const done = Boolean(s.afgevinkt_op); const kan = !done && !s.automatisch && !wacht && !p.afgerond_op && can("beheerder"); if (!done && !s.automatisch) wacht = true; %>
+    <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:<%= i ? '1px solid var(--grijs-thin)' : '0' %>;<%= s.automatisch ? 'background:var(--bg);margin:0 -18px;padding-left:18px;padding-right:18px' : '' %>">
+      <div style="width:34px;flex-shrink:0;text-align:center">
+        <% if (done) { %><span class="msr" style="color:var(--groen);font-size:26px">check_circle</span>
+        <% } else if (s.automatisch) { %><span class="msr" style="color:var(--grijs);font-size:24px">smart_toy</span>
+        <% } else if (kan) { %><form method="POST" action="/processen/<%= p.id %>/stappen/<%= s.id %>"><button type="submit" class="btn small" style="padding:4px 6px" title="Afvinken"><span class="msr">check_box_outline_blank</span></button></form>
+        <% } else { %><span class="msr" style="color:var(--grijs-light);font-size:24px">radio_button_unchecked</span><% } %>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;<%= done ? 'color:var(--grijs)' : '' %>"><span class="muted small" style="margin-right:6px"><%= s.automatisch ? "" : (p.stappen.slice(0, i + 1).filter(x => !x.automatisch).length + ".") %></span><%= s.omschrijving %></div>
+        <div class="muted small" style="margin-top:2px"><%= s.wie %><% if (done) { %> · <%= s.automatisch ? "gedaan door de app" : (s.door || "afgevinkt") %> <%= h.formatDate(s.afgevinkt_op, true) %><% } %></div>
+        <% if (!done && !s.automatisch && can("beheerder")) { %>
+          <% const k = s.omschrijving.toLowerCase(); %>
+          <div class="actions" style="margin-top:6px">
+            <% if (k.includes("kilometerstand")) { %><a href="/voertuigen/<%= p.voertuig_id %>#km" class="btn small ghost"><span class="msr">speed</span>Km-stand doorgeven</a><% } %>
+            <% if (k.includes("foto") || k.includes("upload") || k.includes("kentekenbewijs") || k.includes("vrijwaring")) { %><a href="/voertuigen/<%= p.voertuig_id %>/documenten<%= k.includes("vrijwaring") ? "?soort=vrijwaring" : k.includes("kentekenbewijs") ? "?soort=kentekenbewijs" : "?soort=fotos" %>" class="btn small ghost"><span class="msr">upload_file</span>Uploaden</a><% } %>
+            <% if (k.includes("gegevens aanvullen")) { %><a href="/voertuigen/<%= p.voertuig_id %>/bewerken" class="btn small ghost"><span class="msr">edit</span>Gegevens bewerken</a><% } %>
+          </div>
+        <% } %>
+      </div>
+      <% if (done && !s.automatisch && !p.afgerond_op && can("beheerder")) { %><form method="POST" action="/processen/<%= p.id %>/stappen/<%= s.id %>"><input type="hidden" name="ongedaan" value="1"><button type="submit" class="btn small ghost" title="Vinkje weghalen"><span class="msr">undo</span></button></form><% } %>
+    </div>
+  <% }) %>
+</div>
+<% if (!p.afgerond_op && can("beheerder")) { %>
+<form method="POST" action="/processen/<%= p.id %>/stoppen" style="margin-top:16px" onsubmit="return confirm('Dit proces stoppen? De vinkjes gaan verloren; wat de app al deed blijft staan.')"><button class="btn ghost small" type="submit"><span class="msr">stop_circle</span>Proces stoppen</button></form>
+<% } %>
+<%- include("../partials/footer") %>

@@ -5,7 +5,10 @@ const express = require("express");
 const db = require("../db");
 const auth = require("../auth");
 const pincode = require("../pincode");
-const { clean, cleanNumber, cleanDate, yes, kenteken: fmtKenteken, LABELS } = require("../helpers");
+const processen = require("../processen");
+const taken = require("../taken");
+const msauth = require("./msauth");
+const { clean, cleanNumber, cleanDate, yes, kenteken: fmtKenteken, formatDate, LABELS } = require("../helpers");
 
 const router = express.Router();
 // Alleen cijfers als id; anders valt het verzoek door naar de 404
@@ -66,6 +69,12 @@ router.post("/", auth.requireRole("beheerder"), async (req, res) => {
   const pin = clean(req.body.tankpas_pincode);
   const id = await db.insert(`INSERT INTO voertuigen (${COLS.join(",")}, tankpas_pincode_enc) VALUES (${COLS.map((_, i) => `$${i + 1}`).join(",")}, $${COLS.length + 1})`, [...COLS.map((c) => v[c]), pin ? pincode.encrypt(pin) : null]);
   await db.run("INSERT INTO logboek (voertuig_id, user_id, soort, omschrijving) VALUES ($1, $2, 'aangemaakt', $3)", [id, req.user.id, `Voertuig aangemaakt door ${req.user.name}`]);
+  // Een bestelde auto begint met de instroom-checklist; stap 1 (aanmaken) is dan al gedaan
+  if (v.status === "besteld") {
+    const pid = await processen.start({ voertuigId: id, soort: "instroom", userId: req.user.id, klaar: ["aanmaken"] });
+    res.flash("Voertuig aangemaakt. Loop de instroom-checklist door.");
+    return res.redirect(`/processen/${pid}`);
+  }
   res.flash("Voertuig aangemaakt.");
   res.redirect(`/voertuigen/${id}`);
 });
@@ -82,13 +91,46 @@ router.get("/:id", auth.requireRole("bestuurder"), async (req, res, next) => {
   const km = await db.all("SELECT k.*, u.name AS door FROM kilometerstanden k LEFT JOIN users u ON u.id = k.user_id WHERE k.voertuig_id = $1 ORDER BY k.datum DESC, k.id DESC LIMIT 6", [v.id]);
   const incidenten = await db.all("SELECT * FROM incidenten WHERE voertuig_id = $1 ORDER BY datum DESC LIMIT 5", [v.id]);
   const boetes = await db.all("SELECT * FROM boetes WHERE voertuig_id = $1 ORDER BY datum DESC LIMIT 5", [v.id]);
-  const documenten = await db.all("SELECT * FROM documenten WHERE voertuig_id = $1 ORDER BY created_at DESC", [v.id]);
-  const taken = await db.all("SELECT * FROM taken WHERE voertuig_id = $1 AND status = 'open' ORDER BY deadline NULLS LAST", [v.id]);
-  const logboek = await db.all("SELECT l.*, u.name AS door FROM logboek l LEFT JOIN users u ON u.id = l.user_id WHERE l.voertuig_id = $1 ORDER BY l.created_at DESC, l.id DESC LIMIT 8", [v.id]);
+  const documenten = await db.all("SELECT d.*, u.name AS geupload_door_naam FROM documenten d LEFT JOIN users u ON u.id = d.geupload_door WHERE d.voertuig_id = $1 ORDER BY d.created_at DESC", [v.id]);
+  const openTaken = await db.all("SELECT * FROM taken WHERE voertuig_id = $1 AND status = 'open' ORDER BY deadline NULLS LAST", [v.id]);
+  const logboek = await db.all("SELECT l.*, u.name AS door FROM logboek l LEFT JOIN users u ON u.id = l.user_id WHERE l.voertuig_id = $1 ORDER BY l.created_at DESC, l.id DESC LIMIT 10", [v.id]);
   const bandenwissels = await db.all("SELECT * FROM bandenwissels WHERE voertuig_id = $1 ORDER BY seizoen DESC", [v.id]);
   const garage = v.merk ? await db.one("SELECT * FROM contacten WHERE soort = 'garage' AND merk IS NOT NULL AND (lower(merk) LIKE '%' || lower($1) || '%') ORDER BY id LIMIT 1", [v.merk.split(" ")[0]]) : null;
-  const pin = req.query.pin === "1" && req.session_pin === undefined ? null : null; // pincode wordt alleen via POST getoond
-  res.render("voertuigen/show", { title: `${v.kenteken || "Besteld"} · ${v.merk} ${v.model || ""}`.trim(), v, toewijzingen, actief, km, incidenten, boetes, documenten, taken, logboek, bandenwissels, garage, pin, getoondePincode: res.locals.getoondePincode || null, ...(await lookups()) });
+  const lopend = await db.all("SELECT p.*, (SELECT COUNT(*) FROM processtappen s WHERE s.proces_id = p.id) AS totaal, (SELECT COUNT(*) FROM processtappen s WHERE s.proces_id = p.id AND s.afgevinkt_op IS NOT NULL) AS klaar FROM processen p WHERE p.voertuig_id = $1 AND p.afgerond_op IS NULL ORDER BY p.gestart_op DESC", [v.id]);
+  const verzoeken = await db.all("SELECT l.*, COALESCE(b.naam, l.extern_naam, u.name) AS wie FROM leenverzoeken l LEFT JOIN bestuurders b ON b.id = l.aanvrager_bestuurder_id LEFT JOIN users u ON u.id = l.aanvrager_user_id WHERE l.voertuig_id = $1 AND l.status = 'open' ORDER BY l.created_at", [v.id]);
+  res.render("voertuigen/show", { title: `${v.kenteken || "Besteld"} · ${v.merk} ${v.model || ""}`.trim(), v, toewijzingen, actief, km, incidenten, boetes, documenten, taken: openTaken, logboek, bandenwissels, garage, lopend, verzoeken, isOwn: Boolean(isOwn), NAMEN: processen.NAMEN, ...(await lookups()) });
+});
+
+// APK: afspraak vastleggen (beheerder of de bestuurder van deze auto). Daarna vraagt de app om het rapport.
+async function magApk(req, res, v) {
+  if (res.locals.can("beheerder")) return true;
+  return Boolean(req.bestuurder && await db.one("SELECT 1 FROM toewijzingen WHERE voertuig_id = $1 AND bestuurder_id = $2 AND status = 'actief'", [v.id, req.bestuurder.id]));
+}
+router.get("/:id/apk", async (req, res, next) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return next();
+  if (!await magApk(req, res, v)) return res.status(403).render("error", { title: "Geen toegang", message: "Alleen de bestuurder van deze auto of een beheerder kan de APK-afspraak vastleggen." });
+  const garage = await taken.garageVoor(v.merk);
+  res.render("voertuigen/apk", { title: `APK · ${v.kenteken || v.merk}`, v, garage, mijn: !res.locals.can("directie") });
+});
+router.post("/:id/apk", async (req, res, next) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return next();
+  if (!await magApk(req, res, v)) return res.status(403).send("Geen toegang.");
+  const back = res.locals.can("directie") ? `/voertuigen/${v.id}` : "/mijn-auto";
+  if (yes(req.body.wissen) && res.locals.can("beheerder")) {
+    await db.run("UPDATE voertuigen SET apk_afspraak = NULL, updated_at = local_now() WHERE id = $1", [v.id]);
+    await db.run("INSERT INTO logboek (voertuig_id, user_id, soort, omschrijving) VALUES ($1,$2,'apk',$3)", [v.id, req.user.id, `APK-afspraak gewist door ${req.user.name}`]);
+    res.flash("APK-afspraak gewist.");
+    return res.redirect(back);
+  }
+  const datum = cleanDate(req.body.apk_afspraak);
+  if (!datum) { res.flash("Vul de datum van de afspraak in.", "error"); return res.redirect(`/voertuigen/${v.id}/apk`); }
+  await db.run("UPDATE voertuigen SET apk_afspraak = $2, updated_at = local_now() WHERE id = $1", [v.id, datum]);
+  await db.run("UPDATE taken SET status = 'afgerond', afgerond_door = $2, afgerond_op = local_now() WHERE status = 'open' AND voertuig_id = $1 AND soort = 'apk'", [v.id, req.user.id]);
+  await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1,$2,$3,'apk',$4)", [v.id, req.bestuurder ? req.bestuurder.id : null, req.user.id, `APK-afspraak op ${formatDate(datum)} vastgelegd door ${req.user.name}`]);
+  res.flash(`APK-afspraak op ${formatDate(datum)} vastgelegd. Na die dag vraagt de app om het keuringsrapport.`);
+  res.redirect(back);
 });
 
 // Bewerken
@@ -132,17 +174,27 @@ router.post("/:id/kilometerstand", async (req, res, next) => {
   res.redirect(back);
 });
 
-// Pincode tonen: alleen admin, beheerder of de bestuurder van deze auto. Elke keer gelogd. (De extra bevestiging volgt in de volgende stap.)
-router.post("/:id/pincode", async (req, res, next) => {
+// Pincode tonen: alleen admin, beheerder of de bestuurder van deze auto, na een extra bevestiging (opnieuw inloggen,
+// geldig een paar minuten: instelling pincode_bevestiging_minuten). Elke keer gelogd.
+async function pincodeTonen(req, res, next) {
   const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
   if (!v) return next();
   const own = req.bestuurder && await db.one("SELECT 1 FROM toewijzingen WHERE voertuig_id = $1 AND bestuurder_id = $2 AND status = 'actief'", [v.id, req.bestuurder.id]);
   if (!res.locals.can("beheerder") && !own) return res.status(403).render("error", { title: "Geen toegang", message: "De pincode is alleen zichtbaar voor de beheerder en de bestuurder van deze auto." });
-  if (!v.tankpas_pincode_enc) { res.flash("Er is geen pincode opgeslagen.", "error"); return res.redirect(`/voertuigen/${v.id}`); }
+  const back = own && !res.locals.can("directie") ? "/mijn-auto" : `/voertuigen/${v.id}`;
+  if (!v.tankpas_pincode_enc) { res.flash("Er is geen pincode opgeslagen.", "error"); return res.redirect(back); }
+  const minuten = Number(await taken.setting("pincode_bevestiging_minuten", "10")) || 10;
+  const vers = await db.one("SELECT 1 FROM users WHERE id = $1 AND last_reauth_at > local_now() - ($2 || ' minutes')::interval", [req.user.id, String(minuten)]);
+  if (!vers) {
+    const next = `/voertuigen/${v.id}/pincode/tonen`;
+    return res.render("voertuigen/pincode-bevestigen", { title: "Bevestig wie je bent", v, back, next, msLoginEnabled: msauth.isEnabled(), devLogin: msauth.devLoginEmail() });
+  }
   const code = pincode.decrypt(v.tankpas_pincode_enc);
-  await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1, $2, $3, 'pincode', $4)", [v.id, req.bestuurder ? req.bestuurder.id : null, req.user.id, `Pincode getoond aan ${req.user.name}`]);
-  res.render("voertuigen/pincode", { title: "Pincode", v, code, back: own && !res.locals.can("directie") ? "/mijn-auto" : `/voertuigen/${v.id}` });
-});
+  await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1, $2, $3, 'pincode', $4)", [v.id, req.bestuurder ? req.bestuurder.id : null, req.user.id, `Pincode getoond aan ${req.user.name} na bevestiging`]);
+  res.render("voertuigen/pincode", { title: "Pincode", v, code, back });
+}
+router.post("/:id/pincode", pincodeTonen);
+router.get("/:id/pincode/tonen", pincodeTonen);
 
 // Archiveren
 router.post("/:id/archiveren", auth.requireRole("beheerder"), async (req, res, next) => {
@@ -157,4 +209,20 @@ router.post("/:id/archiveren", auth.requireRole("beheerder"), async (req, res, n
   res.redirect("/voertuigen");
 });
 
-module.exports = { router };
+// Archief: ingeleverde en verkochte auto's, met alles erop en eraan (het detail blijft bereikbaar)
+const archief = express.Router();
+archief.get("/", auth.requireRole("directie"), async (req, res) => {
+  const rows = await db.all(`SELECT v.*, ve.naam AS vestiging, (SELECT COALESCE(b.naam, t.extern_naam) FROM toewijzingen t LEFT JOIN bestuurders b ON b.id = t.bestuurder_id WHERE t.voertuig_id = v.id ORDER BY t.van DESC NULLS LAST, t.id DESC LIMIT 1) AS laatste_bestuurder,
+      (SELECT stand FROM kilometerstanden k WHERE k.voertuig_id = v.id ORDER BY datum DESC, id DESC LIMIT 1) AS km_stand, (SELECT COUNT(*) FROM documenten d WHERE d.voertuig_id = v.id) AS documenten
+    FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id WHERE v.status = 'archief' ORDER BY v.gearchiveerd_op DESC NULLS LAST`);
+  res.render("voertuigen/archief", { title: "Archief", rows });
+});
+archief.post("/:id/terug", auth.requireRole("admin"), async (req, res, next) => {
+  if (!/^\d+$/.test(req.params.id)) return next();
+  await db.run("UPDATE voertuigen SET status = 'op_voorraad', gearchiveerd_op = NULL, updated_at = local_now() WHERE id = $1 AND status = 'archief'", [req.params.id]);
+  await db.run("INSERT INTO logboek (voertuig_id, user_id, soort, omschrijving) VALUES ($1,$2,'archief',$3)", [req.params.id, req.user.id, `Uit het archief gehaald door ${req.user.name}`]);
+  res.flash("Voertuig staat weer op voorraad.");
+  res.redirect(`/voertuigen/${req.params.id}`);
+});
+
+module.exports = { router, archief };

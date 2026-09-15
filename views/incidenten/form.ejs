@@ -1,0 +1,16 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= mijn ? "/mijn-auto" : "/incidenten" %>"><%= mijn ? "Mijn auto" : "Incidenten" %></a> › Melden</div>
+<div class="page-head"><div><div class="eyebrow">Incident</div><h1>Incident melden</h1><div class="sub">Kort wat er gebeurd is, met foto's. De beheerder van je vestiging krijgt direct bericht.</div></div></div>
+<div class="card" style="max-width:640px">
+<form method="POST" action="/incidenten" enctype="multipart/form-data" class="form">
+  <label class="full">Auto<select name="voertuig_id" required><% if (voertuigen.length > 1) { %><option value="">– kies –</option><% } %><% voertuigen.forEach(v => { %><option value="<%= v.id %>" <%= form.voertuig_id === v.id ? "selected" : "" %>><%= v.kenteken || "besteld" %> · <%= v.merk %> <%= v.model || "" %><%= v.bestuurder ? " · " + v.bestuurder : "" %></option><% }) %></select></label>
+  <label>Wanneer<input type="date" name="datum" value="<%= form.datum %>" required></label>
+  <label>Soort<select name="soort"><% Object.entries(LABELS.incident_soort).forEach(([k, l]) => { %><option value="<%= k %>" <%= form.soort === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+  <label class="full">Wat is er gebeurd<textarea name="omschrijving" required placeholder="Waar, hoe, welke schade"></textarea></label>
+  <label class="full">Tegenpartij <span class="hint">naam, kenteken, verzekeraar, als die er is</span><input name="tegenpartij"></label>
+  <label class="full">Foto's <span class="hint">op de telefoon opent dit de camera</span><input type="file" name="fotos" multiple accept="image/*,application/pdf" capture="environment"></label>
+  <% if (can("beheerder")) { %><label>Kosten (€) <span class="hint">als bekend</span><input type="number" name="kosten" step="0.01" min="0"></label><% } %>
+  <div class="buttons"><a href="<%= mijn ? "/mijn-auto" : "/incidenten" %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">send</span>Melden</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

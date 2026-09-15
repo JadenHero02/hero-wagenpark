@@ -1,0 +1,39 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= mijn ? "/mijn-auto" : "/voertuigen/" + v.id %>"><%= mijn ? "Mijn auto" : (v.kenteken || v.merk) %></a> › Documenten</div>
+<div class="page-head"><div><div class="eyebrow">Documenten</div><h1><span class="plate big"><%= v.kenteken || "besteld" %></span> <%= v.merk %> <%= v.model || "" %></h1><div class="sub">In de app, per auto. Kentekenbewijs, verzekering, APK-rapport, foto's.</div></div></div>
+<div class="grid-2">
+  <div class="card" style="padding:0">
+    <table class="list">
+      <thead><tr><th>Document</th><th>Soort</th><th>Geüpload</th><th></th></tr></thead>
+      <tbody>
+      <% documenten.forEach(d => { %>
+        <tr>
+          <td><a href="/documenten/<%= d.id %>" target="_blank"><span class="msr" style="font-size:18px"><%= (d.mimetype || "").startsWith("image/") ? "image" : "description" %></span> <%= d.bestandsnaam %></a><% if (d.omschrijving) { %><div class="muted small"><%= d.omschrijving %></div><% } %><% if (d.goedgekeurd_op) { %><div class="small" style="color:var(--groen-text)">Goedgekeurd door <%= d.goedgekeurd_door_naam || "" %> op <%= h.formatDate(d.goedgekeurd_op) %></div><% } else if (d.soort === "apk_rapport") { %><div class="small" style="color:var(--oranje-bold)">Wacht op goedkeuring door een beheerder</div><% } %></td>
+          <td><span class="pill grey"><%= h.label("document", d.soort) %></span></td>
+          <td class="small muted"><%= h.formatDate(d.created_at) %><br><%= d.geupload_door_naam || "" %> · <%= Math.round((d.grootte || 0) / 1024) %> kB</td>
+          <td class="nowrap">
+            <a href="/documenten/<%= d.id %>?download=1" class="btn small ghost" title="Downloaden"><span class="msr">download</span></a>
+            <% if (can("beheerder") && d.soort === "apk_rapport" && !d.goedgekeurd_op) { %>
+              <form method="POST" action="/documenten/<%= d.id %>/goedkeuren" class="inline" style="display:inline-flex;gap:6px;align-items:center"><input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten"><input type="date" name="apk_vervaldatum" required title="Nieuwe APK-vervaldatum" style="padding:5px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><button class="btn small primary" type="submit" title="Rapport goedkeuren en nieuwe APK-datum zetten"><span class="msr">verified</span>Goedkeuren</button></form>
+            <% } %>
+            <% if (can("beheerder")) { %><form method="POST" action="/documenten/<%= d.id %>/verwijderen" class="inline" onsubmit="return confirm('Dit document verwijderen?')"><input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten"><button class="btn small ghost" type="submit" title="Verwijderen"><span class="msr">delete</span></button></form><% } %>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!documenten.length) { %><tr><td colspan="4" class="empty">Nog geen documenten bij deze auto.</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="lbl"><span class="msr">upload_file</span>Uploaden</div>
+    <form method="POST" action="/voertuigen/<%= v.id %>/documenten" enctype="multipart/form-data" class="form" style="grid-template-columns:1fr;margin-top:10px">
+      <input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten">
+      <label>Soort<select name="soort"><% Object.entries(LABELS.document).forEach(([k, l]) => { %><option value="<%= k %>" <%= soort === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+      <label>Bestand(en) <span class="hint">pdf, jpg, png, Word, Excel; tot 10 MB per bestand</span><input type="file" name="bestanden" multiple required accept=".pdf,.jpg,.jpeg,.png,.heic,.webp,.doc,.docx,.xlsx,.txt,image/*,application/pdf"></label>
+      <label>Omschrijving<input name="omschrijving" placeholder="optioneel"></label>
+      <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">upload</span>Uploaden</button></div>
+    </form>
+    <% if (soort === "apk_rapport") { %><p class="muted small" style="margin-top:10px">Na het uploaden keurt een beheerder het rapport goed en zet de nieuwe APK-datum. Dan sluiten de APK-taken.</p><% } %>
+  </div>
+</div>
+<%- include("../partials/footer") %>

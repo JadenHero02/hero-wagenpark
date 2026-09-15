@@ -1,0 +1,22 @@
+<%- include("../partials/header") %>
+<div class="page-head"><div><div class="eyebrow">Archief</div><h1>Ingeleverde en verkochte auto's</h1><div class="sub"><%= rows.length %> auto's, met documenten en logboek</div></div></div>
+<div class="card" style="padding:0">
+  <table class="list">
+    <thead><tr><th>Kenteken</th><th>Auto</th><th>Laatste bestuurder</th><th>Vestiging</th><th class="num">Km-stand</th><th>Documenten</th><th>Gearchiveerd</th></tr></thead>
+    <tbody>
+    <% rows.forEach(r => { %>
+      <tr class="click" onclick="location.href='/voertuigen/<%= r.id %>'">
+        <td><span class="plate"><%= r.kenteken || "besteld" %></span></td>
+        <td><strong><%= r.merk %></strong> <%= r.model || "" %><div class="muted small"><%= h.label("eigendom", r.eigendom) %><%= r.bouwjaar ? " · " + r.bouwjaar : "" %></div></td>
+        <td><%= r.laatste_bestuurder || "" %></td>
+        <td><%= r.vestiging || "" %></td>
+        <td class="num"><%= h.num(r.km_stand) %></td>
+        <td><%= r.documenten %></td>
+        <td class="small muted"><%= h.formatDate(r.gearchiveerd_op) %></td>
+      </tr>
+    <% }) %>
+    <% if (!rows.length) { %><tr><td colspan="7" class="empty">Het archief is leeg.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include("../partials/footer") %>

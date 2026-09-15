@@ -40,12 +40,17 @@ npm run dev                 # herstart bij elke wijziging
 npm run import -- --reset   # leest de Excel (EXCEL_PATH) in en wist eerst alle wagenparkdata; foutlijst in data/import-foutlijst.txt
 ```
 
-Variabelen (lokaal in `.env`, op Railway als Variables): `DATABASE_URL`, `DB_SCHEMA`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PUBLIC_BASE_URL`, `PINCODE_KEY` (sleutel voor de versleutelde pincodes; nooit wijzigen zonder de pincodes opnieuw in te voeren), en voor mail `MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET`, `MAIL_FROM`. Lokaal inloggen zonder Microsoft kan met `DEV_LOGIN_EMAIL` (niet in productie).
+Variabelen (lokaal in `.env`, op Railway als Variables): `DATABASE_URL`, `DB_SCHEMA`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PUBLIC_BASE_URL`, `PINCODE_KEY` (sleutel voor de versleutelde pincodes; nooit wijzigen zonder de pincodes opnieuw in te voeren), en voor mail `MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET`, `MAIL_FROM` (Microsoft Graph, client credentials met `Mail.Send` op de mailbox van de afzender). Zolang de drie MS-variabelen ontbreken, verstuurt de app niets: elke mail komt wel in het maillog (Instellingen > Mail), zodat je ziet wat er verstuurd zou zijn. Met `MAIL_TEST_TO` gaat alle mail naar dat ene adres, met de echte ontvanger in het onderwerp; gebruik dat bij het testen, want de bestuurders uit de Excel zijn echte collega's. `TAKEN_RONDE=off` zet de automatische takenronde uit (bijvoorbeeld op een tweede omgeving). Lokaal inloggen zonder Microsoft kan met `DEV_LOGIN_EMAIL` (niet in productie).
 
 Rollen: admin (Annemiek), beheerder (celdirecteuren en office managers), bestuurder, directie. Wie welke rol krijgt bij de eerste login staat in de tabel `instellingen` (`admin_emails`, `beheerder_emails`, `directie_emails`); iedereen anders wordt bestuurder.
 
-Mapstructuur: `server.js` (start en routes), `src/db.js` (database), `src/auth.js` (sessies en rollen), `src/routes/` (per onderdeel), `views/` (EJS-templates), `public/` (stijl, lettertypen, logo), `scripts/import-excel.js` (de import).
+Mapstructuur: `server.js` (start en routes), `src/db.js` (database), `src/auth.js` (sessies en rollen), `src/mail.js` (mail via Graph, maillog), `src/taken.js` (de takenmotor: automatische taken en herinneringen, dagmail), `src/processen.js` (de vier checklists en wat de app daarin zelf doet), `src/routes/` (per onderdeel), `views/` (EJS-templates), `public/` (stijl, lettertypen, logo), `scripts/import-excel.js` (de import).
+
+De takenmotor draait bij het opstarten en daarna elk half uur. Elke automatische taak heeft een sleutel en elke herinnering een ref in het maillog, zodat niets twee keer ontstaat. Termijnen staan in de tabel `instellingen` en zijn door de admin te wijzigen. Documenten staan in de database (`document_inhoud`, tot 10 MB per bestand), niet op schijf: Railway heeft geen blijvende schijf.
+
+De pincode van een tankpas is pas zichtbaar na een extra bevestiging: opnieuw inloggen via Microsoft (lokaal: de dev-login). Een login telt daarna `pincode_bevestiging_minuten` (standaard 10) als bevestiging. Elke keer tonen staat in het logboek van de auto.
 
 ## Stappen
 
 1. Fundament (15 september): repository, schema en rol in Supabase, login, dashboard, wagenpark met detail, bestuurders, contacten, Mijn auto (kern), pincodes versleuteld, Excel-import met foutlijst.
+2. Beheer (15 en 16 september): toewijzen en innemen met de uitgifte- en inname-checklist, uitleen op verzoek met goedkeuring en verlenging, de vier processen als checklist met automatische stappen, takenmotor (APK met afspraak en rapport, bandenwissel, contract, rijbewijs, leenauto te laat, dagmail), mail via Graph met maillog, documenten per auto in de app, boetes met doorbelasten en uitzondering, incidenten met foto's, wachtlijst, archief, instellingen en rollen, pincode na extra bevestiging. Migratie `hero_wagenpark_stap2_beheer`.

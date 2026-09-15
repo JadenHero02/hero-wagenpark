@@ -1,0 +1,46 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Taken</div><h1>Wat er moet gebeuren</h1><div class="sub"><%= counts.open %> open · <%= counts.te_laat %> te laat · <%= counts.beheerder %> voor beheerders, <%= counts.bestuurder %> bij bestuurders</div></div>
+  <div class="actions">
+    <% if (can("admin")) { %><form method="POST" action="/taken/ronde" class="inline"><button type="submit" class="btn ghost small" title="Laat de app nu de automatische taken en mails bijwerken"><span class="msr">autorenew</span>Takenronde</button></form><% } %>
+    <% if (can("beheerder")) { %><a href="/taken/nieuw" class="btn primary"><span class="msr">add</span>Nieuwe taak</a><% } %>
+  </div>
+</div>
+<form method="GET" class="filters">
+  <% const link = (key, val, lbl) => { const on = f[key] === val || (key === "laat" && val === "1" && f.laat); const p = new URLSearchParams(); Object.entries(f).forEach(([k, v]) => { if (v && k !== key && k !== "laat") p.set(k, v); }); if (f.laat && key !== "laat") p.set("laat", "1"); if (!on) p.set(key, val); return `<a class="chip ${on ? "on" : ""}" href="?${p}">${lbl}</a>`; }; %>
+  <div class="chips">
+    <%- link("status", "open", "Open") %><%- link("laat", "1", "Te laat") %><%- link("voor", "beheerder", "Voor beheerders") %><%- link("voor", "bestuurder", "Bij bestuurders") %><%- link("status", "afgerond", "Afgerond") %><%- link("status", "alle", "Alles") %>
+  </div>
+  <select name="soort" onchange="this.form.submit()"><option value="">Alle soorten</option><% Object.entries(LABELS.taak).forEach(([k, l]) => { %><option value="<%= k %>" <%= f.soort === k ? "selected" : "" %>><%= l %></option><% }) %></select>
+  <select name="vestiging" onchange="this.form.submit()"><option value="">Alle vestigingen</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= f.vestiging === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select>
+  <input type="hidden" name="status" value="<%= f.status %>"><% if (f.voor) { %><input type="hidden" name="voor" value="<%= f.voor %>"><% } %><% if (f.laat) { %><input type="hidden" name="laat" value="1"><% } %>
+</form>
+<div class="card" style="padding:0">
+  <table class="list">
+    <thead><tr><th>Deadline</th><th>Taak</th><th>Auto</th><th>Bestuurder</th><th>Soort</th><th>Voor</th><th></th></tr></thead>
+    <tbody>
+    <% rows.forEach(t => { %>
+      <tr>
+        <td><% if (t.deadline) { %><span class="pill <%= t.status !== 'open' ? 'grey' : t.dagen < 0 ? 'bad' : t.dagen <= 7 ? 'warn' : 'grey' %>"><%= h.formatDate(t.deadline) %></span><div class="muted small"><%= t.status === 'open' ? h.relativeDate(t.deadline) : "" %></div><% } else { %><span class="muted small">geen</span><% } %></td>
+        <td><strong><%= t.titel %></strong><% if (t.omschrijving) { %><div class="muted small"><%= t.omschrijving %></div><% } %><% if (t.status !== "open") { %><div class="small"><span class="pill grey"><%= t.status %></span> <span class="muted"><%= t.afgerond_door_naam || "de app" %> · <%= h.formatDate(t.afgerond_op, true) %></span></div><% } %></td>
+        <td><% if (t.voertuig_id) { %><a href="/voertuigen/<%= t.voertuig_id %>"><span class="plate"><%= t.kenteken || "besteld" %></span></a><div class="muted small"><%= t.merk %> <%= t.model || "" %><%= t.vestiging ? " · " + t.vestiging : "" %></div><% } %></td>
+        <td><% if (t.bestuurder_id) { %><a href="/bestuurders/<%= t.bestuurder_id %>"><%= t.bestuurder %></a><% } %></td>
+        <td class="small"><%= h.label("taak", t.soort) %></td>
+        <td class="small"><%= t.voor === "bestuurder" ? "Bestuurder" : "Beheerder" %></td>
+        <td class="nowrap">
+          <% if (can("beheerder")) { %>
+            <% if (t.status === "open") { %>
+              <form method="POST" action="/taken/<%= t.id %>/afronden" class="inline"><input type="hidden" name="terug" value="/taken?status=<%= f.status %>"><button class="btn small" type="submit" title="Afronden"><span class="msr">check</span></button></form>
+              <form method="POST" action="/taken/<%= t.id %>/vervallen" class="inline"><input type="hidden" name="terug" value="/taken?status=<%= f.status %>"><button class="btn small ghost" type="submit" title="Laten vervallen"><span class="msr">close</span></button></form>
+            <% } else { %>
+              <form method="POST" action="/taken/<%= t.id %>/heropenen" class="inline"><input type="hidden" name="terug" value="/taken?status=<%= f.status %>"><button class="btn small ghost" type="submit">Heropenen</button></form>
+            <% } %>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!rows.length) { %><tr><td colspan="7" class="empty">Geen taken.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include("../partials/footer") %>

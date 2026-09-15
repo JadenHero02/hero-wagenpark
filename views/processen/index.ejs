@@ -1,0 +1,42 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Processen</div><h1>Checklists</h1><div class="sub">Instroom, uitgifte, inname en uitstroom: per auto een lijst met vinkjes, naam en datum. De grijze stappen doet de app zelf.</div></div>
+  <% if (can("beheerder")) { %><div class="actions"><a href="/processen/start" class="btn primary"><span class="msr">checklist</span>Proces starten</a></div><% } %>
+</div>
+<div class="card">
+  <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">pending_actions</span> Lopend</h2></div>
+  <table class="list">
+    <thead><tr><th>Proces</th><th>Auto</th><th>Voortgang</th><th>Volgende stap</th><th>Gestart</th></tr></thead>
+    <tbody>
+    <% lopend.forEach(p => { %>
+      <tr class="click" onclick="location.href='/processen/<%= p.id %>'">
+        <td><strong><%= NAMEN[p.soort] %></strong></td>
+        <td><span class="plate"><%= p.kenteken || "besteld" %></span> <%= p.merk %> <%= p.model || "" %><div class="muted small"><%= p.vestiging || "" %></div></td>
+        <td><span class="pill <%= p.klaar === p.totaal ? 'ok' : '' %>"><%= p.klaar %> van <%= p.totaal %></span></td>
+        <td class="small"><%= p.volgende || "" %></td>
+        <td class="small muted"><%= h.formatDate(p.gestart_op) %> · <%= p.gestart_door_naam || "" %></td>
+      </tr>
+    <% }) %>
+    <% if (!lopend.length) { %><tr><td colspan="5" class="empty">Geen lopende processen.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<div class="grid-2" style="margin-top:16px">
+  <div class="card">
+    <div class="card-head"><h2>De vier lijsten</h2></div>
+    <% Object.entries(STAPPEN).forEach(([soort, stappen]) => { %>
+      <h3 style="margin-top:12px"><%= NAMEN[soort] %></h3>
+      <ol style="margin:6px 0 0;padding-left:20px;font-size:13px">
+        <% stappen.forEach(s => { %><li style="<%= s.auto ? 'color:var(--grijs)' : '' %>"><%= s.tekst %><% if (s.auto) { %> <span class="small">(de app)</span><% } %></li><% }) %>
+      </ol>
+    <% }) %>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>Afgerond</h2></div>
+    <div class="rows">
+      <% afgerond.forEach(p => { %><div><span><a href="/processen/<%= p.id %>"><%= NAMEN[p.soort] %></a> · <a href="/voertuigen/<%= p.voertuig_id %>"><span class="plate"><%= p.kenteken || "besteld" %></span></a> <%= p.merk %></span><span class="v muted small"><%= h.formatDate(p.afgerond_op, true) %></span></div><% }) %>
+      <% if (!afgerond.length) { %><div class="muted">Nog niets afgerond.</div><% } %>
+    </div>
+  </div>
+</div>
+<%- include("../partials/footer") %>

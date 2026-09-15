@@ -1,0 +1,32 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Wachtlijst</div><h1>Wie wacht op een auto</h1><div class="sub"><%= rows.filter(r => r.status === "open").length %> wachtend · <%= vrij %> op voorraad</div></div>
+  <% if (can("beheerder")) { %><div class="actions"><a href="/wachtlijst/nieuw" class="btn primary"><span class="msr">add</span>Op de wachtlijst</a></div><% } %>
+</div>
+<div class="card" style="padding:0">
+  <table class="list">
+    <thead><tr><th>Naam</th><th>Vestiging</th><th>Sinds</th><th>Gewenste auto</th><th>Opmerking</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    <% rows.forEach(w => { %>
+      <tr>
+        <td><strong><% if (w.b_id) { %><a href="/bestuurders/<%= w.b_id %>"><%= w.naam %></a><% } else { %><%= w.naam %><% } %></strong></td>
+        <td><%= w.vestiging || "" %></td>
+        <td><%= h.formatDate(w.datum_aanvraag) %><% if (w.status === "open" && w.dagen !== null) { %><div class="muted small"><%= w.dagen %> dagen</div><% } %></td>
+        <td><%= w.gewenste_auto || "" %></td>
+        <td class="small"><%= w.opmerking || "" %></td>
+        <td><span class="pill <%= w.status === 'open' ? 'warn' : w.status === 'gekoppeld' ? 'ok' : 'grey' %>"><%= h.label("wachtlijst", w.status) %></span><% if (w.kenteken) { %> <span class="plate"><%= w.kenteken %></span><% } %></td>
+        <td class="nowrap">
+          <% if (can("beheerder") && w.status === "open") { %>
+            <a href="/uitleen/toewijzen?bestuurder=<%= w.b_id || "" %>" class="btn small"><span class="msr">person_add</span>Koppelen</a>
+            <form method="POST" action="/wachtlijst/<%= w.id %>/status" class="inline"><input type="hidden" name="status" value="vervallen"><button class="btn small ghost" type="submit" title="Vervallen"><span class="msr">close</span></button></form>
+          <% } else if (can("beheerder") && w.status === "vervallen") { %>
+            <form method="POST" action="/wachtlijst/<%= w.id %>/status" class="inline"><input type="hidden" name="status" value="open"><button class="btn small ghost" type="submit">Weer open</button></form>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!rows.length) { %><tr><td colspan="7" class="empty">Niemand op de wachtlijst.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include("../partials/footer") %>

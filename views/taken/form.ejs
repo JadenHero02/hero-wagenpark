@@ -1,0 +1,15 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/taken">Taken</a> › Nieuwe taak</div>
+<div class="page-head"><h1>Nieuwe taak</h1></div>
+<div class="card" style="max-width:640px">
+<form method="POST" action="/taken" class="form">
+  <label class="full">Titel<input name="titel" required placeholder="Bijvoorbeeld: winterbanden bestellen"></label>
+  <label class="full">Toelichting<textarea name="omschrijving"></textarea></label>
+  <label>Auto<select name="voertuig_id"><option value="">–</option><% voertuigen.forEach(v => { %><option value="<%= v.id %>" <%= form.voertuig_id === v.id ? "selected" : "" %>><%= v.kenteken || "besteld" %> · <%= v.merk %> <%= v.model || "" %></option><% }) %></select></label>
+  <label>Bestuurder<select name="bestuurder_id"><option value="">– (bij een auto: de bestuurder ervan) –</option><% bestuurders.forEach(b => { %><option value="<%= b.id %>" <%= form.bestuurder_id === b.id ? "selected" : "" %>><%= b.naam %></option><% }) %></select></label>
+  <label>Deadline<input type="date" name="deadline"></label>
+  <label>Voor wie<select name="voor"><option value="beheerder">Beheerder</option><option value="bestuurder">Bestuurder (staat in Mijn auto)</option></select></label>
+  <div class="buttons"><a href="/taken" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

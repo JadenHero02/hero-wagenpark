@@ -1,0 +1,15 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/wachtlijst">Wachtlijst</a> › Nieuw</div>
+<div class="page-head"><h1>Op de wachtlijst zetten</h1></div>
+<div class="card" style="max-width:640px">
+<form method="POST" action="/wachtlijst" class="form">
+  <label>Bestuurder<select name="bestuurder_id"><option value="">– nog geen bestuurder in de app –</option><% bestuurders.forEach(b => { %><option value="<%= b.id %>"><%= b.naam %></option><% }) %></select></label>
+  <label>Of naam<input name="naam" placeholder="nieuwe collega"></label>
+  <label>Vestiging<select name="vestiging_id"><option value="">–</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>"><%= ve.naam %></option><% }) %></select></label>
+  <label>Wacht sinds<input type="date" name="datum_aanvraag" value="<%= vandaag %>"></label>
+  <label class="full">Gewenste auto<input name="gewenste_auto" placeholder="Bijvoorbeeld: elektrisch, klein"></label>
+  <label class="full">Opmerking<input name="opmerking"></label>
+  <div class="buttons"><a href="/wachtlijst" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

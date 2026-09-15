@@ -1,0 +1,44 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= can("directie") ? "/incidenten" : "/mijn-auto" %>"><%= can("directie") ? "Incidenten" : "Mijn auto" %></a> › Incident</div>
+<div class="page-head">
+  <div><div class="eyebrow">Incident</div><h1><%= h.label("incident_soort", i.soort) %> · <span class="plate big"><%= i.kenteken || "besteld" %></span></h1><div class="sub"><%= i.merk %> <%= i.model || "" %> · <%= h.formatDate(i.datum) %><%= i.bestuurder ? " · " + i.bestuurder : "" %></div></div>
+  <span class="pill <%= i.status === 'afgerond' ? 'ok' : i.status === 'gemeld' ? 'warn' : '' %>" style="font-size:13px"><%= h.label("incident_status", i.status) %></span>
+</div>
+<div class="grid-2">
+  <div>
+    <div class="card">
+      <dl class="kv">
+        <dt>Wat</dt><dd><%= i.omschrijving || "–" %></dd>
+        <dt>Tegenpartij</dt><dd><%= i.tegenpartij || "–" %></dd>
+        <dt>Kosten</dt><dd><%= h.euro(i.kosten) || "onbekend" %></dd>
+        <dt>Gemeld</dt><dd><%= h.formatDate(i.created_at, true) %> door <%= i.gemeld_door_naam || "onbekend" %></dd>
+        <dt>Auto</dt><dd><% if (can("directie")) { %><a href="/voertuigen/<%= i.voertuig_id %>"><%= i.kenteken %></a><% } else { %><%= i.kenteken %><% } %><%= i.vestiging ? " · " + i.vestiging : "" %></dd>
+      </dl>
+    </div>
+    <% if (fotos.length) { %>
+    <div class="card"><div class="lbl"><span class="msr">photo_camera</span>Foto's en bijlagen</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <% fotos.forEach(f => { %><a href="/documenten/<%= f.id %>" target="_blank"><% if ((f.mimetype || "").startsWith("image/")) { %><img src="/documenten/<%= f.id %>" alt="<%= f.bestandsnaam %>" style="width:140px;height:110px;object-fit:cover;border-radius:8px;border:1px solid var(--grijs-thin)"><% } else { %><span class="btn small ghost"><span class="msr">description</span><%= f.bestandsnaam %></span><% } %></a><% }) %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <div>
+    <% if (can("beheerder")) { %>
+    <div class="card">
+      <div class="lbl"><span class="msr">edit</span>Afhandelen</div>
+      <form method="POST" action="/incidenten/<%= i.id %>/status" class="form" style="grid-template-columns:1fr;margin-top:10px">
+        <label>Status<select name="status"><% Object.entries(LABELS.incident_status).forEach(([k, l]) => { %><option value="<%= k %>" <%= i.status === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+        <label>Kosten (€)<input type="number" name="kosten" step="0.01" min="0" value="<%= i.kosten ?? "" %>"></label>
+        <label>Tegenpartij<input name="tegenpartij" value="<%= i.tegenpartij || "" %>"></label>
+        <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
+      </form>
+      <p class="muted small" style="margin-top:10px">Eigen risico na schade voer je in als boete; die wordt doorbelast volgens het personeelsbeleid.<% if (i.taak_status === "open") { %> De bijbehorende taak sluit bij status "afgerond".<% } %></p>
+      <div class="actions" style="margin-top:8px"><a href="/boetes/nieuw?voertuig=<%= i.voertuig_id %>" class="btn small ghost"><span class="msr">receipt_long</span>Eigen risico doorbelasten</a><a href="/voertuigen/<%= i.voertuig_id %>/documenten?soort=fotos" class="btn small ghost"><span class="msr">upload_file</span>Meer foto's</a></div>
+    </div>
+    <% } else { %>
+    <div class="card"><p class="muted">Bedankt voor de melding. De beheerder van je vestiging pakt dit op. Voor schade regel je zelf de reparatie via de garage van het merk; eigen risico wordt volgens het personeelsbeleid doorbelast.</p></div>
+    <% } %>
+  </div>
+</div>
+<%- include("../partials/footer") %>

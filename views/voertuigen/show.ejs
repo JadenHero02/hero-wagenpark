@@ -21,10 +21,24 @@
   <div class="actions">
     <a href="/voertuigen/<%= v.id %>/bewerken" class="btn"><span class="msr">edit</span>Bewerken</a>
     <a href="/processen/start?voertuig=<%= v.id %>" class="btn"><span class="msr">checklist</span>Proces starten</a>
-    <% if (actief) { %><a href="/uitleen/innemen?voertuig=<%= v.id %>" class="btn primary"><span class="msr">key_off</span>Innemen</a><% } else if (v.status !== 'besteld') { %><a href="/uitleen/toewijzen?voertuig=<%= v.id %>" class="btn primary"><span class="msr">person_add</span>Toewijzen</a><% } %>
+    <a href="/boetes/nieuw?voertuig=<%= v.id %>" class="btn ghost"><span class="msr">receipt_long</span>Boete</a>
+    <a href="/incidenten/nieuw?voertuig=<%= v.id %>" class="btn ghost"><span class="msr">car_crash</span>Incident</a>
+    <% if (v.status === "archief") { %><% if (can("admin")) { %><form method="POST" action="/archief/<%= v.id %>/terug" class="inline"><button class="btn" type="submit"><span class="msr">unarchive</span>Uit het archief</button></form><% } %>
+    <% } else if (actief) { %><a href="/uitleen/innemen?voertuig=<%= v.id %>" class="btn primary"><span class="msr">key_off</span>Innemen</a><% } else if (v.status !== 'besteld') { %><a href="/uitleen/toewijzen?voertuig=<%= v.id %>" class="btn primary"><span class="msr">person_add</span>Toewijzen</a><a href="/uitleen/toewijzen?voertuig=<%= v.id %>&soort=uitleen" class="btn"><span class="msr">key</span>Uitlenen</a><% } %>
   </div>
+  <% } else if (isOwn) { %>
+  <div class="actions"><a href="/mijn-auto" class="btn"><span class="msr">person_pin_circle</span>Mijn auto</a></div>
   <% } %>
 </div>
+
+<% if (lopend.length || verzoeken.length) { %>
+<div class="card" style="margin-bottom:16px;border-left:5px solid var(--oranje)">
+  <div class="rows">
+    <% lopend.forEach(p => { %><div><span><span class="msr" style="color:var(--oranje)">checklist</span> <strong><%= NAMEN[p.soort] %></strong> loopt: <%= p.klaar %> van <%= p.totaal %> stappen</span><span class="v"><a href="/processen/<%= p.id %>" class="btn small primary">Naar de checklist</a></span></div><% }) %>
+    <% verzoeken.forEach(l => { %><div><span><span class="msr" style="color:var(--oranje)">key</span> Leenverzoek van <strong><%= l.wie %></strong>: <%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %><% if (l.reden) { %>, <%= l.reden %><% } %></span><span class="v"><a href="/uitleen/verzoeken/<%= l.id %>" class="btn small primary"><%= can("beheerder") ? "Beoordelen" : "Bekijken" %></a></span></div><% }) %>
+  </div>
+</div>
+<% } %>
 
 <div class="grid-3">
   <div class="card">
@@ -48,7 +62,8 @@
   <div class="card">
     <div class="lbl"><span class="msr">event</span>Deadlines</div>
     <div class="rows" style="margin-top:4px">
-      <div><span class="k">APK</span><span class="v"><% if (v.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'ok' %>"><%= h.formatDate(v.apk_vervaldatum) %></span><% } else { %><span class="muted">onbekend</span><% } %></span></div>
+      <div><span class="k">APK</span><span class="v"><% if (v.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'ok' %>"><%= h.formatDate(v.apk_vervaldatum) %></span><% } else { %><span class="muted">onbekend</span><% } %><% if (can("beheerder") || isOwn) { %> <a href="/voertuigen/<%= v.id %>/apk" class="small" title="APK-afspraak vastleggen"><span class="msr" style="font-size:16px">event</span></a><% } %></span></div>
+      <% if (v.apk_afspraak) { %><div><span class="k">APK-afspraak</span><span class="v"><span class="pill <%= h.daysUntil(v.apk_afspraak) < 0 ? 'warn' : '' %>"><%= h.formatDate(v.apk_afspraak) %></span><% if (h.daysUntil(v.apk_afspraak) < 0) { %> <a href="/voertuigen/<%= v.id %>/documenten?soort=apk_rapport" class="small">rapport uploaden</a><% } %></span></div><% } %>
       <% const bw = bandenwissels[0]; %>
       <% if (v.banden === "winter_zomer") { %><div><span class="k">Winterbanden</span><span class="v"><span class="pill warn">vóór 1 nov</span></span></div><% } %>
       <% if (bw) { %><div><span class="k">Bandenwissel <%= bw.seizoen %></span><span class="v"><span class="pill <%= bw.gewisseld ? 'ok' : 'warn' %>"><%= bw.gewisseld ? "gewisseld" : "nog niet" %></span></span></div><% } %>
@@ -85,19 +100,29 @@
     </div>
   </div>
   <div class="card">
-    <div class="card-head"><div class="lbl"><span class="msr">folder</span>Documenten</div></div>
+    <div class="card-head"><div class="lbl"><span class="msr">folder</span>Documenten</div><a href="/voertuigen/<%= v.id %>/documenten" class="small">Alles →</a></div>
     <div class="rows">
-      <% documenten.forEach(doc => { %><div><span class="k"><%= doc.soort.replace("_", " ") %> · <%= doc.bestandsnaam %></span><span class="v muted small"><%= h.formatDate(doc.created_at) %></span></div><% }) %>
-      <% if (!documenten.length) { %><div class="muted">Nog geen documenten. Uploaden komt woensdag.</div><% } %>
+      <% documenten.slice(0, 5).forEach(doc => { %><div><span class="k"><a href="/documenten/<%= doc.id %>" target="_blank"><%= doc.bestandsnaam %></a><div class="small"><%= h.label("document", doc.soort) %><% if (doc.soort === "apk_rapport" && !doc.goedgekeurd_op) { %> · <span style="color:var(--oranje-bold)">te beoordelen</span><% } %></div></span><span class="v muted small"><%= h.formatDate(doc.created_at) %></span></div><% }) %>
+      <% if (!documenten.length) { %><div class="muted">Nog geen documenten.</div><% } %>
     </div>
+    <% if (can("beheerder") || isOwn) { %>
+    <form method="POST" action="/voertuigen/<%= v.id %>/documenten" enctype="multipart/form-data" class="actions" style="margin-top:10px">
+      <input type="hidden" name="terug" value="/voertuigen/<%= v.id %>">
+      <select name="soort" style="padding:7px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><% Object.entries(LABELS.document).forEach(([k, l]) => { %><option value="<%= k %>"><%= l %></option><% }) %></select>
+      <input type="file" name="bestanden" multiple required style="font-size:12px;max-width:170px">
+      <button class="btn small" type="submit"><span class="msr">upload</span>Uploaden</button>
+    </form>
+    <% } %>
   </div>
 </div>
 
 <% if (taken.length) { %>
 <div class="card" style="margin-top:16px">
-  <div class="card-head"><div class="lbl"><span class="msr">task_alt</span>Open taken</div></div>
-  <div class="rows"><% taken.forEach(t => { %><div><span><%= t.titel %></span><span class="v"><% if (t.deadline) { %><span class="pill <%= h.daysUntil(t.deadline) < 0 ? 'bad' : 'warn' %>"><%= h.formatDate(t.deadline) %></span><% } %></span></div><% }) %></div>
+  <div class="card-head"><div class="lbl"><span class="msr">task_alt</span>Open taken</div><% if (can("beheerder")) { %><a href="/taken/nieuw?voertuig=<%= v.id %>" class="small">Nieuwe taak →</a><% } %></div>
+  <div class="rows"><% taken.forEach(t => { %><div><span><%= t.titel %><% if (t.omschrijving) { %><div class="muted small"><%= t.omschrijving %></div><% } %><span class="muted small"> · <%= t.voor === "bestuurder" ? "bestuurder" : "beheerder" %></span></span><span class="v" style="display:flex;gap:6px;align-items:center"><% if (t.deadline) { %><span class="pill <%= h.daysUntil(t.deadline) < 0 ? 'bad' : 'warn' %>"><%= h.formatDate(t.deadline) %></span><% } %><% if (can("beheerder") || (isOwn && t.voor === "bestuurder")) { %><form method="POST" action="/taken/<%= t.id %>/afronden" class="inline"><input type="hidden" name="terug" value="/voertuigen/<%= v.id %>"><button class="btn small" type="submit" title="Afronden"><span class="msr">check</span></button></form><% } %></span></div><% }) %></div>
 </div>
+<% } else if (can("beheerder")) { %>
+<div style="margin-top:16px"><a href="/taken/nieuw?voertuig=<%= v.id %>" class="btn ghost small"><span class="msr">add_task</span>Taak toevoegen</a></div>
 <% } %>
 
 <div class="card" style="margin-top:16px" id="historie">

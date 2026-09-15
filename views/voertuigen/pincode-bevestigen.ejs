@@ -1,0 +1,15 @@
+<%- include("../partials/header") %>
+<div class="page-head"><div><div class="eyebrow">Tankpas</div><h1>Bevestig wie je bent</h1></div></div>
+<div class="card" style="max-width:460px">
+  <p>De pincode van <strong><%= v.kenteken || v.merk %></strong> is privé. Log opnieuw in met je Hero-account, dan laat de app de code zien. Dit wordt gelogd op jouw naam.</p>
+  <% if (msLoginEnabled) { %>
+    <a class="btn primary wide" href="/auth/microsoft?next=<%= encodeURIComponent(next) %>"><span class="msr">lock_open</span>Opnieuw inloggen en pincode tonen</a>
+  <% } %>
+  <% if (devLogin) { %>
+    <form method="POST" action="/login/dev" style="margin-top:8px"><input type="hidden" name="next" value="<%= next %>"><button type="submit" class="btn ghost wide"><span class="msr">construction</span>Lokaal bevestigen als <%= devLogin %></button></form>
+  <% } %>
+  <% if (!msLoginEnabled && !devLogin) { %><p class="muted">Inloggen is niet ingesteld.</p><% } %>
+  <p style="margin-top:14px"><a href="<%= back %>" class="btn ghost small"><span class="msr">arrow_back</span>Terug</a></p>
+  <p class="muted small" style="margin-top:10px">Later: Face ID of vingerafdruk op de telefoon.</p>
+</div>
+<%- include("../partials/footer") %>

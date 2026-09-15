@@ -1,0 +1,13 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/boetes">Boetes</a> › Invoeren</div>
+<div class="page-head"><div><div class="eyebrow">Boetes</div><h1>Boete invoeren</h1><div class="sub">De app zoekt er de bestuurder van dat moment bij. Daarna bevestig je het doorbelasten.</div></div></div>
+<div class="card" style="max-width:640px">
+<form method="POST" action="/boetes" class="form">
+  <label class="full">Auto<select name="voertuig_id" required><option value="">– kies –</option><% voertuigen.forEach(v => { %><option value="<%= v.id %>" <%= form.voertuig_id === v.id ? "selected" : "" %>><%= v.kenteken || "besteld" %> · <%= v.merk %> <%= v.model || "" %><%= v.bestuurder ? " · " + v.bestuurder : "" %></option><% }) %></select></label>
+  <label>Datum overtreding<input type="date" name="datum" value="<%= form.datum %>" required></label>
+  <label>Bedrag (€)<input type="number" name="bedrag" step="0.01" min="0" placeholder="0,00"></label>
+  <label class="full">Omschrijving <span class="hint">snelheid, parkeren, eigen risico na schade, ...</span><input name="omschrijving" placeholder="Bijvoorbeeld: 12 km/u te hard op de A7"></label>
+  <div class="buttons"><a href="/boetes" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">save</span>Invoeren</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

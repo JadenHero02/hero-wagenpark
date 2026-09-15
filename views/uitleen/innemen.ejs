@@ -1,0 +1,23 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/voertuigen/<%= v.id %>"><%= v.kenteken || v.merk %></a> › Innemen</div>
+<div class="page-head"><div><div class="eyebrow">Inname</div><h1><span class="plate big"><%= v.kenteken || "besteld" %></span> <%= v.merk %> <%= v.model || "" %></h1><div class="sub">Nu op naam van <strong><%= actief.bestuurder || actief.extern_naam %></strong> (<%= actief.soort === "uitleen" ? "leenauto" : "vast" %>, sinds <%= h.formatDate(actief.van) || "onbekend" %>)</div></div></div>
+<div class="card" style="max-width:640px">
+<form method="POST" action="/uitleen/innemen" class="form">
+  <input type="hidden" name="voertuig_id" value="<%= v.id %>">
+  <input type="hidden" name="toewijzing_id" value="<%= actief.id %>">
+  <% if (actief.soort === "uitleen") { %>
+    <label>Ingeleverd op<input type="date" name="datum" value="<%= vandaag %>" required></label>
+    <label>Kilometerstand bij inname<input type="number" name="km" min="<%= km ? km.stand : 0 %>" placeholder="<%= km ? "laatste " + h.num(km.stand) : "" %>"></label>
+    <label class="full">Opmerking <span class="hint">schade, tank, sleutel</span><input name="opmerking"></label>
+    <div class="buttons"><a href="/voertuigen/<%= v.id %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">key_off</span>Innemen, terug op voorraad</button></div>
+  <% } else { %>
+    <label>Inleverdatum<input type="date" name="datum" value="<%= vandaag %>" required></label>
+    <label>Kilometerstand <span class="hint">als je die nu al weet</span><input type="number" name="km" min="<%= km ? km.stand : 0 %>" placeholder="<%= km ? "laatste " + h.num(km.stand) : "" %>"></label>
+    <label class="full">Opmerking<input name="opmerking"></label>
+    <label class="check full"><input type="checkbox" name="direct"> De auto is al ingeleverd: direct afsluiten zonder checklist</label>
+    <p class="muted small full" style="grid-column:1/-1">Zonder dat vinkje start de inname-checklist: de bestuurder krijgt een mail met de datum, jullie lopen samen een ronde om de auto, en bij de laatste stap gaat de auto terug op voorraad en krijgt HR bericht.</p>
+    <div class="buttons"><a href="/voertuigen/<%= v.id %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">key_off</span>Innemen</button></div>
+  <% } %>
+</form>
+</div>
+<%- include("../partials/footer") %>

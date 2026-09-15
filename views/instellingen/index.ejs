@@ -1,0 +1,45 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Admin</div><h1>Instellingen</h1><div class="sub">Termijnen, HR-adres, rollen. Alleen voor de admin.</div></div>
+  <div class="actions"><a href="/instellingen/mail" class="btn"><span class="msr">mail</span>Maillog (<%= mails.n %><%= mails.fout ? ", " + mails.fout + " mislukt" : "" %>)</a></div>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-head"><h2>Termijnen en adressen</h2></div>
+    <form method="POST" action="/instellingen" class="form">
+      <% VELDEN.forEach(([key, label, hint]) => { %>
+        <label class="<%= key.endsWith("_emails") || key === "hr_email" ? "full" : "" %>"><%= label %><% if (hint) { %> <span class="hint"><%= hint %></span><% } %><input name="<%= key %>" value="<%= waarden[key] || "" %>"></label>
+      <% }) %>
+      <div class="buttons"><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
+    </form>
+  </div>
+  <div>
+    <div class="card">
+      <div class="card-head"><h2>Mail</h2></div>
+      <dl class="kv">
+        <dt>Stand</dt><dd><% if (mailMode === "verstuurd") { %><span class="pill ok">verstuurt via Microsoft 365</span><% } else { %><span class="pill warn">alleen loggen</span> <span class="muted small">MS_TENANT_ID, MS_CLIENT_ID en MS_CLIENT_SECRET nog niet ingesteld; mails staan in het maillog</span><% } %></dd>
+        <dt>Afzender</dt><dd><%= mailFrom %></dd>
+        <% if (mailTest) { %><dt>Testmodus</dt><dd>Alles gaat naar <%= mailTest %></dd><% } %>
+      </dl>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Gebruikers en rollen</h2></div>
+      <table class="list">
+        <thead><tr><th>Naam</th><th>Rol</th><th>Vestiging</th><th>Laatst</th><th></th></tr></thead>
+        <tbody>
+        <% users.forEach(u => { %>
+          <tr>
+            <td><strong><%= u.name %></strong><div class="muted small"><%= u.email %></div></td>
+            <td><select name="role" form="u<%= u.id %>" style="padding:5px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><% Object.entries(LABELS.role).forEach(([k, l]) => { %><option value="<%= k %>" <%= u.role === k ? "selected" : "" %>><%= l %></option><% }) %></select></td>
+            <td><select name="vestiging_id" form="u<%= u.id %>" style="padding:5px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><option value="">–</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= u.vestiging_id === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select></td>
+            <td class="small muted"><%= h.formatDate(u.last_login_at) || "nooit" %><% if (!u.is_active) { %> <span class="pill soft">uit</span><% } %></td>
+            <td class="nowrap"><form method="POST" action="/instellingen/gebruikers/<%= u.id %>" id="u<%= u.id %>" class="inline"><button class="btn small" type="submit" name="is_active" value="<%= u.is_active ? "1" : "0" %>">Opslaan</button> <button class="btn small ghost" type="submit" name="is_active" value="<%= u.is_active ? "0" : "1" %>"><%= u.is_active ? "Uitzetten" : "Aanzetten" %></button></form></td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table>
+      <p class="muted small" style="margin-top:8px">Beheerders met een vestiging krijgen de mails van die vestiging (leenverzoeken, incidenten). Zonder vestiging krijgen alle beheerders ze.</p>
+    </div>
+  </div>
+</div>
+<%- include("../partials/footer") %>
