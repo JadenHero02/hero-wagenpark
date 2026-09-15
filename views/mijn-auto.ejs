@@ -52,7 +52,7 @@
       <div class="card"><div class="lbl">Km-stand</div><div style="font-size:22px;font-weight:800;color:var(--blauw)"><%= v.km_stand ? h.num(v.km_stand) : "onbekend" %></div><div class="muted small"><%= v.km_datum ? h.formatDate(v.km_datum) : "nog niet doorgegeven" %></div>
         <form method="POST" action="/voertuigen/<%= v.id %>/kilometerstand" class="actions" style="margin-top:8px"><input type="number" name="stand" min="0" inputmode="numeric" placeholder="Nieuwe stand" required style="width:120px;padding:8px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit"><button class="btn small" type="submit"><span class="msr">speed</span>Doorgeven</button></form>
       </div>
-      <div class="card"><div class="lbl">Tankpas</div><div style="font-weight:700"><%= v.tankpas_nummer || "geen" %></div>
+      <div class="card"><div class="lbl"><%= h.tankpasLeverancier(v.tankpas_nummer) === "E-Flux" ? "Laadpas" : "Tankpas" %></div><div style="font-weight:700"><%= v.tankpas_nummer || "geen" %></div><% const lev = h.tankpasLeverancier(v.tankpas_nummer); if (lev) { %><div class="muted small"><%= lev %></div><% } %>
         <% if (v.tankpas_pincode_enc) { %><form method="POST" action="/voertuigen/<%= v.id %>/pincode" style="margin-top:8px"><button class="btn small" type="submit"><span class="msr">visibility</span>Pincode</button></form><p class="muted small" style="margin:6px 0 0">Na een extra bevestiging.</p><% } %>
       </div>
     </div>
@@ -91,7 +91,8 @@
     <% autos.forEach(v => { const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(" ")[0])); if (!garage) return; %>
       <div><span><strong><%= garage.naam %></strong><div class="muted small">Garage, onderhoud en APK voor <%= v.merk %></div></span><span class="v"><% if (garage.telefoon) { %><a href="tel:<%= garage.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span><%= garage.telefoon %></a><% } %></span></div>
     <% }) %>
-    <% contacten.forEach(c => { %>
+    <% const leveranciers = autos.map(v => h.tankpasLeverancier(v.tankpas_nummer)).filter(Boolean); %>
+    <% contacten.filter(c => c.soort !== "tankpas" || leveranciers.some(l => c.naam.toLowerCase().includes(l.toLowerCase().split(" ")[0]))).forEach(c => { %>
       <div><span><strong><%= c.naam %></strong><div class="muted small"><%= h.label("contact", c.soort) %><%= c.vestiging ? " · " + c.vestiging : "" %><%= c.opmerking ? " · " + c.opmerking : "" %></div></span><span class="v"><% if (c.telefoon) { %><a href="tel:<%= c.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span><%= c.telefoon %></a><% } else if (c.email) { %><a href="mailto:<%= c.email %>" class="btn small"><span class="msr">mail</span>Mail</a><% } %></span></div>
     <% }) %>
     <% if (!contacten.length) { %><div class="muted">Nog geen contactpersonen ingevuld.</div><% } %>

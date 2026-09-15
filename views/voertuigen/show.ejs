@@ -55,7 +55,7 @@
     <h3 style="margin-top:6px"><%= h.label("eigendom", v.eigendom) %><% if (v.leasemaatschappij) { %> · <%= v.leasemaatschappij %><% } %></h3>
     <% if (v.contract_einde) { %><div class="small muted">Contract tot <%= h.formatDate(v.contract_einde) %></div><% } %>
     <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span><%= v.tankpas_nummer ? v.tankpas_nummer : "Geen tankpas" %></span>
+      <span><%= v.tankpas_nummer ? v.tankpas_nummer : "Geen tankpas" %><% const lev = h.tankpasLeverancier(v.tankpas_nummer); if (lev) { %> <span class="muted small"><%= lev %> <%= lev === "E-Flux" ? "laadpas" : "tankpas" %></span><% } %></span>
       <% if (v.tankpas_pincode_enc) { %><form method="POST" action="/voertuigen/<%= v.id %>/pincode" class="inline"><button class="btn small" type="submit"><span class="msr">visibility</span>Toon pincode</button></form><% } else if (v.tankpas_nummer) { %><span class="muted small">geen pincode opgeslagen</span><% } %>
     </div>
   </div>

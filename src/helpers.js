@@ -70,6 +70,13 @@ function bouwjaarFmt(value) {
   const m = String(value || "").match(/^(\d{4})-(\d{2})$/);
   return m ? `${MAAND_KORT[Number(m[2]) - 1] || m[2]} ${m[1]}` : value || "";
 }
+// Leverancier van de tank- of laadpas, af te lezen aan het nummer: 19 cijfers vanaf 306 = MKB Brandstof (tankpas), C + 8 tekens = E-Flux (laadpas)
+function tankpasLeverancier(nummer) {
+  const n = String(nummer || "").replace(/\s/g, "");
+  if (/^\d{15,}$/.test(n)) return "MKB Brandstof";
+  if (/^C[A-Z0-9]{8}$/i.test(n)) return "E-Flux";
+  return null;
+}
 // 38412 -> "38.412"
 const num = (n) => (n === null || n === undefined || n === "" ? "" : Number(n).toLocaleString("nl-NL"));
 const euro = (n) => (n === null || n === undefined || n === "" ? "" : "€ " + Number(n).toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -109,4 +116,4 @@ const label = (group, key) => (LABELS[group] && LABELS[group][key]) || key || ""
 // Voor tekst die een template met <%- %> invoegt
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label, esc, bouwjaarNorm, bouwjaarFmt };
+module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label, esc, bouwjaarNorm, bouwjaarFmt, tankpasLeverancier };
