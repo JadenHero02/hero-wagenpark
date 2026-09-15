@@ -231,8 +231,9 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
   .menu-achter { display: block; position: fixed; inset: 0; z-index: 44; background: rgba(3,21,63,.45); } .menu-achter[hidden] { display: none; }
   body.menu-open { overflow: hidden; }
   .side-link { padding: 10px 12px; font-size: 14.5px; color: rgba(255,255,255,.92); border-left: 3px solid transparent; border-radius: 0 8px 8px 0; }
-  .side-link .msr { color: rgba(255,255,255,.7); } .side-link:hover { background: rgba(255,255,255,.1); }
-  .side-link.on { background: rgba(255,255,255,.16); color: #ffffff; border-left-color: var(--oranje); } .side-link.on .msr { color: #ffffff; }
+  .side-link .msr { color: rgba(255,255,255,.7); }
+  .side-link:hover, .side-link:active, .side-link:focus-visible, .side-link.on { background: rgba(255,255,255,.16); color: #ffffff; border-left-color: var(--oranje); }
+  .side-link:hover .msr, .side-link:active .msr, .side-link:focus-visible .msr, .side-link.on .msr { color: #ffffff; }
   .side-badge { color: rgba(255,255,255,.7); }
   .sidenav-sep { border-top-color: rgba(255,255,255,.18); }
   .versie-link { color: rgba(255,255,255,.6); } .versie-link:hover, .versie-link.on { color: #ffffff; background: rgba(255,255,255,.12); }
