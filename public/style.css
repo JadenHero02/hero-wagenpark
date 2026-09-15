@@ -150,7 +150,7 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .rows.dash .dash-knop { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .rows.dash .btn.small { min-width: 96px; justify-content: center; }
 /* Dashboard: maximale breedte, vier compacte tegels op één rij, daaronder taken breed links en snel/verduurzaming rechts */
-.dash-page { max-width: 1600px; }
+.dash-page { max-width: 1360px; }
 .tiles.dash-tiles { margin-bottom: 16px; }
 .tiles.dash-tiles .tile { padding: 14px 16px; gap: 4px; }
 .tiles.dash-tiles .tile .big { font-size: 30px; }
@@ -162,9 +162,6 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .milieu-balk { display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 2px; margin: 4px 0 10px; }
 .milieu-balk span { display: block; min-width: 3px; }
 .milieu-legenda { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 13px; }
-.dash-log > div { align-items: flex-start; } .dash-log .when { color: var(--grijs); width: 92px; flex-shrink: 0; font-size: 12.5px; padding-top: 1px; }
-.dash-log .wat { flex: 1; min-width: 0; line-height: 1.45; } .dash-log .door { color: var(--grijs); font-size: 12.5px; }
-table.list.compact th, table.list.compact td { padding: 7px 8px; } table.list.compact td:first-child { font-weight: 600; }
 .milieu-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 13.5px; }
 .kv dt { color: var(--grijs); } .kv dd { margin: 0; }

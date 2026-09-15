@@ -72,19 +72,6 @@
         <% if (!komend.length && !besteld.length) { %><div class="muted">Niets gepland de komende weken.</div><% } %>
       </div>
     </div>
-
-    <div class="card">
-      <div class="card-head"><h2><span class="msr" style="color:var(--grijs)">history</span> Laatste activiteit</h2></div>
-      <div class="rows dash-log">
-        <% activiteit.forEach(a => { %>
-          <div>
-            <span class="when"><%= h.formatDate(a.created_at, true) %></span>
-            <span class="wat"><% if (a.kenteken) { %><a href="/voertuigen/<%= a.voertuig_id %>"><span class="plate"><%= a.kenteken %></span></a> <% } %><%= a.omschrijving %><% if (a.door && !a.omschrijving.includes(a.door)) { %> <span class="door">· <%= a.door %></span><% } %></span>
-          </div>
-        <% }) %>
-        <% if (!activiteit.length) { %><div class="muted">Nog niets gelogd.</div><% } %>
-      </div>
-    </div>
   </div>
 
   <div>
@@ -113,18 +100,6 @@
       </div>
       <div class="muted small" style="margin-top:10px"><%= counts.doc_ok %> van <%= counts.met_kenteken %> auto's hebben een kentekenbewijs in de app.</div>
     </div>
-
-    <% if (!vId) { %>
-    <div class="card">
-      <div class="card-head"><h2><span class="msr" style="color:var(--blauw)">location_on</span> Per vestiging</h2></div>
-      <table class="list compact">
-        <thead><tr><th>Vestiging</th><th class="num">Rijden</th><th class="num">Voorraad</th><th class="num">Besteld</th><th class="num" title="APK vervalt binnen 30 dagen">APK &lt; 30 d</th></tr></thead>
-        <tbody>
-          <% perVestiging.forEach(p => { %><tr class="click" onclick="location.href='/?vestiging=<%= p.id %>'"><td><%= p.naam %></td><td class="num"><%= p.rijdend %></td><td class="num"><%= p.voorraad %></td><td class="num"><%= p.besteld %></td><td class="num" style="<%= p.apk > 0 ? 'color:var(--oranje);font-weight:700' : '' %>"><%= p.apk %></td></tr><% }) %>
-        </tbody>
-      </table>
-    </div>
-    <% } %>
   </div>
 </div>
 </div>
