@@ -222,14 +222,20 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
   .menu-knop { display: inline-flex; margin-left: -4px; }
   .brand img { width: 40px; height: 34px; }
   /* Menu als paneel van links: alle onderdelen onder elkaar, ook voor de admin met veertien knoppen */
-  .sidenav { position: fixed; top: 0; left: 0; bottom: 0; z-index: 45; width: min(300px, 86vw); height: auto; padding: 0 10px 12px; box-shadow: 0 12px 40px rgba(3,21,63,.28); transform: translateX(-104%); transition: transform .22s ease; }
+  /* Het paneel in het Hero-blauw van de balk, witte tekst en iconen, actief onderdeel met een lichte band en oranje streep */
+  .sidenav { position: fixed; top: 0; left: 0; bottom: 0; z-index: 45; width: min(300px, 86vw); height: auto; padding: 0 10px 12px; background: var(--hero-blauw); border-right: 0; box-shadow: 0 12px 40px rgba(3,21,63,.4); transform: translateX(-104%); transition: transform .22s ease; }
   .sidenav.open { transform: none; }
-  .sidenav-kop { display: flex; align-items: center; gap: 10px; height: 58px; margin: 0 -10px 8px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--grijs-thin); color: var(--blauw); font-size: 15px; }
+  .sidenav-kop { display: flex; align-items: center; gap: 10px; height: 58px; margin: 0 -10px 8px; padding: 0 8px 0 16px; border-bottom: 1px solid rgba(255,255,255,.18); color: #ffffff; font-size: 15px; }
   .sidenav-kop .msr:first-child { font-size: 22px; } .sidenav-kop strong { flex: 1; }
-  .menu-sluit { display: inline-flex; color: var(--grijs); } .menu-sluit:hover { background: var(--blauw-hair); color: var(--blauw); }
+  .menu-sluit { display: inline-flex; color: rgba(255,255,255,.85); } .menu-sluit:hover { background: rgba(255,255,255,.14); color: #ffffff; }
   .menu-achter { display: block; position: fixed; inset: 0; z-index: 44; background: rgba(3,21,63,.45); } .menu-achter[hidden] { display: none; }
   body.menu-open { overflow: hidden; }
-  .side-link { padding: 10px 12px; font-size: 14.5px; }
+  .side-link { padding: 10px 12px; font-size: 14.5px; color: rgba(255,255,255,.92); border-left: 3px solid transparent; border-radius: 0 8px 8px 0; }
+  .side-link .msr { color: rgba(255,255,255,.7); } .side-link:hover { background: rgba(255,255,255,.1); }
+  .side-link.on { background: rgba(255,255,255,.16); color: #ffffff; border-left-color: var(--oranje); } .side-link.on .msr { color: #ffffff; }
+  .side-badge { color: rgba(255,255,255,.7); }
+  .sidenav-sep { border-top-color: rgba(255,255,255,.18); }
+  .versie-link { color: rgba(255,255,255,.6); } .versie-link:hover, .versie-link.on { color: #ffffff; background: rgba(255,255,255,.12); }
   .sidenav-title, .versie-bubble { display: none; }
   .main { padding: 14px 14px 40px; }
   .page-head { margin-bottom: 14px; } h1 { font-size: 22px; }

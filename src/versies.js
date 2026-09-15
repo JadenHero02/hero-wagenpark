@@ -5,7 +5,8 @@
 
 const VERSIES = [
   { versie: "0.2.19", datum: "2026-09-15", punten: [
-    { soort: "verbeterd", tekst: "menu op telefoon en tablet: een menuknop links in de blauwe balk opent het volledige menu als paneel, met alle onderdelen onder elkaar (ook de veertien van de admin). Sluit met het kruisje, een tik naast het paneel of een keuze. De zijwaarts scrollende menurij is weg", commit: "" },
+    { soort: "verbeterd", tekst: "menu op telefoon en tablet: een menuknop links in de blauwe balk opent het volledige menu als paneel, met alle onderdelen onder elkaar (ook de veertien van de admin). Sluit met het kruisje, een tik naast het paneel of een keuze. De zijwaarts scrollende menurij is weg", commit: "25e6e96" },
+    { soort: "verbeterd", tekst: "dat menupaneel in het Hero-blauw van de balk, met witte tekst en een oranje streep bij het actieve onderdeel", commit: "" },
   ] },
   { versie: "0.2.18", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "dashboard opnieuw ingedeeld: de vier stuurgetallen op één rij bovenaan, daaronder \"Vandaag voor jou\" en \"Komende weken\" breed links en de snelle acties en verduurzaming (als één balk) rechts. De pagina rekt op een breed scherm niet meer eindeloos uit en de kolommen lopen niet meer scheef", commit: "" },
