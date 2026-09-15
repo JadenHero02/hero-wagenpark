@@ -243,6 +243,7 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
   .brand-app { display: none; }
   .tiles { grid-template-columns: 1fr !important; }
   .tiles.dash-tiles { grid-template-columns: 1fr 1fr !important; gap: 10px; }
+  .rows.dash .dash-tekst { flex: 1 1 100%; } .rows.dash .dash-knop { width: 100%; justify-content: flex-end; }
   .tiles.dash-tiles .tile { padding: 12px; } .tiles.dash-tiles .tile .big { font-size: 26px; } .tiles.dash-tiles .tile .muted.small { font-size: 12px; }
   .brand img { width: 38px; height: 32px; }
   .plate.big { --ph: 28px; font-size: 17px; }
