@@ -105,7 +105,7 @@
          groep.set(key, g);
        });
        [...groep.values()].forEach(c => { const rollen = c.rollen.join(" en "); const tekst = rollen.charAt(0).toUpperCase() + rollen.slice(1) + (c.opmerkingen.length ? " · " + c.opmerkingen.join(" · ") : ""); %>
-      <div><span><strong><%= c.naam %></strong><div class="muted small"><%= tekst %></div></span><span class="v"><% if (c.telefoon) { %><a href="tel:<%= c.telefoon.replace(/s/g, "") %>" class="btn small"><span class="msr">call</span><%= c.telefoon %></a><% } else if (c.email) { %><a href="mailto:<%= c.email %>" class="btn small"><span class="msr">mail</span>Mail</a><% } %></span></div>
+      <div><span><strong><%= c.naam %></strong><div class="muted small"><%= tekst %></div></span><span class="v"><% if (c.telefoon) { %><a href="tel:<%= c.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span><%= c.telefoon %></a><% } else if (c.email) { %><a href="mailto:<%= c.email %>" class="btn small"><span class="msr">mail</span>Mail</a><% } %></span></div>
     <% }) %>
     <% if (!contacten.length) { %><div class="muted">Nog geen contactpersonen ingevuld.</div><% } %>
   </div>
