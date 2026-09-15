@@ -4,9 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.4", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "een bestuurder ziet in het menu alleen nog Mijn auto; Dashboard en Mijn auto waren voor hem dezelfde pagina (feedback Vasco). Het zoekveld bovenin is er alleen voor wie het wagenpark mag zien", commit: "" },
+  ] },
   { versie: "0.2.3", datum: "2026-09-15", punten: [
-    { soort: "verbeterd", tekst: "de naam Wagenpark staat in de blauwe balk naast het logo en niet meer boven het menu; dat leek te veel op de menuregel Wagenpark (feedback Huub)", commit: "" },
-    { soort: "verbeterd", tekst: "op de telefoon geen tekstballon meer bij het versienummer", commit: "" },
+    { soort: "verbeterd", tekst: "de naam Wagenpark staat in de blauwe balk naast het logo en niet meer boven het menu; dat leek te veel op de menuregel Wagenpark (feedback Huub)", commit: "1f4b6c7" },
+    { soort: "verbeterd", tekst: "op de telefoon geen tekstballon meer bij het versienummer", commit: "1f4b6c7" },
   ] },
   { versie: "0.2.2", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "versiebeheer: versienummer onderin het menu, pagina Over deze versie met wat er nieuw is, bugs melden en wensen indienen met automatisch versie, scherm en apparaat erbij", commit: "ad93172" },

@@ -16,7 +16,7 @@
   const isActive = (prefix) => (prefix === "/" ? p === "/" : p.startsWith(prefix)) ? "on" : "";
   const user = currentUser || null;
   const menu = [
-    { href: "/", icon: "grid_view", label: "Dashboard", min: "bestuurder" },
+    { href: "/", icon: "grid_view", label: "Dashboard", min: "directie" },
     { href: "/voertuigen", icon: "directions_car", label: "Wagenpark", min: "directie", badge: badges.voertuigen },
     { href: "/bestuurders", icon: "group", label: "Bestuurders", min: "directie" },
     { href: "/wachtlijst", icon: "hourglass_top", label: "Wachtlijst", min: "directie", badge: badges.wachtlijst },
@@ -33,10 +33,10 @@
 <div class="shell">
   <header class="topbar">
     <a href="/" class="brand"><img src="/img/Hero_logo_wit.svg" alt="Hero" width="46" height="39"><span class="brand-app"><span class="msr">directions_car</span>Wagenpark</span></a>
-    <form class="topsearch" method="GET" action="/voertuigen" role="search">
+    <% if (can("directie")) { %><form class="topsearch" method="GET" action="/voertuigen" role="search">
       <span class="msr">search</span>
       <input type="search" name="q" placeholder="Zoeken op kenteken, bestuurder, merk..." aria-label="Zoeken">
-    </form>
+    </form><% } %>
     <div class="topbar-right">
       <% if (user) { %>
         <details class="usermenu">
@@ -58,8 +58,8 @@
           <% if (m.badge) { %><span class="side-badge <%= m.hot ? 'hot' : '' %>"><%= m.badge %></span><% } %>
         </a>
       <% }) %>
-      <% if (user && currentBestuurder) { %>
-        <div class="sidenav-sep"></div>
+      <% if (user && (currentBestuurder || !can("directie"))) { %>
+        <% if (can("directie")) { %><div class="sidenav-sep"></div><% } %>
         <a href="/mijn-auto" class="side-link <%= isActive('/mijn-auto') %>"><span class="msr">person_pin_circle</span><span class="label">Mijn auto</span></a>
       <% } %>
       <% if (user) { %>
