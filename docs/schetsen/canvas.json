@@ -1,0 +1,40 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Dashboard beheerder",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    {
+      "file": "Voertuigdetail.dc.html",
+      "title": "Voertuigdetail",
+      "x": 0,
+      "y": 1040,
+      "w": 1440,
+      "h": 900
+    },
+    {
+      "file": "MijnAuto.dc.html",
+      "title": "Mijn auto (telefoon)",
+      "x": 1540,
+      "y": 0,
+      "w": 390,
+      "h": 1110
+    }
+  ],
+  "annotations": [
+    {
+      "id": "schets-uitleg",
+      "x": 1540,
+      "y": 1230,
+      "w": 390,
+      "text": "Schetsen bij het ontwerpplan wagenparkbeheer, versie 0.7 (15 september): afspraak vastleggen, leenauto op verzoek, documentenlijst en contactpersonen verwerkt.\nOpgezet zoals het Hero-platform: bovenbalk, linkerbalk met Favorieten, Hero-blauw en oranje, Exo, Material Symbols. Alle gegevens zijn verzonnen."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

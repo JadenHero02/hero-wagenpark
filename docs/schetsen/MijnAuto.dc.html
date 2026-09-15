@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">
+  <style>
+    body { margin: 0; font-family: Exo, Arial, Helvetica, sans-serif; color: #03153f; background: #ffffff; }
+    a { color: #073889; } a:hover { color: #0065cc; }
+    .msr { font-family: 'Material Symbols Rounded', sans-serif; font-weight: 400; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; }
+    .card { background: #ffffff; border: 1px solid #dfe4e6; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #9496a1; }
+    .btn { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; }
+  </style>
+</helmet>
+<div style="width: 390px; height: 1110px; background: #f3f6f9; display: flex; flex-direction: column; overflow: hidden;">
+
+  <div style="background: #073889; padding: 52px 20px 22px 20px; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+      <img src="hero-logo-wit.svg" style="width: 40px; height: 34px;" alt="Hero">
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #f79c44;"><span class="msr" style="font-size: 16px;">directions_car</span>MIJN AUTO</div>
+    </div>
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+      <div style="font-family: Arial, sans-serif; font-weight: 700; font-size: 13px; background: #f2c230; color: #111111; padding: 4px 8px; border-radius: 3px; letter-spacing: 0.05em;">AB-123-C</div>
+      <div style="font-size: 18px; font-weight: 800; color: #ffffff;">Renault Megane E-Tech</div>
+    </div>
+    <div style="font-size: 13px; color: #d3e6f0;">Sanne Jansen · Wognum · sinds maart 2024</div>
+  </div>
+
+  <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1;">
+
+    <div class="card" style="border-left: 5px solid #b71525; gap: 8px;">
+      <div class="lbl" style="color: #b71525; display: flex; flex-direction: row; align-items: center; gap: 6px;"><span class="msr" style="font-size: 16px;">error</span>ACTIE NODIG</div>
+      <div style="font-size: 15px; font-weight: 700; line-height: 1.35;">APK vervalt over 4 dagen. Plan zelf een afspraak.</div>
+      <div style="font-size: 13px; color: #9496a1;">Renault: vrije dealerkeuze. Bijvoorbeeld Stokman, Zwaag. Na de keuring: rapport uploaden.</div>
+      <div style="display: flex; flex-direction: row; gap: 8px;">
+        <div class="btn" style="flex-grow: 1; background: #f46015; color: #ffffff;"><span class="msr" style="font-size: 18px;">event</span>Afspraak vastleggen</div>
+        <div class="btn" style="border: 1px solid #073889; color: #073889; padding: 12px 14px;"><span class="msr" style="font-size: 18px;">call</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 5px solid #f46015; gap: 4px;">
+      <div class="lbl" style="color: #f46015; display: flex; flex-direction: row; align-items: center; gap: 6px;"><span class="msr" style="font-size: 16px;">ac_unit</span>BINNENKORT</div>
+      <div style="font-size: 14px; line-height: 1.35;">Winterbanden laten monteren vóór 1 november.</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+      <div class="card">
+        <div class="lbl">KM-STAND</div>
+        <div style="font-size: 22px; font-weight: 800; color: #073889;">38.412</div>
+        <div style="font-size: 12px; color: #9496a1;">1 sep 2026</div>
+        <div class="btn" style="border: 1px solid #073889; color: #073889; padding: 10px; font-size: 13px; margin-top: 4px;"><span class="msr" style="font-size: 16px;">speed</span>Doorgeven</div>
+      </div>
+      <div class="card">
+        <div class="lbl">TANKPAS</div>
+        <div style="font-size: 15px; font-weight: 700;">MKB Brandstof</div>
+        <div style="font-size: 13px; color: #9496a1; letter-spacing: 0.1em;">7034 5512 ••••</div>
+        <div class="btn" style="border: 1px solid #073889; color: #073889; padding: 10px; font-size: 13px; margin-top: 4px;"><span class="msr" style="font-size: 16px;">visibility</span>Pincode</div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+      <div class="btn" style="background: #073889; color: #ffffff; padding: 14px 6px; font-size: 12px; gap: 4px;"><span class="msr" style="font-size: 18px;">photo_camera</span>Incident</div>
+      <div class="btn" style="background: #ffffff; border: 1px solid #dfe4e6; color: #073889; padding: 14px 6px; font-size: 12px; gap: 4px;"><span class="msr" style="font-size: 18px;">folder</span>Documenten</div>
+      <div class="btn" style="background: #ffffff; border: 1px solid #dfe4e6; color: #073889; padding: 14px 6px; font-size: 12px; gap: 4px;"><span class="msr" style="font-size: 18px;">key</span>Leenauto</div>
+    </div>
+
+    <div class="card" style="gap: 8px;">
+      <div class="lbl">MIJN BOETES</div>
+      <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+        <div style="font-size: 14px;">12 aug 2026 · te hard, A7</div>
+        <div style="display: flex; flex-direction: row; gap: 8px; align-items: center;">
+          <div style="font-size: 14px; font-weight: 700;">€ 109</div>
+          <div style="font-size: 11px; font-weight: 600; color: #944100; background: #fde1b6; padding: 2px 8px; border-radius: 10px;">doorbelast</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="gap: 0px; padding: 12px 16px;">
+      <div class="lbl" style="padding-bottom: 6px;">WIE BEL JE WAARVOOR</div>
+      <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid #dfe4e6;">
+        <div style="display: flex; flex-direction: column; gap: 1px;"><div style="font-size: 13px; font-weight: 700;">Celdirecteur Wognum</div><div style="font-size: 12px; color: #9496a1;">Auto, vragen over je regeling</div></div>
+        <div class="btn" style="border: 1px solid #073889; color: #073889; padding: 8px 10px;"><span class="msr" style="font-size: 18px;">call</span></div>
+      </div>
+      <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid #dfe4e6;">
+        <div style="display: flex; flex-direction: column; gap: 1px;"><div style="font-size: 13px; font-weight: 700;">Wagenparkbeheer</div><div style="font-size: 12px; color: #9496a1;">Tankpas, leenauto, boetes</div></div>
+        <div class="btn" style="border: 1px solid #073889; color: #073889; padding: 8px 10px;"><span class="msr" style="font-size: 18px;">call</span></div>
+      </div>
+      <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid #dfe4e6;">
+        <div style="display: flex; flex-direction: column; gap: 1px;"><div style="font-size: 13px; font-weight: 700;">Garage Renault · Stokman Zwaag</div><div style="font-size: 12px; color: #9496a1;">APK, onderhoud, banden</div></div>
+        <div class="btn" style="border: 1px solid #073889; color: #073889; padding: 8px 10px;"><span class="msr" style="font-size: 18px;">call</span></div>
+      </div>
+      <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid #dfe4e6;">
+        <div style="display: flex; flex-direction: column; gap: 1px;"><div style="font-size: 13px; font-weight: 700;">Verzekering · Hypotheekshop Hoorn</div><div style="font-size: 12px; color: #9496a1;">Schade, ruitbreuk, pech</div></div>
+        <div class="btn" style="border: 1px solid #073889; color: #073889; padding: 8px 10px;"><span class="msr" style="font-size: 18px;">call</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; display: flex; flex-direction: row; justify-content: space-around; padding: 10px 0 0 0; border-top: 1px solid #dfe4e6;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #073889; font-weight: 700;"><span class="msr" style="color: #f46015;">directions_car</span>Mijn auto</div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #9496a1;"><span class="msr">grid_view</span>Dashboard</div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #9496a1;"><span class="msr">auto_awesome</span>Hera</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

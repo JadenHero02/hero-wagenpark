@@ -1,0 +1,871 @@
+<title>Ontwerpplan Wagenparkbeheer Hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F2F3F0;
+    --panel:#FFFFFF;
+    --panel-2:#E9EBE6;
+    --ink:#1B1F24;
+    --ink-2:#3C434C;
+    --muted:#646C77;
+    --line:#D6D9D3;
+    --line-2:#C2C6BF;
+    --accent:#E8B400;
+    --accent-soft:#FBF0BF;
+    --accent-ink:#6E5300;
+    --plate-blue:#003399;
+    --ok:#2E7D4F;
+    --warn:#B8640A;
+    --crit:#B3261E;
+    --ok-soft:#DFF0E5;
+    --warn-soft:#FBE7CF;
+    --crit-soft:#F8DAD7;
+    --shadow:0 1px 2px rgba(27,31,36,.06),0 8px 24px rgba(27,31,36,.06);
+    --display:"Archivo",system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+    --body:"IBM Plex Sans",system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15181C; --panel:#1D2126; --panel-2:#252A30; --ink:#E9EBE6; --ink-2:#C9CDC6; --muted:#98A1AB;
+      --line:#2F353C; --line-2:#3C434B; --accent:#F2C630; --accent-soft:#3A3212; --accent-ink:#F2D66B;
+      --ok:#6FC291; --warn:#E9A25A; --crit:#EF8B84; --ok-soft:#1E3327; --warn-soft:#3A2A16; --crit-soft:#3E1F1D;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15181C; --panel:#1D2126; --panel-2:#252A30; --ink:#E9EBE6; --ink-2:#C9CDC6; --muted:#98A1AB;
+    --line:#2F353C; --line-2:#3C434B; --accent:#F2C630; --accent-soft:#3A3212; --accent-ink:#F2D66B;
+    --ok:#6FC291; --warn:#E9A25A; --crit:#EF8B84; --ok-soft:#1E3327; --warn-soft:#3A2A16; --crit-soft:#3E1F1D;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;padding-inline:clamp(16px,4vw,40px);padding-block:0 96px;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .wrap{max-width:860px;margin:0 auto}
+
+  /* Header */
+  .masthead{padding-block:40px 28px;border-bottom:2px solid var(--ink)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .eyebrow .dot{width:10px;height:10px;background:var(--accent);border-radius:2px;display:inline-block}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,5.4vw,52px);line-height:1.02;letter-spacing:-.02em;margin:14px 0 18px;text-wrap:balance}
+  .lede{font-size:18px;line-height:1.55;color:var(--ink-2);max-width:62ch;margin:0}
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px 24px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+  .meta div{font-size:14px}
+  .meta dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .meta dd{margin:0;font-weight:500}
+  dl{margin:0}
+
+  /* TOC */
+  .toc{margin:28px 0 8px;padding:18px 22px;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+  .toc h2{margin:0 0 10px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  .toc ol{margin:0;padding:0;list-style:none;columns:2;column-gap:28px}
+  .toc li{break-inside:avoid;padding:3px 0;font-size:15px}
+  .toc a{text-decoration:none;display:flex;gap:10px}
+  .toc a:hover{text-decoration:underline}
+  .toc .n{font-family:var(--mono);color:var(--muted);min-width:2ch;font-size:13px;padding-top:2px}
+  @media (max-width:560px){.toc ol{columns:1}}
+
+  /* Sections */
+  section{margin-top:56px;scroll-margin-top:24px}
+  h2.sec{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.2vw,30px);line-height:1.15;letter-spacing:-.015em;margin:0 0 6px;display:flex;gap:14px;align-items:baseline;text-wrap:balance}
+  h2.sec .n{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--accent-ink);background:var(--accent-soft);padding:2px 8px;border-radius:3px;flex:none;transform:translateY(-4px)}
+  .sec-intro{color:var(--ink-2);max-width:66ch;margin:6px 0 18px}
+  h3{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.005em;margin:28px 0 8px}
+  h4{font-family:var(--body);font-weight:600;font-size:15px;margin:18px 0 6px}
+  p{max-width:66ch;margin:0 0 12px}
+  ul,ol{max-width:66ch;padding-left:22px;margin:0 0 14px}
+  li{margin-bottom:5px}
+  li::marker{color:var(--muted)}
+  strong{font-weight:600}
+  code,.mono{font-family:var(--mono);font-size:.92em}
+  code{background:var(--panel-2);padding:1px 5px;border-radius:3px}
+
+  /* Callouts */
+  .note{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;margin:16px 0;border-radius:0 6px 6px 0;max-width:70ch}
+  .note.q{border-left-color:var(--warn)}
+  .note .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+
+  /* Tables */
+  .tbl{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+  th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--panel-2)}
+  tr:last-child td{border-bottom:0}
+  td.c{text-align:center}
+  .tbl.wide table{min-width:680px}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* Pills */
+  .pill{display:inline-block;font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;padding:2px 8px;border-radius:999px;white-space:nowrap;line-height:1.5}
+  .must{background:var(--crit-soft);color:var(--crit)}
+  .should{background:var(--warn-soft);color:var(--warn)}
+  .could{background:var(--ok-soft);color:var(--ok)}
+  .wont{background:var(--panel-2);color:var(--muted)}
+  .yes{color:var(--ok);font-weight:600}
+  .own{color:var(--accent-ink);font-weight:600}
+  .no{color:var(--muted)}
+
+  /* Kenteken */
+  .plate{display:inline-flex;align-items:stretch;font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.06em;color:#111;background:#F2C230;border:1px solid #B48B00;border-radius:3px;overflow:hidden;line-height:1;vertical-align:middle}
+  .plate .eu{background:#003399;width:9px;display:block}
+  .plate span:last-child{padding:4px 7px 4px 6px}
+
+  /* Roles cards */
+  .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0 8px}
+  .role{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+  .role h4{margin:0 0 4px;font-family:var(--display);font-size:16px}
+  .role .who{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .role ul{padding-left:18px;margin:0;font-size:14px}
+
+  /* Data model */
+  .ents{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:14px 0}
+  .ent{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .ent .h{font-family:var(--mono);font-size:13px;font-weight:600;padding:8px 12px;background:var(--panel-2);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+  .ent .h small{font-weight:400;color:var(--muted);font-size:11px}
+  .ent ul{list-style:none;padding:8px 12px;margin:0;font-size:13.5px;line-height:1.55}
+  .ent li{margin:0;display:flex;gap:8px;justify-content:space-between}
+  .ent li span:last-child{color:var(--muted);font-family:var(--mono);font-size:11.5px;white-space:nowrap}
+  .ent .fk{color:var(--accent-ink)}
+
+  /* Flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:12px 0 18px;padding:0;list-style:none;max-width:none}
+  .flow li{flex:1 1 140px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;position:relative;margin:0}
+  .flow li b{display:block;font-family:var(--display);font-size:14px;margin-bottom:2px}
+  .flow li .who{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+  .flow li.auto{border-style:dashed;background:transparent}
+
+  /* Wireframes */
+  .wf{background:var(--panel);border:1px solid var(--line-2);border-radius:6px;padding:12px;margin:12px 0 22px;box-shadow:var(--shadow);font-size:12px;color:var(--ink-2)}
+  .wf .bar{display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+  .wf .bar .logo{font-family:var(--display);font-weight:800;font-size:13px;color:var(--ink)}
+  .wf .bar .nav{display:flex;gap:10px;color:var(--muted);flex-wrap:wrap}
+  .wf .bar .nav .on{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
+  .wf .bar .me{margin-left:auto;color:var(--muted)}
+  .wf .grid{display:grid;gap:8px}
+  .wf .box{border:1px solid var(--line);border-radius:4px;padding:8px 10px;background:var(--bg)}
+  .wf .box .t{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .wf .big{font-family:var(--display);font-size:22px;font-weight:700;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}
+  .wf .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed var(--line)}
+  .wf .row:last-child{border-bottom:0}
+  .wf .btn{display:inline-block;border:1px solid var(--ink);color:var(--ink);border-radius:3px;padding:2px 8px;font-weight:600;font-size:11px}
+  .wf .btn.p{background:var(--ink);color:var(--bg)}
+  .wf .tag{display:inline-block;border-radius:999px;padding:0 6px;font-family:var(--mono);font-size:10px}
+  .wf .tag.w{background:var(--warn-soft);color:var(--warn)}
+  .wf .tag.c{background:var(--crit-soft);color:var(--crit)}
+  .wf .tag.o{background:var(--ok-soft);color:var(--ok)}
+  .wf .cap{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:.03em}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g2{grid-template-columns:2fr 1fr}
+  .g3{grid-template-columns:1fr 1fr 1fr}
+  @media (max-width:640px){.g4{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}}
+  .wf.phone{max-width:300px}
+
+  /* Planning */
+  .days{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0 18px}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+  .day .d{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .day h4{margin:2px 0 8px;font-family:var(--display);font-size:16px}
+  .day ul{padding-left:16px;margin:0;font-size:13.5px}
+  .day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .day.done h4::after{content:" · af";color:var(--ok);font-family:var(--mono);font-size:11px;font-weight:500}
+
+  /* Decision list */
+  .decide{list-style:none;padding:0;max-width:none}
+  .decide li{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--line);margin:0}
+  .decide li:last-child{border-bottom:1px solid var(--line)}
+  .decide .box{width:18px;height:18px;border:1.5px solid var(--line-2);border-radius:3px;margin-top:4px}
+  .decide b{display:block;font-weight:600}
+  .decide span{color:var(--ink-2);font-size:14.5px}
+  .decide .opt{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:3px;display:block}
+
+  .arch{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0}
+  .arch div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:14px}
+  .arch b{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;font-weight:500}
+
+  footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);font-family:var(--mono)}
+  @media (prefers-reduced-motion:no-preference){a{transition:color .15s}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media print{body{background:#fff;color:#000}.wf{box-shadow:none}section{break-inside:avoid-page}}
+</style>
+
+<div class="wrap">
+<header class="masthead">
+  <div class="eyebrow"><span class="dot"></span> Hero Interim Professionals · Ontwerpplan · Concept voor feedback</div>
+  <h1>Wagenparkbeheer: van Excel naar één systeem</h1>
+  <p class="lede">Ontwerpplan voor een webapplicatie waarin Hero het wagenpark beheert: welke auto bij wie hoort, wat er wanneer moet gebeuren, en wat het kost. Dit document beschrijft wat we bouwen, voor wie, en in welke volgorde. Er is nog niets gebouwd. Eerst feedback, dan bouwen.</p>
+  <dl class="meta">
+    <div><dt>Auteur</dt><dd>Jaden Bakker</dd></div>
+    <div><dt>Datum</dt><dd class="num">14 september 2026</dd></div>
+    <div><dt>Versie</dt><dd class="num">0.3 (concept)</dd></div>
+    <div><dt>Deadline bouw</dt><dd class="num">do 17 sept, einde dag</dd></div>
+    <div><dt>Samenvoegen</dt><dd class="num">vr 18 sept</dd></div>
+  </dl>
+</header>
+
+<nav class="toc" aria-label="Inhoud">
+  <h2>Inhoud</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1</span>Samenvatting</a></li>
+    <li><a href="#s2"><span class="n">2</span>Huidige situatie en probleem</a></li>
+    <li><a href="#s3"><span class="n">3</span>Doel en afbakening</a></li>
+    <li><a href="#s4"><span class="n">4</span>Gebruikers en rollen</a></li>
+    <li><a href="#s5"><span class="n">5</span>Functionaliteiten</a></li>
+    <li><a href="#s6"><span class="n">6</span>Processen</a></li>
+    <li><a href="#s7"><span class="n">7</span>Datamodel</a></li>
+    <li><a href="#s8"><span class="n">8</span>Schermen</a></li>
+    <li><a href="#s9"><span class="n">9</span>Techniek en architectuur</a></li>
+    <li><a href="#s10"><span class="n">10</span>Overstap vanuit Excel</a></li>
+    <li><a href="#s11"><span class="n">11</span>Planning</a></li>
+    <li><a href="#s12"><span class="n">12</span>Kanttekeningen, voorwaarden en risico's</a></li>
+    <li><a href="#s13"><span class="n">13</span>Beslispunten voor feedback</a></li>
+  </ol>
+</nav>
+
+<!-- 1 -->
+<section id="s1">
+  <h2 class="sec"><span class="n">1</span>Samenvatting</h2>
+  <p>Het wagenpark van Hero staat nu in een Excel op SharePoint met zes tabbladen (contacten, wagenpark overzicht, wachtlijst, tijdelijke uitleen, processen, incidenten) die niet goed wordt bijgehouden. Er wordt gereageerd op wat zich aandient (een boete, een APK-brief, een nieuwe collega die een auto nodig heeft), maar er is geen overzicht en niemand weet zeker of de lijst klopt. De opdrachtgever wil alles uit die Excel, plus tankpassen, papieren, onderhoudsdatums, archief en foto's, in één keuzemenu in een app binnen het Hero-platform.</p>
+  <p>Het voorstel is een kleine webapplicatie met drie kernonderdelen:</p>
+  <ul>
+    <li><strong>Eén waarheid over het wagenpark.</strong> Elke auto, elk leasecontract en elke toewijzing aan een collega staat op één plek, met een logboek van wijzigingen.</li>
+    <li><strong>Het systeem bewaakt de deadlines.</strong> APK, einde leasecontract, verlopen rijbewijs, kilometerbundel die volloopt: het systeem maakt daar taken van en mailt de juiste persoon op tijd.</li>
+    <li><strong>Bestuurders doen hun eigen deel.</strong> Een collega ziet zijn eigen auto, geeft de kilometerstand door, meldt schade en ziet zijn boetes. Dat hoeft de beheerder dan niet meer na te jagen.</li>
+  </ul>
+  <p>De eerste versie moet donderdag 17 september aan het einde van de dag werken, met de bestaande Excel-data ingeladen. De bouw gebeurt in hackathon-stijl: twee collega's bouwen los van elkaar een eigen versie, donderdag laten we die zien, vrijdag voegen we het beste van beide samen. Buddy's blijven beschikbaar voor vragen. Het plan hieronder is bewust in lagen opgezet: een <em>must</em>-kern die donderdag zeker staat, en uitbreidingen die volgen als er tijd is of in een tweede ronde.</p>
+  <p>De belangrijkste les komt uit de ATS-demo van vanmiddag: het prototype kon veel, maar het scherm was druk en belangrijke functies zaten verstopt. Dit plan is daarom bewust smal. Eén taak per scherm, het dashboard toont alleen wat er moet gebeuren, een bestuurder ziet maximaal vijf dingen, en wat donderdag niet af is gaat eruit in plaats van half erin. De volledige principes staan in hoofdstuk 3.</p>
+  <p>Dit document is tegelijk de bouwopdracht. Het is zo geschreven dat het na goedkeuring rechtstreeks aan Claude Code kan worden gegeven, hoofdstuk voor hoofdstuk, in genummerde stappen die elk apart te controleren zijn. Zo werkte het bij het ATS ook.</p>
+  <div class="note"><div class="lbl">Wat ik nodig heb van jullie</div><p>Feedback op hoofdstuk 3 (afbakening), 4 (rollen) en 13 (beslispunten). De rest is uitwerking die ik kan bijstellen zodra die drie kloppen. De spelregels uit het personeelsbeleid (boetes en eigen risico voor de bestuurder, onderhoud zelf regelen, onderhoudsadres per merk, winterbanden) zijn verwerkt in hoofdstuk 2, 5 en 7.</p></div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <h2 class="sec"><span class="n">2</span>Huidige situatie en probleem</h2>
+  <p class="sec-intro">Gebaseerd op de briefing van 14 september, de mail van de opdrachtgever van diezelfde dag met de wensenlijst, en de Excel zelf, die ik op 14 september heb doorgenomen.</p>
+  <h3>Hoe het nu gaat</h3>
+  <ul>
+    <li>Alle auto's staan in één Excel op de SharePoint-site Wagenparkbeheer, verdeeld over negen tabbladen. Die wordt niet consequent bijgewerkt: bij vier van de 54 auto's staat een kilometerstand, en bij vier auto's is de APK-datum verstreken zonder dat er een nieuwe staat.</li>
+    <li>Beheer bestaat uit losse taken: een boete doorsturen, een APK inplannen, een auto regelen voor een nieuwe collega. Niemand heeft de rol "wagenparkbeheerder" als vaste verantwoordelijkheid.</li>
+    <li>Kennis zit in hoofden en mailboxen: wie rijdt nu in welke auto, wanneer loopt welk contract af, wat is de kilometerstand.</li>
+    <li>Annemiek, PA en office manager, houdt de Excel bij. In de briefing werd dat scherp gezegd: haar taak is niet wagenparkbeheer, haar taak is taken uitvoeren vóór het wagenparkbeheer. Dat klopt met het tabblad Processen, dat de office managers als uitvoerders noemt. Niemand bewaakt het geheel.</li>
+  </ul>
+  <h3>Wat er nu in de Excel staat</h3>
+  <p>Negen tabbladen (de mail noemde er zes). Elk tabblad wordt een onderdeel in het keuzemenu van de app.</p>
+  <div class="tbl wide"><table>
+    <thead><tr><th>Tabblad</th><th>Wat erin staat</th><th>Wordt in de app</th></tr></thead>
+    <tbody>
+      <tr><td>Wagenpark overzicht</td><td>54 auto's met kenteken plus 12 bestelde (6 Tesla Model 3, 6 Renault Megane E-Tech). Per auto: kenteken, bestuurder, telefoon, vestiging, merk, soort (eigendom, financial lease, operational lease, huur), bijtelling, type, bouwjaar, milieu (benzine, elektrisch, hybride), type banden, tank-/laadpasnummer, pincode, kilometerstand met datum, APK-vervaldatum, en vrije tekst voor onderhoud, schade en opmerkingen.</td><td>Wagenpark, Bestuurders, Archief. Onderhoud en schade worden losse records in plaats van vrije tekst. Pincode afgeschermd.</td></tr>
+      <tr><td>Contacten</td><td>Garages per merk (Ben Duin voor klein onderhoud, MKB Autobeheer en Stokman voor Renault, Dusseldorp Zwaag voor BMW en Mini, Tesla Purmerend, Gomes voor Mercedes, Broekhuis voor Audi), Bubble Wash, en twee losse contactpersonen.</td><td>Contacten, met soort en merk, zodat het onderhoudsadres per auto automatisch klopt.</td></tr>
+      <tr><td>Wachtlijst</td><td>Medewerker, vestiging, datum aanvraag, gewenste auto, opmerking. Eén persoon, die nu in een huurauto rijdt.</td><td>Wachtlijst</td></tr>
+      <tr><td>Tijdelijke uitleen</td><td>Kenteken, medewerker (ook externen), vestiging, datum uit, datum retour, reden. Drie lopende uitleningen.</td><td>Uitleen</td></tr>
+      <tr><td>Uitleen overzicht</td><td>Historie van 41 uitleningen sinds 2024, plus de vier leenauto's: lavendelbus, verhuisbus, Mini en een Clio.</td><td>Uitleen (historie) en een vlag "leenauto" op de auto.</td></tr>
+      <tr><td>2026 - Zomerbandenwissel</td><td>Checklist per seizoen: 34 auto's met winter/zomerbanden, wie erin rijdt, telefoon, vestiging, kolom "Gewisseld".</td><td>Seizoenstaak banden, automatisch aangemaakt voor auto's met winter/zomerbanden.</td></tr>
+      <tr><td>Processen</td><td>Vier uitgeschreven processen met stappen: instroom nieuwe auto, uitgifte, inname, uitstroom. Inclusief wie wat regelt (verzekering via Hypotheekshop Hoorn, tankpas via MKB Brandstof of E-Flux, bestickering via Plakkie, Bubble Wash vóór uitgifte, HR informeren, vrijwaringsbewijs RDW).</td><td>Processen als checklist per auto, zie hoofdstuk 6.</td></tr>
+      <tr><td>Verduurzaming</td><td>Aantal auto's per vestiging en per milieu, 2024 tegenover 2025 (benzine van 62% naar 41%, elektrisch van 38% naar 50%).</td><td>Rapport Verduurzaming, automatisch uit de data.</td></tr>
+      <tr><td>Incidentenregistratie</td><td>Leeg. Schades staan als vrije tekst in het Wagenpark overzicht.</td><td>Incidenten</td></tr>
+    </tbody>
+  </table></div>
+  <p>Wat opvalt: de meeste auto's zijn eigendom van Hero of afbetaalde financial lease, niet operational lease. Een leasecontract met kilometerbundel geldt dus maar voor een handvol auto's. De vier vestigingen (Wognum, Alkmaar, Hoorn, Schiphol) zijn de eenheid waarin alles is georganiseerd. En per auto bestaat al een map in Teams voor foto's en papieren; de app hoeft die alleen te koppelen.</p>
+  <p>Daarnaast vraagt de opdrachtgever om in hetzelfde menu op te nemen: tankpasnummers inclusief pincode, een map voor RDW-papieren, een map voor verzekeringspapieren, de datums van onderhoudsbeurten en APK, een archief van oude auto's met alle informatie, een map voor foto's van de auto, en contactpersonen voor APK en garage. Alles in één oogopslag. Dat is één op één verwerkt in hoofdstuk 5 en 8.</p>
+  <div class="note"><div class="lbl">Cijfers uit de Excel</div><p>54 auto's op de weg, 12 besteld, 4 leenauto's, 4 vestigingen. Merken: vooral Renault Clio en Megane, Tesla Model 3, BMW, Audi, Mercedes. Helft elektrisch. Bij 4 auto's is de APK-datum verstreken of niet bijgewerkt. Bij 4 auto's staat een kilometerstand. Onderhoud en schade zijn vrije tekst bij 10 auto's.</p></div>
+  <h3>Wat daar misgaat</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Symptoom</th><th>Gevolg</th><th>Wat het systeem doet</th></tr></thead>
+    <tbody>
+      <tr><td>Lijst loopt achter</td><td>Onbekend wie in welke auto rijdt; boete belandt bij de verkeerde persoon of blijft liggen</td><td>Toewijzing met begin- en einddatum; boete koppelt zichzelf aan de bestuurder op de overtredingsdatum</td></tr>
+      <tr><td>Deadlines worden gemist</td><td>APK verloopt, leasecontract loopt stilzwijgend door, meer-kilometers worden duur</td><td>Automatische taken en mails, 90/30/7 dagen vooraf</td></tr>
+      <tr><td>Geen kostenbeeld</td><td>Celdirecteuren weten niet wat het wagenpark van hun cel kost</td><td>Kosten per auto, per vestiging en per maand op één scherm</td></tr>
+      <tr><td>Documenten verspreid</td><td>Kentekenbewijs, contract, groene kaart zijn niet vindbaar als het nodig is</td><td>Documenten hangen aan de auto</td></tr>
+      <tr><td>Pincodes in een Excel</td><td>Iedereen met toegang tot het bestand ziet alle tankpas-pincodes</td><td>Pincode versleuteld opgeslagen, alleen zichtbaar voor de beheerder en de bestuurder van die auto, elke keer dat iemand hem opvraagt gelogd</td></tr>
+      <tr><td>Geen geschiedenis</td><td>Bij schade of discussie is niet terug te vinden wat wanneer is gewijzigd</td><td>Logboek per auto en per toewijzing</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Wat het personeelsbeleid al vastlegt</h3>
+  <p>Het onderdeel "Mobiliteit en bedrijfsauto" in de Hero-app bevat spelregels die het systeem moet volgen, niet opnieuw moet uitvinden:</p>
+  <ul>
+    <li><strong>Wie buiten kantoor werkt heeft recht op een bedrijfsauto.</strong> Wie geen bedrijfsauto heeft, krijgt een vaste reiskostenvergoeding. Dat laatste valt buiten dit systeem.</li>
+    <li><strong>Eigen risico en boetes zijn voor eigen rekening.</strong> Doorbelasten is dus de standaard, geen keuze per geval.</li>
+    <li><strong>Onderhoud regelt de bestuurder zelf, op tijd.</strong> Herinneringen voor APK, beurten en banden gaan daarom eerst naar de bestuurder. De beheerder bewaakt alleen of het gebeurt.</li>
+    <li><strong>Onderhoudsadres hangt af van het merk.</strong> BMW en Mini: Dusseldorp Hoorn, gratis halen en brengen. Renault: vrije dealerkeuze. Overige merken: MKB Autobeheer. Het systeem toont per auto het juiste adres en telefoonnummer.</li>
+    <li><strong>Winterbanden op tijd laten monteren.</strong> Een vaste seizoenstaak, elk jaar opnieuw.</li>
+  </ul>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <h2 class="sec"><span class="n">3</span>Doel en afbakening</h2>
+  <h3>Doel</h3>
+  <p>Eén plek waar het wagenpark klopt, waar het systeem zelf aan de bel trekt, en waar bestuurders hun eigen zaken regelen. Het systeem wordt de wagenparkbeheerder; de mensen voeren alleen nog uit. Succes is meetbaar: op vrijdag 18 september staan alle auto's uit de Excel in het systeem, zijn ze toegewezen aan de juiste collega's, en staat voor elke auto de eerstvolgende deadline op de agenda.</p>
+  <h3>Ontwerpprincipes</h3>
+  <p>De feedback op de ATS-demo van vanmiddag was duidelijk: veel functionaliteit, maar het scherm was druk en belangrijke knoppen zaten verstopt. Volgende versies moeten eenvoudiger en taakgerichter zijn, opgebouwd als gebruikersverhaal. Dat neem ik hier vanaf dag één mee:</p>
+  <ul>
+    <li><strong>Eén taak per scherm.</strong> Kilometerstand doorgeven is één pagina met één veld. Schade melden is één formulier. Geen tabbladen, geen verborgen menu's.</li>
+    <li><strong>Het dashboard toont wat er moet gebeuren, niet alles wat er is.</strong> Deadlines en open taken bovenaan, cijfers daaronder, de rest achter een klik.</li>
+    <li><strong>Bestuurders zien maximaal vijf dingen.</strong> Mijn auto, kilometerstand, schade melden, mijn boetes, documenten. Niets anders.</li>
+    <li><strong>Elke functie begint als gebruikersverhaal.</strong> "Als beheerder wil ik een boete invoeren en meteen zien wie er reed." Wat daar niet in past, bouwen we niet.</li>
+    <li><strong>Liever minder en af.</strong> Een must die niet af is, gaat eruit. Een should die niet af is, wordt niet getoond.</li>
+  </ul>
+  <h3>Binnen scope (donderdag)</h3>
+  <ul>
+    <li>Voertuigregister met leasecontract, status, tankpas (pincode afgeschermd) en archief van oude auto's</li>
+    <li>Toewijzing auto aan collega, inclusief inname en uitgifte</li>
+    <li>Wachtlijst en tijdelijke uitleen</li>
+    <li>Incidentenregistratie: schade, pech, diefstal, ruitschade</li>
+    <li>Contacten: leasemaatschappijen, garages, APK-adressen, verzekeraar</li>
+    <li>Automatische taken en e-mailherinneringen voor APK, contracteinde, rijbewijs, winterbanden en kilometerbundel</li>
+    <li>Bestuurdersportaal: mijn auto, kilometerstand doorgeven, schade melden, mijn boetes</li>
+    <li>Boetes met automatische bestuurderkoppeling en doorbelasting</li>
+    <li>Dashboard met deadlines en open taken, per vestiging gefilterd</li>
+    <li>Import van de bestaande Excel</li>
+    <li>Inloggen met het Hero Microsoft-account</li>
+  </ul>
+  <h3>Als er tijd over is (should)</h3>
+  <ul>
+    <li>Documenten en foto's uploaden bij een auto (RDW-papieren, verzekeringspapieren, foto's)</li>
+    <li>Kosten per auto en per vestiging</li>
+    <li>Incident-afhandeling met statussen (bij verzekeraar, in reparatie)</li>
+    <li>Processen-pagina met de uitleg uit het tabblad Processen</li>
+    <li>Inname-checklist, RDW-opzoeken op kenteken, maandelijkse kilometervraag, export naar Excel</li>
+  </ul>
+  <h3>Buiten scope (nu)</h3>
+  <ul>
+    <li>Native iOS- of Android-app. De webapp werkt op telefoon en is als snelkoppeling op het beginscherm te zetten. Een App Store-app vraagt een Apple Developer-account dat er waarschijnlijk niet is (zie 12).</li>
+    <li>Directe koppeling met de leasemaatschappij of verzekeraar. Eerst handmatig; koppelen kan later als de basis staat.</li>
+    <li>Brandstof- en laadpasafrekening op transactieniveau. Wel: welke pas hoort bij welke auto.</li>
+    <li>Ritregistratie voor de Belastingdienst (bijtelling). Dat is een ander product en ander risico.</li>
+    <li>Reiskostenvergoeding voor collega's zonder bedrijfsauto. Dat loopt via HR en salaris, niet via het wagenpark.</li>
+  </ul>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <h2 class="sec"><span class="n">4</span>Gebruikers en rollen</h2>
+  <p class="sec-intro">Uit de briefing, letterlijk: "ik, Annemiek en alle andere celdirecteuren, maar ook de mensen die een auto hebben", en die laatste groep als volwaardige gebruikers. Annemiek is daarbij PA en office manager, geen celdirecteur. De opdrachtgever rekent zichzelf dus mee, en bestuurders krijgen een eigen ingang in plaats van alleen een mailtje. Ik vertaal dat naar vier rollen. Eén persoon kan meerdere rollen hebben.</p>
+  <div class="roles">
+    <div class="role"><h4>Beheerder</h4><div class="who">Wie de taken uitvoert: de office managers, volgens het tabblad Processen. Nu doet Annemiek het, als PA en office manager. Het systeem bewaakt, de beheerder handelt af.</div>
+      <ul><li>Voert auto's, contracten en toewijzingen in</li><li>Handelt taken af (APK plannen, boete doorbelasten)</li><li>Beheert documenten en instellingen</li><li>Ziet alles, van alle cellen</li></ul></div>
+    <div class="role"><h4>Celdirecteur</h4><div class="who">Verantwoordelijk voor een vestiging (Wognum, Alkmaar, Hoorn of Schiphol) en de mensen daar. De Excel is per vestiging georganiseerd.</div>
+      <ul><li>Ziet auto's, bestuurders en kosten van de eigen vestiging</li><li>Vraagt een auto aan voor een nieuwe collega</li><li>Keurt schade of doorbelasting goed als dat nodig is</li><li>Ziet openstaande taken van de eigen vestiging</li></ul></div>
+    <div class="role"><h4>Bestuurder</h4><div class="who">Elke collega met een auto van de zaak.</div>
+      <ul><li>Ziet de eigen auto, het contract en de documenten</li><li>Geeft de kilometerstand door</li><li>Meldt schade met foto's</li><li>Ziet eigen boetes en of die worden doorbelast</li></ul></div>
+    <div class="role"><h4>Directie / financiën</h4><div class="who">Alleen lezen, over alle cellen. De opdrachtgever noemde zichzelf als gebruiker, dus dit zit in de eerste versie.</div>
+      <ul><li>Rapportage over het hele wagenpark</li><li>Kosten per vestiging en per maand</li><li>Export naar Excel</li></ul></div>
+  </div>
+  <h3>Rechtenmatrix</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Onderdeel</th><th>Beheerder</th><th>Celdirecteur</th><th>Bestuurder</th><th>Directie</th></tr></thead>
+    <tbody>
+      <tr><td>Voertuigen bekijken</td><td class="yes">alles</td><td class="own">eigen vestiging</td><td class="own">eigen auto</td><td class="yes">alles</td></tr>
+      <tr><td>Voertuigen en contracten bewerken</td><td class="yes">ja</td><td class="no">nee</td><td class="no">nee</td><td class="no">nee</td></tr>
+      <tr><td>Auto toewijzen / innemen</td><td class="yes">ja</td><td class="own">aanvragen</td><td class="no">nee</td><td class="no">nee</td></tr>
+      <tr><td>Kilometerstand doorgeven</td><td class="yes">ja</td><td class="no">nee</td><td class="own">eigen auto</td><td class="no">nee</td></tr>
+      <tr><td>Schade melden</td><td class="yes">ja</td><td class="own">eigen vestiging</td><td class="own">eigen auto</td><td class="no">nee</td></tr>
+      <tr><td>Boetes invoeren en doorbelasten</td><td class="yes">ja</td><td class="no">nee</td><td class="own">alleen zien</td><td class="no">nee</td></tr>
+      <tr><td>Taken afhandelen</td><td class="yes">ja</td><td class="own">eigen vestiging</td><td class="own">eigen taken</td><td class="no">nee</td></tr>
+      <tr><td>Kosten en rapportage</td><td class="yes">alles</td><td class="own">eigen vestiging</td><td class="no">nee</td><td class="yes">alles</td></tr>
+      <tr><td>Gebruikers en rollen beheren</td><td class="yes">ja</td><td class="no">nee</td><td class="no">nee</td><td class="no">nee</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note q"><div class="lbl">Te toetsen</div><p>Annemiek is PA en office manager en doet de wagenparktaken. Blijft zij de enige beheerder, met het systeem als bewaker? Of wordt de uitvoering verdeeld, zodat elke celdirecteur de auto's van de eigen vestiging afhandelt? Het rechtenmodel kan beide aan. Zie beslispunt 1.</p></div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <h2 class="sec"><span class="n">5</span>Functionaliteiten</h2>
+  <p class="sec-intro">Geprioriteerd met MoSCoW. <span class="pill must">must</span> staat donderdag. <span class="pill should">should</span> bouw ik als de must-kern vóór donderdagmiddag klaar is. <span class="pill could">could</span> is een tweede ronde. <span class="pill wont">niet nu</span> is bewust buiten scope.</p>
+
+  <h3>5.1 Voertuigen en contracten</h3>
+  <div class="tbl wide"><table>
+    <thead><tr><th style="width:70px">Prio</th><th>Functie</th><th>Voor wie</th><th>Toelichting</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill must">must</span></td><td>Voertuigoverzicht met zoeken en filteren</td><td>Beheerder, celdirecteur</td><td>Op kenteken, merk, bestuurder, cel, status. Sorteren op eerstvolgende deadline.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Voertuigdetail</td><td>Alle rollen</td><td>Dezelfde velden als het Wagenpark overzicht: kenteken, merk, type, bouwjaar/maand, vestiging, soort eigendom, bijtelling ja/nee, milieu, type banden, tankpas, kilometerstand met datum, APK-vervaldatum. Plus status, huidige bestuurder, deadlines, onderhoudshistorie, incidenten, documentenmap en logboek.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Soort eigendom en contract</td><td>Beheerder</td><td>Eigendom, financial lease, financial lease afbetaald, operational lease, huur (de vijf soorten uit de Excel). Alleen bij operational lease en huur horen contractvelden: leasemaatschappij, contractnummer, begin, einde, kilometerbundel, maandtarief, tarief meer/minder-kilometers. Bij eigendom: aanschafdatum en verzekeraar (nu via Hypotheekshop Hoorn).</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Status van de auto</td><td>Beheerder</td><td>Besteld (met verwachte levering, zoals de 12 bestelde Tesla's en Megane's), actief, leenauto, tijdelijk buiten gebruik, ingeleverd, verkocht. Status bepaalt of de auto op het dashboard telt.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Documentenmap per auto</td><td>Beheerder, bestuurder</td><td>Per auto bestaat al een map in Teams (stap 5 van het instroomproces). De app bewaart de link naar die map en toont hem bij de auto. Dat dekt de wens "mapjes voor RDW-papieren, verzekeringspapieren en foto's" zonder bestanden te verhuizen.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Tankpas met pincode</td><td>Beheerder, bestuurder</td><td>Pasnummer, leverancier en pincode per auto, zoals nu in het tabblad Wagenpark overzicht. De pincode staat versleuteld in de database, is standaard verborgen, en wordt pas getoond na een klik op "toon pincode". Alleen de beheerder en de bestuurder van die auto mogen dat. Elke keer dat de code wordt getoond, komt in het logboek.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Archief oude auto's</td><td>Beheerder</td><td>Auto's met status ingeleverd of verkocht verdwijnen uit het overzicht maar niet uit het systeem. Het archief toont ze met alle informatie, toewijzingen, incidenten en documenten. Precies wat de opdrachtgever vraagt.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Documenten en foto's in de app zelf</td><td>Beheerder</td><td>Uploaden en bekijken in de app, in drie mappen per auto: RDW-papieren, verzekeringspapieren, foto's. Pas als de Teams-koppeling hierboven niet genoeg blijkt.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Contacten</td><td>Alle rollen</td><td>Het tabblad Contacten uit de Excel, één op één: bedrijf, adres, website, telefoon, merk, waarvoor. Nu: Ben Duin (klein onderhoud, alle merken), MKB Autobeheer en Stokman (Renault), Dusseldorp Zwaag (BMW en Mini, gratis halen en brengen), Tesla Purmerend, Gomes (Mercedes), Broekhuis (Audi), Bubble Wash. Erbij: verzekeraar (Hypotheekshop Hoorn), tankpas (MKB Brandstof, E-Flux), bestickering (Plakkie). Het onderhoudsadres van een auto volgt uit het merk en staat in elke onderhoudsherinnering.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>RDW-gegevens ophalen op kenteken</td><td>Beheerder</td><td>De RDW heeft een open, gratis API. Kenteken invoeren vult merk, model, bouwjaar, brandstof, APK-vervaldatum in. Scheelt typewerk en fouten.</td></tr>
+      <tr><td><span class="pill could">could</span></td><td>Koopauto's naast leaseauto's</td><td>Beheerder</td><td>Zelfde register, andere velden: aanschafwaarde, afschrijving.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.2 Toewijzing en bestuurders</h3>
+  <div class="tbl wide"><table>
+    <thead><tr><th style="width:70px">Prio</th><th>Functie</th><th>Voor wie</th><th>Toelichting</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill must">must</span></td><td>Auto toewijzen aan collega</td><td>Beheerder</td><td>Met begindatum en kilometerstand bij uitgifte. Eén actieve bestuurder per auto, één actieve auto per bestuurder (uitzondering mogelijk).</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Auto innemen</td><td>Beheerder</td><td>Einddatum en kilometerstand bij inname. Daarna is de auto vrij of gaat terug naar de leasemaatschappij. De checklist (sleutels, tankpas, laadkabel, schade) is should.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Historie van toewijzingen</td><td>Beheerder, celdirecteur</td><td>Wie reed wanneer in welke auto. Basis voor het koppelen van boetes.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Bestuurdersprofiel</td><td>Beheerder</td><td>Naam, e-mail, cel, functie, rijbewijs geldig tot, in dienst sinds, uit dienst per.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Wachtlijst</td><td>Beheerder, celdirecteur</td><td>Het tabblad Wachtlijst: wie wil een auto, sinds wanneer, gewenst vanaf, voorkeur, budget, status. Zodra een auto vrijkomt of wordt besteld, koppelt de beheerder hem aan iemand van de wachtlijst.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Tijdelijke uitleen</td><td>Beheerder</td><td>De tabbladen Tijdelijke uitleen en Uitleen overzicht: wie heeft een leenauto (ook externen), sinds wanneer, tot wanneer verwacht, reden, kilometerstand bij uitgifte en inname. De vier leenauto's (lavendelbus, verhuisbus, Mini, Clio) krijgen de status leenauto, zodat je in één oogopslag ziet welke vrij is. Een uitleen die over de verwachte datum heen is, wordt een taak.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Auto aanvragen voor nieuwe collega</td><td>Celdirecteur</td><td>Formulier: voor wie, vanaf wanneer, budget, voorkeur. Komt direct op de wachtlijst en wordt een taak voor de beheerder.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Leenauto reserveren</td><td>Bestuurder</td><td>Een leenauto vooraf vastleggen voor een periode. Nu gaat dat via een WhatsApp-groep.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.3 Taken en herinneringen</h3>
+  <p>Dit is het hart van "beheer in plaats van taken uitvoeren". Het systeem maakt taken aan, de mens handelt ze af.</p>
+  <div class="tbl wide"><table>
+    <thead><tr><th style="width:70px">Prio</th><th>Functie</th><th>Voor wie</th><th>Toelichting</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill must">must</span></td><td>Automatische taken op deadlines</td><td>Beheerder</td><td>APK vervalt, leasecontract eindigt, rijbewijs verloopt, kilometerbundel op 90% (op basis van laatste stand en verwacht verbruik). Standaard 90, 30 en 7 dagen vooraf, instelbaar.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Takenlijst</td><td>Beheerder, celdirecteur</td><td>Open, in behandeling, afgerond. Per taak: auto, bestuurder, deadline, wie ermee bezig is.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>E-mailherinnering</td><td>Beheerder, bestuurder</td><td>Dagelijkse mail met wat er deze week moet gebeuren. Omdat de bestuurder volgens het beleid zelf onderhoud regelt, gaan APK-, onderhouds- en bandenherinneringen eerst naar de bestuurder, met het onderhoudsadres erbij. De beheerder ziet alleen of het is gedaan. Via Microsoft Graph, zelfde opzet als in het ATS.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Seizoenstaak bandenwissel</td><td>Bestuurder, beheerder</td><td>Vervangt het tabblad "2026 - Zomerbandenwissel". Elk jaar rond 1 oktober en 1 april een taak per auto met type banden winter/zomer (34 auto's nu; all-season slaat over). Bestuurder meldt af, beheerder ziet per vestiging wie nog niet is geweest, precies als de kolom "Gewisseld".</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Handmatige taak</td><td>Beheerder</td><td>Voor alles wat het systeem niet zelf ziet: ruitschade laten repareren, terugroepactie, inleverafspraak.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Maandelijkse kilometerstand-vraag</td><td>Bestuurder</td><td>Elke eerste van de maand een mail met een link waar de bestuurder in één klik de stand invult.</td></tr>
+      <tr><td><span class="pill could">could</span></td><td>Teams-melding in plaats van mail</td><td>Beheerder</td><td>Zelfde inhoud, ander kanaal.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.4 Kilometers, incidenten en boetes</h3>
+  <div class="tbl wide"><table>
+    <thead><tr><th style="width:70px">Prio</th><th>Functie</th><th>Voor wie</th><th>Toelichting</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill must">must</span></td><td>Kilometerstand doorgeven</td><td>Bestuurder, beheerder</td><td>Datum, stand, optioneel foto van de teller. Het systeem berekent verbruik per maand en verwachte eindstand ten opzichte van de bundel.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Incident melden</td><td>Bestuurder, beheerder</td><td>Het tabblad Incidentenregistratie. Soort (schade, pech, diefstal, ruitschade, overig), datum, plaats, omschrijving, foto's, tegenpartij ja/nee. Wordt een taak voor de beheerder. Meer niet.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Incident afhandelen</td><td>Beheerder</td><td>Statusverloop: gemeld, bij verzekeraar, in reparatie, afgerond. Kosten en eigen risico vastleggen; het eigen risico is volgens het beleid voor de bestuurder en wordt als doorbelasting geregistreerd.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Boete registreren</td><td>Beheerder</td><td>Kenteken, datum en tijd overtreding, bedrag, soort. Het systeem zoekt zelf op wie op dat moment de bestuurder was en stelt die voor.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Boete doorbelasten</td><td>Beheerder</td><td>Conform beleid zijn boetes voor eigen rekening, dus een nieuwe boete staat standaard op "doorbelasten". De beheerder bevestigt en zet de datum. Een uitzondering (bijvoorbeeld een aantoonbaar zakelijke parkeerboete) kan alleen met reden. Bestuurder ziet het in zijn portaal en krijgt een mail.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Boete-brief uploaden en uitlezen</td><td>Beheerder</td><td>PDF of foto van de CJIB-brief uploaden; het systeem haalt kenteken, datum en bedrag eruit (zelfde tekst-lees-aanpak als in het ATS). Beheerder controleert en bevestigt.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.5 Dashboard en rapportage</h3>
+  <div class="tbl wide"><table>
+    <thead><tr><th style="width:70px">Prio</th><th>Functie</th><th>Voor wie</th><th>Toelichting</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill must">must</span></td><td>Dashboard</td><td>Beheerder, celdirecteur</td><td>Bovenaan: deadlines komende 30 dagen en open taken. Daaronder: aantal auto's actief / in bestelling / vrij. Celdirecteur ziet alleen de eigen vestiging. Kosten komen erbij zodra 5.5 kosten af is.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Kosten per auto en per vestiging</td><td>Beheerder, celdirecteur, directie</td><td>Maandtarief lease plus geregistreerde extra's (schade eigen risico, meer-kilometers, boetes niet doorbelast).</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Rapport verduurzaming</td><td>Directie, KAM</td><td>Vervangt het tabblad Verduurzaming: aantal en percentage benzine, elektrisch en hybride per vestiging, per jaar, automatisch uit de data. Sluit aan op de ISO-doelstelling om het wagenpark te verduurzamen.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Export naar Excel</td><td>Beheerder, directie</td><td>Het volledige register als download. Ook de weg terug als het systeem ooit stopt.</td></tr>
+      <tr><td><span class="pill could">could</span></td><td>Contracteinde-planning</td><td>Beheerder</td><td>Tijdlijn van alle contracten per kwartaal, om vervanging te plannen en te onderhandelen.</td></tr>
+      <tr><td><span class="pill wont">niet nu</span></td><td>CO2- en bijtellingsrapportage</td><td>Directie</td><td>Interessant, maar los van het beheerprobleem.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.6 Algemeen</h3>
+  <div class="tbl wide"><table>
+    <thead><tr><th style="width:70px">Prio</th><th>Functie</th><th>Toelichting</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill must">must</span></td><td>Inloggen met Microsoft-account (hero.eu)</td><td>Geen apart wachtwoord. Rol komt uit een tabel in het systeem, beheerd door de beheerder.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Werkt op telefoon</td><td>Bestuurders gebruiken het vooral op de telefoon: kilometerstand, schade met foto.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Logboek</td><td>Elke wijziging aan auto, contract, toewijzing, boete: wie, wanneer, wat.</td></tr>
+      <tr><td><span class="pill must">must</span></td><td>Excel-import</td><td>Eenmalig bij de start, herhaalbaar tijdens het testen. Zie hoofdstuk 10.</td></tr>
+      <tr><td><span class="pill should">should</span></td><td>Bug- en wensmelding in de app</td><td>Zelfde knop als in het ATS, komt als mail binnen.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 6 -->
+<section id="s6">
+  <h2 class="sec"><span class="n">6</span>Processen</h2>
+  <p class="sec-intro">Het tabblad Processen in de Excel beschrijft vier processen voor de office managers: instroom van een nieuwe auto, uitgifte, inname en uitstroom. Die neem ik letterlijk over. In de app wordt elk proces een checklist die je bij een auto start: elke stap is een vinkje met wie het deed en wanneer. Open stappen verschijnen automatisch in Taken. Daarnaast zijn er drie processen die het systeem zelf start: een deadline die nadert, een incident en een boete. Stippellijn = doet het systeem zelf.</p>
+
+  <h3>6.1 Instroom nieuwe auto</h3>
+  <p>Start: de beheerder maakt de auto aan met status "besteld" en een verwachte afleverdatum, zoals nu de twaalf bestelde Tesla's en Megane's.</p>
+  <ol class="flow">
+    <li><span class="who">Beheerder</span><b>1. Auto aanmaken</b>Merk, type, vestiging, soort eigendom, verwachte levering. Status: besteld.</li>
+    <li><span class="who">Beheerder</span><b>Afleverdatum bevestigd</b>Datum invullen.</li>
+    <li class="auto"><span class="who">Systeem</span><b>Maakt voorbereidingstaken</b>Verzekering, tankpas, bestickering, inspectie, met deadline vóór aflevering.</li>
+    <li><span class="who">Beheerder</span><b>2. Verzekering afsluiten</b>Via Hypotheekshop Hoorn. Polis in de documentenmap.</li>
+    <li><span class="who">Beheerder</span><b>3. Tank- of laadpas bestellen</b>MKB Brandstof of E-Flux. Pasnummer en pincode vastleggen bij de auto.</li>
+    <li><span class="who">Beheerder</span><b>4. Hero-bestickering inplannen</b>Klasse A, B of C, via Plakkie.</li>
+    <li><span class="who">Beheerder</span><b>5. Aflevering en inspectie</b>Kenteken invullen, foto's maken, kilometerstand noteren, map in Teams aanmaken en koppelen aan de auto.</li>
+    <li><span class="who">Beheerder</span><b>6. Gegevens aanvullen</b>APK-datum, bouwjaar, type banden, bijtelling.</li>
+    <li class="auto"><span class="who">Systeem</span><b>Status actief</b>De auto telt mee op het dashboard en staat klaar voor uitgifte.</li>
+  </ol>
+
+  <h3>6.2 Uitgifte auto</h3>
+  <p>Start: de beheerder koppelt een auto aan een medewerker, eventueel vanaf de wachtlijst, met een startdatum.</p>
+  <ol class="flow">
+    <li><span class="who">Beheerder</span><b>1. Toewijzen aan medewerker</b>Startdatum. Wachtlijst wordt bijgewerkt.</li>
+    <li class="auto"><span class="who">Systeem</span><b>Informeert HR</b>Mail met wie, welke auto, per wanneer.</li>
+    <li><span class="who">Beheerder</span><b>2. Verzamelen</b>Tankpas met code, kentekenbewijs, autosleutel.</li>
+    <li><span class="who">Beheerder</span><b>3. Bubble Wash en volle tank</b>Ingepland vóór de uitgiftedatum.</li>
+    <li><span class="who">Beheerder + bestuurder</span><b>4. Schaderondgang</b>Samen om de auto. Bestaande schade wordt een incident met foto's.</li>
+    <li><span class="who">Beheerder</span><b>5. Foto's en kilometerstand</b>Eerste kilometerstand van deze toewijzing.</li>
+    <li><span class="who">Beheerder</span><b>6. Overhandigen</b>Sleutels, tankpas, code, kentekenbewijs.</li>
+    <li class="auto"><span class="who">Systeem</span><b>7. Bijwerken</b>Toewijzing actief. Bestuurder ziet Mijn auto, inclusief tankpas en pincode.</li>
+  </ol>
+
+  <h3>6.3 Inname auto</h3>
+  <p>Start: een collega gaat uit dienst, wisselt van auto, of een uitleen loopt af. De beheerder zet de inleverdatum; alles daarna volgt uit de checklist.</p>
+  <ol class="flow">
+    <li><span class="who">Beheerder</span><b>1. Inleverdatum bepalen</b>Bij de toewijzing of uitleen.</li>
+    <li class="auto"><span class="who">Systeem</span><b>Mailt bestuurder</b>Datum, en het verzoek de auto netjes en met volle tank in te leveren.</li>
+    <li><span class="who">Beheerder</span><b>3. Ronde en foto's</b>Foto's naar de documentenmap. Nieuwe schade wordt een incident.</li>
+    <li><span class="who">Beheerder</span><b>4. Kilometerstand noteren</b>Eindstand van deze toewijzing.</li>
+    <li><span class="who">Beheerder</span><b>5. Sleutels en toebehoren innemen</b>Sleutels, tankpas, kentekenbewijs, laadkabel. Vinkje per onderdeel.</li>
+    <li class="auto"><span class="who">Systeem</span><b>6. Meldt inname bij HR</b>Inclusief de incidenten van deze rondgang.</li>
+    <li class="auto"><span class="who">Systeem</span><b>7. Bijwerken</b>Toewijzing gesloten. Auto staat vrij, wordt leenauto, of gaat naar uitstroom.</li>
+  </ol>
+
+  <h3>6.4 Uitstroom auto</h3>
+  <p>Start: verkoop of einde lease. De auto verdwijnt uit het overzicht maar niet uit het systeem: hij gaat naar het Archief, met alles erop en eraan.</p>
+  <ol class="flow">
+    <li><span class="who">Beheerder</span><b>1. Einddatum bepalen</b>Verkoop of beëindiging lease.</li>
+    <li><span class="who">Beheerder</span><b>2. Foto's en kilometerstand</b>Eindstand van de auto.</li>
+    <li><span class="who">Beheerder</span><b>3. Verzamelen</b>Sleutels, groene kaart, tankpas.</li>
+    <li><span class="who">Beheerder</span><b>4. Laadkabel en toebehoren</b>Vinkje per onderdeel.</li>
+    <li><span class="who">Beheerder</span><b>5. Vrijwaringsbewijs RDW</b>Ontvangen en in de documentenmap.</li>
+    <li><span class="who">Beheerder</span><b>6. Verzekering opzeggen</b>Per datum vrijwaring. Tankpas blokkeren.</li>
+    <li class="auto"><span class="who">Systeem</span><b>7. Archiveren</b>Status verkocht of ingeleverd. Auto naar Archief. Herinnering om de Teams-map te archiveren.</li>
+  </ol>
+
+  <h3>6.5 Deadline nadert (APK, contracteinde, rijbewijs, banden, bundel, uitleen)</h3>
+  <ol class="flow">
+    <li class="auto"><span class="who">Systeem</span><b>Ziet deadline</b>Dagelijkse controle, 90/30/7 dagen vooraf. Ook: APK al verstreken (nu bij vier auto's).</li>
+    <li class="auto"><span class="who">Systeem</span><b>Maakt taak en mail</b>Aan de bestuurder bij onderhoud en banden, met het garage-adres voor dat merk. Aan de beheerder bij contract, rijbewijs en te late uitleen.</li>
+    <li><span class="who">Bestuurder of beheerder</span><b>Regelt het</b>Plant APK bij de garage van het merk, verlengt of vervangt contract, haalt leenauto terug.</li>
+    <li><span class="who">Beheerder</span><b>Sluit taak af</b>Met nieuwe datum in het systeem. Onderhoud komt als record in de historie, niet meer als vrije tekst.</li>
+  </ol>
+
+  <h3>6.6 Incident</h3>
+  <ol class="flow">
+    <li><span class="who">Bestuurder</span><b>Meldt incident</b>Op telefoon: soort, datum, plaats, foto's, tegenpartij.</li>
+    <li class="auto"><span class="who">Systeem</span><b>Maakt taak</b>Beheerder en celdirecteur op de hoogte.</li>
+    <li><span class="who">Beheerder</span><b>Meldt bij verzekeraar of garage</b>Status: bij verzekeraar of in reparatie.</li>
+    <li><span class="who">Beheerder</span><b>Sluit af</b>Kosten en eigen risico vastgelegd; eigen risico doorbelast conform beleid.</li>
+  </ol>
+
+  <h3>6.7 Boete</h3>
+  <ol class="flow">
+    <li><span class="who">Beheerder</span><b>Voert boete in</b>Kenteken, datum, tijd, bedrag.</li>
+    <li class="auto"><span class="who">Systeem</span><b>Zoekt bestuurder</b>Wie reed op die datum in die auto, ook bij een uitleen.</li>
+    <li><span class="who">Beheerder</span><b>Bevestigt en belast door</b>Of markeert als zakelijk, met reden.</li>
+    <li class="auto"><span class="who">Systeem</span><b>Mailt bestuurder</b>Boete zichtbaar in Mijn auto.</li>
+  </ol>
+
+  <div class="note"><div class="lbl">Hoe de checklist werkt</div><p>Bij een auto kies je "Proces starten" en het soort (instroom, uitgifte, inname, uitstroom). De app maakt de stappen aan zoals hierboven. Elke stap heeft een vinkje, de naam van wie hem afvinkte en de datum. Wat het systeem zelf doet, gebeurt automatisch zodra de stap ervoor is afgevinkt. De pagina Processen toont dezelfde stappen als uitleg, met per stap een knop naar het scherm waar je hem uitvoert. Zo blijft de kennis uit het tabblad Processen bewaard, ook als er een nieuwe office manager komt.</p></div>
+</section>
+
+<!-- 7 -->
+<section id="s7">
+  <h2 class="sec"><span class="n">7</span>Datamodel</h2>
+  <p class="sec-intro">Vijftien tabellen. Gele velden verwijzen naar een andere tabel. Alle tabellen krijgen daarnaast <code>aangemaakt_op</code>, <code>gewijzigd_op</code> en <code>gewijzigd_door</code>. De zes tabbladen uit de Excel zijn hierin terug te vinden: Contacten = contact, Wagenpark overzicht = voertuig + toewijzing + pas, Wachtlijst = wachtlijst, Tijdelijke uitleen = uitleen, Incidentenregistratie = incident, Processen = geen tabel maar een pagina.</p>
+  <div class="ents">
+    <div class="ent"><div class="h">voertuig <small>tabblad Wagenpark overzicht</small></div><ul>
+      <li><span>kenteken</span><span>uniek, leeg bij besteld</span></li><li><span>merk, type</span><span>tekst</span></li><li><span>vestiging_id</span><span class="fk">→ vestiging</span></li><li><span>milieu</span><span>benzine/elektrisch/hybride</span></li>
+      <li><span>bouwjaar_maand</span><span></span></li><li><span>soort_eigendom</span><span>eigendom/fin. lease/fin. lease afbetaald/oper. lease/huur</span></li><li><span>bijtelling</span><span>ja/nee/n.v.t.</span></li><li><span>type_banden</span><span>winter-zomer/all season</span></li>
+      <li><span>status</span><span>besteld/actief/leenauto/buiten gebruik/ingeleverd/verkocht</span></li><li><span>verwachte_levering</span><span>datum, bij besteld</span></li><li><span>apk_vervalt_op</span><span>datum</span></li><li><span>tankpas_id</span><span class="fk">→ pas</span></li><li><span>documentenmap_url</span><span>Teams-map</span></li><li><span>opmerkingen</span><span></span></li></ul></div>
+    <div class="ent"><div class="h">leasecontract <small>alleen bij lease of huur</small></div><ul>
+      <li><span>voertuig_id</span><span class="fk">→ voertuig</span></li><li><span>leasemaatschappij, contractnr</span><span></span></li><li><span>begin, einde, looptijd_mnd</span><span></span></li>
+      <li><span>km_bundel_totaal</span><span>num</span></li><li><span>maandtarief</span><span>€</span></li><li><span>tarief_meer_km, tarief_minder_km</span><span>€/km</span></li>
+      <li><span>inbegrepen</span><span>banden/verz/vervangend</span></li><li><span>opzegtermijn_mnd</span><span></span></li></ul></div>
+    <div class="ent"><div class="h">medewerker <small>bestuurders en beheerders</small></div><ul>
+      <li><span>naam, email, telefoon</span><span>email = login</span></li><li><span>vestiging_id</span><span class="fk">→ vestiging</span></li><li><span>extern</span><span>ja/nee, voor uitleen aan externen</span></li><li><span>functie</span><span></span></li>
+      <li><span>rijbewijs_geldig_tot</span><span>datum</span></li><li><span>in_dienst, uit_dienst</span><span>datum</span></li><li><span>rol</span><span>beheerder/celdirecteur/bestuurder/directie</span></li></ul></div>
+    <div class="ent"><div class="h">vestiging <small>Wognum, Alkmaar, Hoorn, Schiphol</small></div><ul>
+      <li><span>naam, adres</span><span></span></li><li><span>celdirecteur_id</span><span class="fk">→ medewerker</span></li><li><span>kostenplaats</span><span>optioneel</span></li></ul></div>
+    <div class="ent"><div class="h">toewijzing <small>wie rijdt wanneer</small></div><ul>
+      <li><span>voertuig_id</span><span class="fk">→ voertuig</span></li><li><span>medewerker_id</span><span class="fk">→ medewerker</span></li><li><span>van, tot</span><span>tot leeg = actief</span></li>
+      <li><span>km_bij_uitgifte, km_bij_inname</span><span></span></li><li><span>inname_checklist</span><span>json</span></li><li><span>opmerking</span><span></span></li></ul></div>
+    <div class="ent"><div class="h">kilometerstand <small>meetpunten</small></div><ul>
+      <li><span>voertuig_id</span><span class="fk">→ voertuig</span></li><li><span>datum, stand</span><span></span></li><li><span>bron</span><span>bestuurder/beheerder/garage</span></li><li><span>foto_id</span><span class="fk">→ document</span></li></ul></div>
+    <div class="ent"><div class="h">onderhoud <small>nu vrije tekst "Onderhoud / APK"</small></div><ul>
+      <li><span>voertuig_id</span><span class="fk">→ voertuig</span></li><li><span>soort</span><span>apk/beurt/banden/reparatie</span></li><li><span>gepland_op, uitgevoerd_op</span><span></span></li>
+      <li><span>garage, km_stand, kosten</span><span></span></li><li><span>status</span><span>gepland/uitgevoerd</span></li></ul></div>
+    <div class="ent"><div class="h">wachtlijst <small>tabblad Wachtlijst</small></div><ul>
+      <li><span>medewerker_id</span><span class="fk">→ medewerker</span></li><li><span>vestiging_id</span><span class="fk">→ vestiging</span></li><li><span>aangevraagd_op, gewenst_vanaf</span><span>datum</span></li><li><span>gewenste_auto, opmerking</span><span></span></li><li><span>status</span><span>open/auto besteld/toegewezen/vervallen</span></li><li><span>voertuig_id</span><span class="fk">→ voertuig (zodra bekend)</span></li></ul></div>
+    <div class="ent"><div class="h">uitleen <small>tabblad Tijdelijke uitleen</small></div><ul>
+      <li><span>voertuig_id, medewerker_id</span><span class="fk">→</span></li><li><span>van, tot_verwacht, tot_werkelijk</span><span>datum</span></li><li><span>reden</span><span>eigen auto in reparatie/wachtend/overig</span></li><li><span>km_bij_uitgifte, km_bij_inname</span><span></span></li></ul></div>
+    <div class="ent"><div class="h">incident <small>tabblad Incidentenregistratie</small></div><ul>
+      <li><span>voertuig_id, medewerker_id</span><span class="fk">→</span></li><li><span>soort</span><span>schade/pech/diefstal/ruit/overig</span></li><li><span>datum, plaats, omschrijving</span><span></span></li><li><span>tegenpartij</span><span>ja/nee + gegevens</span></li>
+      <li><span>status</span><span>gemeld/verzekeraar/reparatie/afgerond</span></li><li><span>eigen_risico, kosten</span><span>€</span></li><li><span>foto's</span><span class="fk">→ document</span></li></ul></div>
+    <div class="ent"><div class="h">boete <small>verkeersboetes</small></div><ul>
+      <li><span>voertuig_id</span><span class="fk">→ voertuig</span></li><li><span>medewerker_id</span><span class="fk">→ medewerker (afgeleid)</span></li><li><span>overtreding_op</span><span>datum + tijd</span></li>
+      <li><span>ontvangen_op, bedrag, soort</span><span></span></li><li><span>doorbelast</span><span>ja/nee/zakelijk</span></li><li><span>doorbelast_op</span><span>datum</span></li><li><span>brief_id</span><span class="fk">→ document</span></li></ul></div>
+    <div class="ent"><div class="h">pas <small>tank- en laadpassen</small></div><ul>
+      <li><span>pasnummer, leverancier</span><span></span></li><li><span>pincode_versleuteld</span><span>alleen via "toon pincode"</span></li><li><span>soort</span><span>tank/laad</span></li><li><span>status</span><span>actief/geblokkeerd</span></li><li><span>geldig_tot</span><span>datum</span></li></ul></div>
+    <div class="ent"><div class="h">contact <small>tabblad Contacten</small></div><ul>
+      <li><span>bedrijf, contactpersoon</span><span></span></li><li><span>telefoon, email</span><span></span></li><li><span>soort</span><span>lease/garage/apk/verzekeraar/brandstof/overig</span></li><li><span>merken</span><span>lijst, voor onderhoudsadres</span></li><li><span>haal_en_breng</span><span>ja/nee</span></li><li><span>opmerking</span><span></span></li></ul></div>
+    <div class="ent"><div class="h">document <small>bestanden</small></div><ul>
+      <li><span>voertuig_id</span><span class="fk">→ voertuig (optioneel)</span></li><li><span>soort</span><span>kentekenbewijs/contract/verz/foto/brief</span></li><li><span>bestandsnaam, pad, grootte</span><span></span></li><li><span>geupload_door</span><span class="fk">→ medewerker</span></li></ul></div>
+    <div class="ent"><div class="h">taak <small>handmatig én automatisch</small></div><ul>
+      <li><span>soort</span><span>apk/contract/rijbewijs/bundel/schade/boete/inname/aanvraag/overig</span></li><li><span>voertuig_id, medewerker_id</span><span class="fk">→ optioneel</span></li>
+      <li><span>toegewezen_aan</span><span class="fk">→ medewerker</span></li><li><span>deadline</span><span>datum</span></li><li><span>status</span><span>open/bezig/afgerond</span></li><li><span>proces</span><span>instroom/uitgifte/inname/uitstroom</span></li><li><span>checklist</span><span>stappen met vinkje, wie, wanneer</span></li><li><span>bron_sleutel</span><span>voorkomt dubbele auto-taken</span></li></ul></div>
+    <div class="ent"><div class="h">logboek <small>audit trail</small></div><ul>
+      <li><span>tabel, rij_id</span><span></span></li><li><span>actie</span><span>aangemaakt/gewijzigd/verwijderd</span></li><li><span>oud, nieuw</span><span>json</span></li><li><span>door, op</span><span></span></li></ul></div>
+  </div>
+  <h3>Afgeleide gegevens (niet opgeslagen, wel getoond)</h3>
+  <ul>
+    <li><strong>Huidige bestuurder</strong> = toewijzing van deze auto waar <code>tot</code> leeg is.</li>
+    <li><strong>Bestuurder bij een boete</strong> = toewijzing waar <code>overtreding_op</code> tussen <code>van</code> en <code>tot</code> valt.</li>
+    <li><strong>Verwachte eindstand</strong> = laatste stand + gemiddeld maandverbruik × resterende contractmaanden. Vergeleken met de bundel geeft dat de meer-kilometerprognose in euro's.</li>
+    <li><strong>Eerstvolgende deadline</strong> per auto = de vroegste van APK, contracteinde, bandenwissel en rijbewijs van de huidige bestuurder.</li>
+    <li><strong>Onderhoudsadres</strong> van een auto = het contact van soort garage waarvan de merkenlijst het merk bevat. Geen match: het contact voor "overig" (MKB Autobeheer). Renault staat als "vrije dealerkeuze".</li>
+    <li><strong>Te laat ingeleverde leenauto</strong> = uitleen waar <code>tot_verwacht</code> is verstreken en <code>tot_werkelijk</code> leeg is. Wordt een taak.</li>
+    <li><strong>Maandkosten per vestiging</strong> = som van maandtarieven van actieve auto's van bestuurders in die cel, plus schadekosten en niet-doorbelaste boetes in die maand.</li>
+  </ul>
+</section>
+
+<!-- 8 -->
+<section id="s8">
+  <h2 class="sec"><span class="n">8</span>Schermen</h2>
+  <p class="sec-intro">De opdrachtgever vraagt om één keuzemenu waarin alles uit de Excel terugkomt. Dat menu volgt de opbouw van de andere Hero-apps (een app met subpagina's in de linkerbalk, zoals Kats en Hero social). Drie schermen zijn hieronder als schets uitgewerkt, de rest in woorden. De schetsen zijn bedoeld om over de indeling te praten, niet over de vormgeving.</p>
+  <h3>8.0 Het keuzemenu</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Menu-item</th><th>Komt uit</th><th>Wat je er ziet</th></tr></thead>
+    <tbody>
+      <tr><td>Dashboard</td><td>nieuw</td><td>Deadlines, open taken, aantallen. Zie 8.1.</td></tr>
+      <tr><td>Wagenpark</td><td>Wagenpark overzicht</td><td>Alle actieve auto's, wie erin rijdt, kenteken, tankpas, kilometerstand, eerstvolgende deadline. Klik = voertuigdetail.</td></tr>
+      <tr><td>Bestuurders</td><td>Wagenpark overzicht</td><td>Wie rijdt wat, rijbewijsdatum, cel.</td></tr>
+      <tr><td>Wachtlijst</td><td>Wachtlijst</td><td>Wie wacht op een auto, sinds wanneer, status.</td></tr>
+      <tr><td>Uitleen</td><td>Tijdelijke uitleen</td><td>Leenauto's die nu uit zijn, met verwachte inleverdatum.</td></tr>
+      <tr><td>Taken</td><td>nieuw + Zomerbandenwissel</td><td>APK, onderhoud, bandenwissel per seizoen, contracteinde, inname, te late uitleen, en de open stappen van lopende processen.</td></tr>
+      <tr><td>Rapporten</td><td>Verduurzaming</td><td>Benzine, elektrisch, hybride per vestiging per jaar. Later: kosten.</td></tr>
+      <tr><td>Incidenten</td><td>Incidentenregistratie</td><td>Schade, pech, diefstal, met status en foto's.</td></tr>
+      <tr><td>Boetes</td><td>nieuw</td><td>Boetes met bestuurder en doorbelasting.</td></tr>
+      <tr><td>Contacten</td><td>Contacten</td><td>Leasemaatschappijen, garages, APK-adressen, verzekeraar.</td></tr>
+      <tr><td>Documenten</td><td>wens: mappen</td><td>Per auto: RDW-papieren, verzekeringspapieren, foto's, contract.</td></tr>
+      <tr><td>Archief</td><td>wens: oude auto's</td><td>Ingeleverde en verkochte auto's met alle informatie.</td></tr>
+      <tr><td>Processen</td><td>Processen</td><td>De vier checklists (instroom, uitgifte, inname, uitstroom) als uitleg, met per stap een knop naar het scherm. Bij een auto start je het proces zelf.</td></tr>
+      <tr><td>Instellingen</td><td>nieuw</td><td>Rollen, cellen, herinneringstermijnen, onderhoudsadres per merk.</td></tr>
+      <tr><td>Mijn auto</td><td>nieuw</td><td>Alleen voor bestuurders. Zie 8.3.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>8.1 Dashboard (beheerder)</h3>
+  <div class="wf">
+    <div class="bar"><span class="logo">HERO Wagenpark</span><span class="nav"><span class="on">Dashboard</span><span>Voertuigen</span><span>Bestuurders</span><span>Taken</span><span>Kosten</span></span><span class="me">Annemiek · beheerder</span></div>
+    <div class="grid g4">
+      <div class="box"><div class="t">Actief</div><div class="big">54</div></div>
+      <div class="box"><div class="t">Besteld</div><div class="big">12</div></div>
+      <div class="box"><div class="t">Leenauto's vrij</div><div class="big">2 / 4</div></div>
+      <div class="box"><div class="t">Open taken</div><div class="big">9</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:8px">
+      <div class="box"><div class="t">Komende 30 dagen</div>
+        <div class="row"><span><span class="plate"><span class="eu"></span><span>AB-123-C</span></span> APK verstreken</span><span class="tag c">4 mnd</span></div>
+        <div class="row"><span><span class="plate"><span class="eu"></span><span>DE-456-F</span></span> APK verstreken · in uitleen</span><span class="tag c">18 dagen</span></div>
+        <div class="row"><span><span class="plate"><span class="eu"></span><span>GH-789-J</span></span> APK vervalt</span><span class="tag w">56 dagen</span></div>
+        <div class="row"><span>Bandenwissel winter · 34 auto's</span><span class="tag w">vanaf 1 okt</span></div>
+      </div>
+      <div class="box"><div class="t">Open</div>
+        <div class="row"><span>Uitleen zonder retourdatum</span><span>2</span></div>
+        <div class="row"><span>Wachtlijst</span><span>1</span></div>
+        <div class="row"><span>Besteld, levering verwacht</span><span>12</span></div>
+        <div class="row"><span>Km-stand onbekend of ouder dan 60 dagen</span><span>50</span></div>
+      </div>
+    </div>
+    <div class="cap">Aantallen uit de Excel van 14 september, kentekens verzonnen. Celdirecteur ziet hetzelfde scherm, gefilterd op de eigen vestiging.</div>
+  </div>
+
+  <h3>8.2 Voertuigdetail</h3>
+  <div class="wf">
+    <div class="bar"><span class="logo">HERO Wagenpark</span><span class="nav"><span>Dashboard</span><span class="on">Voertuigen</span><span>Bestuurders</span><span>Taken</span><span>Kosten</span></span><span class="me">Annemiek · beheerder</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <div><span class="plate"><span class="eu"></span><span>R-482-XK</span></span> &nbsp;<b style="color:var(--ink)">Renault Megane E-Tech</b> · elektrisch · 2024 · <span class="tag o">actief</span></div>
+      <div><span class="btn">Bewerken</span> <span class="btn p">Innemen</span></div>
+    </div>
+    <div class="grid g3">
+      <div class="box"><div class="t">Bestuurder</div>Sanne Jansen<br>Cel Zuid · sinds 03-2024<br><span class="btn">Historie</span></div>
+      <div class="box"><div class="t">Contract en tankpas</div>ALD · tot 02-2028 · € 812/mnd<br>Bundel: 38.400 / 120.000<br>Tankpas Shell 7034 5512 · <span class="btn">Toon pincode</span></div>
+      <div class="box"><div class="t">Deadlines</div><div class="row"><span>APK</span><span class="tag c">18-09-2026</span></div><div class="row"><span>Winterbanden</span><span class="tag w">01-11-2026</span></div><div class="row"><span>Contract</span><span>28-02-2028</span></div><div class="row"><span>Onderhoud</span><span>vrije dealerkeuze</span></div></div>
+    </div>
+    <div class="grid g3" style="margin-top:8px">
+      <div class="box"><div class="t">Kilometerstand</div><div class="row"><span>01-09-2026</span><span>38.412</span></div><div class="row"><span>01-08-2026</span><span>36.190</span></div><div class="row"><span>prognose einde</span><span class="tag o">113k</span></div></div>
+      <div class="box"><div class="t">Schades en boetes</div><div class="row"><span>Parkeerschade 06-2026</span><span class="tag o">afgerond</span></div><div class="row"><span>Boete € 109 · 12-08</span><span class="tag w">doorbelasten</span></div></div>
+      <div class="box"><div class="t">Documenten</div><div class="row"><span>Kentekenbewijs.pdf</span></div><div class="row"><span>Leasecontract-ALD.pdf</span></div><div class="row"><span>Groene kaart 2026.pdf</span></div></div>
+    </div>
+    <div class="cap">Onderaan: logboek van alle wijzigingen aan deze auto.</div>
+  </div>
+
+  <h3>8.3 Mijn auto (bestuurder, op telefoon)</h3>
+  <div class="wf phone">
+    <div class="bar"><span class="logo">HERO</span><span class="me">Sanne</span></div>
+    <div style="margin-bottom:8px"><span class="plate"><span class="eu"></span><span>R-482-XK</span></span> &nbsp;<b style="color:var(--ink)">Renault Megane E-Tech</b></div>
+    <div class="box" style="margin-bottom:8px;border-color:var(--crit)"><div class="t">Actie nodig</div>APK vervalt over 4 dagen. Renault: vrije dealerkeuze, plan zelf een afspraak.<br><span class="btn p" style="margin-top:6px">Ik heb het gepland</span></div>
+    <div class="box" style="margin-bottom:8px;border-color:var(--warn)"><div class="t">Binnenkort</div>Winterbanden laten monteren vóór 1 november.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div class="box"><div class="t">Km-stand</div><div class="big" style="font-size:18px">38.412</div><span class="btn" style="margin-top:4px">Doorgeven</span></div>
+      <div class="box"><div class="t">Bundel</div><div class="big" style="font-size:18px">32%</div>op schema</div>
+    </div>
+    <div class="box" style="margin-top:8px"><div class="t">Tankpas</div>Shell · 7034 5512 ····<br><span class="btn" style="margin-top:4px">Toon pincode</span></div>
+    <div class="box" style="margin-top:8px"><span class="btn">Incident melden</span> &nbsp; <span class="btn">Documenten</span></div>
+    <div class="box" style="margin-top:8px"><div class="t">Mijn boetes</div><div class="row"><span>12-08 · € 109</span><span class="tag w">doorbelast</span></div></div>
+    <div class="cap">Bewust minimaal: kilometerstand, schade, boetes, en het onderhoud dat de bestuurder zelf regelt.</div>
+  </div>
+
+  <h3>8.4 Overige schermen</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Scherm</th><th>Inhoud</th></tr></thead>
+    <tbody>
+      <tr><td>Voertuigoverzicht</td><td>Tabel met kenteken, merk/model, bestuurder, cel, status, eerstvolgende deadline, km-stand. Zoekveld, filters op status en cel, sorteren op elke kolom. Knop "Nieuw voertuig" (met RDW-opzoeken op kenteken).</td></tr>
+      <tr><td>Bestuurdersoverzicht en -detail</td><td>Wie rijdt wat, rijbewijsdatum, cel. Detail toont de auto-historie van deze persoon en zijn boetes en schades.</td></tr>
+      <tr><td>Taken</td><td>Lijst gegroepeerd op deadline (te laat, deze week, deze maand, later). Filter op soort en toegewezen aan. Taak openen toont de auto en de knoppen om hem af te handelen.</td></tr>
+      <tr><td>Kosten</td><td>Per cel en per maand: lease, schade, boetes. Per auto uitklapbaar. Export naar Excel.</td></tr>
+      <tr><td>Wachtlijst</td><td>Lijst op volgorde van aanvraagdatum: naam, cel, gewenst vanaf, voorkeur, status. Knop "Auto koppelen" zodra er een auto vrij is.</td></tr>
+      <tr><td>Uitleen</td><td>Leenauto's die nu uit zijn: kenteken, wie, sinds, verwacht terug. Te laat staat rood. Knop "Innemen".</td></tr>
+      <tr><td>Incident melden (formulier)</td><td>Soort, datum, plaats, wat is er gebeurd, foto's maken of uploaden, tegenpartij ja/nee. Werkt op telefoon met de camera.</td></tr>
+      <tr><td>Contacten</td><td>Kaartjes per bedrijf: soort, contactpersoon, telefoon, e-mail, voor welke merken. Bellen met één tik op de telefoon.</td></tr>
+      <tr><td>Archief</td><td>Zelfde tabel als Wagenpark, maar alleen ingeleverde en verkochte auto's, met inleverdatum en eindstand.</td></tr>
+      <tr><td>Processen</td><td>De uitleg uit het tabblad Processen, per proces een korte pagina met de stappen en een knop naar het scherm waar je die stap doet.</td></tr>
+      <tr><td>Instellingen</td><td>Gebruikers en rollen, cellen, onderhoudspartners per merk (uit het beleid), herinneringstermijnen (90/30/7), datum bandenwissel, afzenderadres voor mail.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 9 -->
+<section id="s9">
+  <h2 class="sec"><span class="n">9</span>Techniek en architectuur</h2>
+  <p class="sec-intro">De app moet uiteindelijk een app binnen het Hero-platform (heroapp.nl) worden. Ik heb op 14 september bekeken hoe dat platform apps aanmaakt; dat bepaalt de techniek. Zelfde bouwstenen als het ATS, aangesloten op het platform.</p>
+  <h3>Plek in het Hero-platform</h3>
+  <p>Nieuwe apps worden aangemaakt via de app Appjes op heroapp.nl. De wizard kent drie types:</p>
+  <ul>
+    <li><strong>Standalone productie.</strong> Eigen GitHub-repository, eigen Supabase-schema, eigen Railway-project, adres onder heroapp.nl.</li>
+    <li><strong>Framework.</strong> Micro-frontend in het Hero Platform Framework: een Railway-service in het framework-project, drie omgevingen (dev, beta, productie), module federation, en de app verschijnt met subpagina's in de linkerbalk zoals Kats en Hero social.</li>
+    <li><strong>DevDay.</strong> Hackathon-app met eigen repository op heroapps.nl.</li>
+  </ul>
+  <p>Voor het keuzemenu dat de opdrachtgever vraagt past het type Framework het best: dan staat Wagenpark in dezelfde linkerbalk als de andere apps. Het framework heeft een kickstart-repository (hero-framework-kickstart in de GitHub-organisatie Hero-Interim-Professionals). Daar heb ik nog geen toegang toe; de uitnodiging staat open. Beslispunt 10.</p>
+  <p>Wat het platform verder al regelt en wat ik dus niet zelf bouw: inloggen met het Hero Microsoft-account, de linkerbalk en het app-menu, de Hera-assistent per app, een Hero AI Gateway met een sleutel per app (in plaats van een eigen Anthropic-sleutel), en de database "Framework Hero DB" in Supabase (hetzelfde project als het ATS, eigen schema per app). Schemawijzigingen gaan via migraties, niet via de SQL-editor.</p>
+  <div class="note q"><div class="lbl">Overlap: Hero assets</div><p>Op heroapp.nl/assets staat al een app "Hero assets" voor bedrijfsmiddelen "van laptop tot bedrijfsauto", met een rol Wagenparkbeheerder, een pagina Wagenpark en auto's met APK-datums erin. Ik weet niet of dat een prototype met voorbeelddata is of een app die al wordt gebruikt. Dat moet dinsdag als eerste duidelijk zijn: bouwen we wagenpark als eigen app, of als onderdeel van Hero assets? Beslispunt 9.</p></div>
+  <h3>Bouwstenen</h3>
+  <div class="arch">
+    <div><b>Applicatie</b>Node.js 24, Express 5, EJS-templates. Server-rendered pagina's, weinig JavaScript in de browser.</div>
+    <div><b>Database</b>PostgreSQL op Supabase, eigen schema <code>wagenpark</code>. Migraties als SQL-bestanden in de repository.</div>
+    <div><b>Hosting</b>Railway, automatische deploy vanaf <code>main</code>. Eigen subdomein onder hero.eu als dat mag.</div>
+    <div><b>Inloggen</b>Via het Hero-platform (Microsoft-account). Alleen hero.eu-accounts. Rol uit de tabel <code>medewerker</code>.</div>
+    <div><b>Pincodes</b>Versleuteld opgeslagen (AES, sleutel in Supabase Vault). Ontsleuteld alleen op verzoek, per keer gelogd.</div>
+    <div><b>E-mail</b>Microsoft Graph, afzender aissistent@hero.eu, zelfde app-registratie als het ATS.</div>
+    <div><b>Bestanden</b>Supabase Storage voor documenten en foto's. Maximaal 10 MB per bestand.</div>
+    <div><b>Dagelijkse controle</b>Een geplande job (Railway cron, 07:00) die deadlines controleert, taken aanmaakt en de dagmail stuurt.</div>
+    <div><b>Kenteken opzoeken</b>RDW Open Data (opendata.rdw.nl), gratis, geen sleutel nodig.</div>
+    <div><b>Tekst uitlezen</b>Claude via de Hero AI Gateway voor het uitlezen van boete-brieven (should). Alleen de brief gaat mee, geen persoonsgegevens verder dan nodig.</div>
+  </div>
+  <h3>Beveiliging en privacy</h3>
+  <ul>
+    <li>Alleen ingelogde hero.eu-accounts. Geen publieke pagina's.</li>
+    <li>Rechten worden op de server afgedwongen per rol en per vestiging, niet alleen in de weergave.</li>
+    <li>Persoonsgegevens beperkt tot wat nodig is: naam, e-mail, cel, rijbewijsdatum. Geen rijbewijsnummer, geen BSN.</li>
+    <li>Boetes en schades zijn gevoelig: alleen beheerder, de betrokken bestuurder en (voor schade) de celdirecteur zien ze.</li>
+    <li>Logboek is onwisbaar vanuit de app.</li>
+    <li>Dagelijkse back-up van de database via Supabase.</li>
+  </ul>
+  <h3>Waarom geen native app</h3>
+  <p>Bestuurders gebruiken het systeem een paar keer per jaar: kilometerstand, een schade, een boete bekijken. Een webapp die goed werkt op de telefoon dekt dat. Een App Store-app kost een Apple Developer-account (99 dollar per jaar, plus een goedkeuringsproces van dagen) en Android daarnaast. Als er later toch een app moet komen, is de webapp als PWA (snelkoppeling op het beginscherm, werkt offline voor lezen) de eerste stap.</p>
+</section>
+
+<!-- 10 -->
+<section id="s10">
+  <h2 class="sec"><span class="n">10</span>Overstap vanuit Excel</h2>
+  <p>De Excel op SharePoint is de enige bron die er nu is, dus die moet er in één keer goed in. De zes tabbladen gaan elk naar hun eigen tabel:</p>
+  <div class="tbl wide"><table>
+    <thead><tr><th>Tabblad</th><th>Naar tabel</th><th>Let op</th></tr></thead>
+    <tbody>
+      <tr><td>Wagenpark overzicht (66 rijen)</td><td>voertuig, medewerker, toewijzing, pas, onderhoud, incident</td><td>Eén rij wordt tot zes records. Rijen zonder kenteken worden "besteld" met de notitie als verwachte levering. Bestuurder "-" = geen toewijzing. Vrije tekst in "Onderhoud / APK" en "Schade" wordt per regel een record met datum waar die te lezen is, anders als opmerking. Pincodes gaan direct versleuteld de database in en komen niet in logbestanden of foutlijsten. Bouwjaar/maand staat in vier notaties (Nov 2014, jul-25, 2024, leeg): normaliseren naar jaar en maand.</td></tr>
+      <tr><td>Contacten (10 rijen)</td><td>contact</td><td>Soort afleiden uit de kolom Opmerking (onderhoud, klein onderhoud, wasstraat). Twee losse personen worden contactpersoon bij hun bedrijf.</td></tr>
+      <tr><td>Wachtlijst (1 rij)</td><td>wachtlijst</td><td>Naam koppelen aan medewerker.</td></tr>
+      <tr><td>Tijdelijke uitleen (3 rijen)</td><td>uitleen</td><td>"Extern:" in de naam wordt medewerker met vlag extern. Ontbrekende retourdatum: leeg laten, wordt een taak.</td></tr>
+      <tr><td>Uitleen overzicht (41 rijen + 4 leenauto's)</td><td>uitleen (historie), voertuig.status = leenauto</td><td>Historie sinds 2024 alleen inlezen als de kentekens bestaan. De vier leenauto's krijgen status leenauto.</td></tr>
+      <tr><td>2026 - Zomerbandenwissel (34 rijen)</td><td>taak (banden, seizoen 2026)</td><td>Kolom "Gewisseld" wordt de status van de taak. Daarna maakt het systeem deze lijst zelf.</td></tr>
+      <tr><td>Processen</td><td>geen tabel</td><td>De stappen staan in hoofdstuk 6 en in de code als checklist-sjabloon.</td></tr>
+      <tr><td>Verduurzaming</td><td>geen tabel</td><td>Wordt een rapport dat live uit voertuig.milieu en vestiging rekent. De cijfers van 2024 en 2025 blijven als vergelijking te zien.</td></tr>
+      <tr><td>Incidentenregistratie (leeg)</td><td>incident</td><td>Niets te importeren. Schades komen uit de kolom Schade van het Wagenpark overzicht.</td></tr>
+    </tbody>
+  </table></div>
+  <ol>
+    <li><strong>Kolomkoppeling is gedaan.</strong> De Excel is op 14 september doorgenomen; de koppeling hierboven is de basis voor het importscript. Dinsdagochtend loop ik met Annemiek of een office manager alleen nog de twijfelgevallen na: de vier verstreken APK-datums, de auto's zonder vestiging, en wat "Financial Lease afbetaald" betekent voor het contract.</li>
+    <li><strong>Importscript.</strong> Leest het bestand per tabblad. Rijen die niet kloppen (kenteken ontbreekt, dubbel, datum onleesbaar) komen in een foutlijst, niet stilzwijgend in de database.</li>
+    <li><strong>Herhaalbaar.</strong> Het script kan opnieuw draaien zonder dubbele rijen, zodat de Excel tot en met donderdag nog bijgewerkt kan worden.</li>
+    <li><strong>Controle door de beheerder.</strong> Na de import een lijst met alles wat het systeem heeft aangenomen: "ik heb 27 auto's gezien, 24 met bestuurder, 3 zonder, 5 zonder contracteinde". De beheerder vult de gaten aan in de app.</li>
+    <li><strong>Eerste kilometerronde.</strong> Bij vier van de 54 auto's staat een kilometerstand. Bij livegang krijgt elke bestuurder één mail met een link om de stand door te geven. Zonder die ronde blijven bundelprognoses en onderhoudsintervallen leeg.</li>
+    <li><strong>Excel bevriezen.</strong> Vanaf vrijdag is de app de bron. De Excel blijft als archief.</li>
+  </ol>
+  <div class="note q"><div class="lbl">Nodig van de beheerder</div><p>Het actuele Excel-bestand, uiterlijk dinsdag 09:00. Plus een halfuur om samen door de kolommen te lopen.</p></div>
+</section>
+
+<!-- 11 -->
+<section id="s11">
+  <h2 class="sec"><span class="n">11</span>Planning</h2>
+  <p class="sec-intro">Vier bouwdagen, van fundament naar afwerking. Elke dag eindigt met iets dat werkt en te laten zien is. Should-functies schuiven in als de dag ruimte heeft.</p>
+  <div class="days">
+    <div class="day today"><div class="d">Ma 14 sept</div><h4>Ontwerpplan</h4><ul><li>Dit document</li><li>Feedback ophalen</li><li>Beslispunten beantwoord</li></ul></div>
+    <div class="day"><div class="d">Di 15 sept</div><h4>Fundament</h4><ul><li>Excel bekijken, kolomkoppeling</li><li>Repository, database, deploy</li><li>Inloggen met Microsoft</li><li>Voertuigoverzicht en -detail</li><li>Contract, bestuurder, cel</li><li>Excel-import, eerste echte data</li></ul></div>
+    <div class="day"><div class="d">Wo 16 sept</div><h4>Beheer</h4><ul><li>Toewijzen en innemen</li><li>Automatische taken en takenlijst</li><li>Dagelijkse controle en mail</li><li>Kilometerstand, schade, boete</li><li>Mijn auto op telefoon</li></ul></div>
+    <div class="day"><div class="d">Do 17 sept</div><h4>Afronden</h4><ul><li>Dashboard en logboek</li><li>Rechten per rol testen</li><li>Should als er tijd is: kosten, documenten</li><li>Demo-klaar einde dag</li></ul></div>
+    <div class="day"><div class="d">Vr 18 sept</div><h4>Samenvoegen</h4><ul><li>Twee versies naast elkaar</li><li>Beste delen samenvoegen</li><li>Feedbackronde en vervolglijst</li></ul></div>
+  </div>
+  <h3>Hoe ik bouw</h3>
+  <p>In genummerde stappen, zoals bij het ATS. Elke stap is een afgerond stuk (bijvoorbeeld "stap 4: voertuigdetail met contract") dat apart te bekijken is en apart in het logboek van het project staat. Wie meekijkt ziet altijd precies wat er af is en wat niet.</p>
+  <h3>Als het niet past</h3>
+  <p>Drie bouwdagen is krap, dus de must-kern is bewust klein gehouden: register, toewijzing, taken en mail, boetes, mijn auto. Kosten, documenten, schade-afhandeling en de inname-checklist staan al als should. Als woensdagmiddag ook de kern niet past, schuift eerst het dashboard (de takenlijst doet dan het werk) en daarna het logboek. Boetes met automatische bestuurderkoppeling en de dagmail met deadlines schuiven niet: dat is precies wat het verschil maakt met de Excel.</p>
+  <h3>Wat ik donderdag laat zien</h3>
+  <ol>
+    <li>Inloggen als beheerder, dashboard met de echte auto's uit de Excel.</li>
+    <li>Een auto openen, contract, bestuurder en eerstvolgende deadline zien.</li>
+    <li>Een auto innemen en aan iemand anders toewijzen.</li>
+    <li>Een boete invoeren en zien dat het systeem de juiste bestuurder voorstelt.</li>
+    <li>Inloggen als bestuurder op de telefoon, kilometerstand doorgeven, schade melden met foto.</li>
+    <li>De dagmail met de deadlines van de komende week.</li>
+  </ol>
+</section>
+
+<!-- 12 -->
+<section id="s12">
+  <h2 class="sec"><span class="n">12</span>Kanttekeningen, voorwaarden en risico's</h2>
+  <p class="sec-intro">In de briefing werd gevraagd om naast "wat zit erin en wat niet" ook de kanttekeningen en voorwaarden op te schrijven. Eerst wat ik nodig heb, dan wat er mis kan gaan.</p>
+  <h3>Voorwaarden om dinsdag te kunnen starten</h3>
+  <ul>
+    <li>Een halfuur met Annemiek of een office manager om de twijfelgevallen uit de Excel na te lopen (zie hoofdstuk 10). De Excel zelf heb ik.</li>
+    <li>Uitsluitsel over Hero assets: eigen app of onderdeel daarvan (beslispunt 9).</li>
+    <li>Toegang tot de GitHub-organisatie Hero-Interim-Professionals en de kickstart-repository. De uitnodiging staat open.</li>
+    <li>Toegang tot de Supabase-organisatie en Railway zoals bij het ATS, of een nieuwe omgeving.</li>
+    <li>Toestemming om de bestaande app-registratie (Microsoft-login en mail vanaf aissistent@hero.eu) te hergebruiken, of een nieuwe registratie door wie dat beheert.</li>
+    <li>De lijst met cellen en celdirecteuren.</li>
+    <li>Twee testaccounts: één beheerder, één bestuurder.</li>
+  </ul>
+  <h3>Kanttekeningen</h3>
+  <ul>
+    <li>De eerste versie is een webapp, geen App Store-app. In de briefing werd een volledige iOS-app genoemd; zonder Apple Developer-account en TestFlight-toegang is dat donderdag niet haalbaar, en voor het gebruik (paar keer per jaar per bestuurder) ook niet nodig.</li>
+    <li>Het systeem is zo goed als de data die erin gaat. De eerste weken zal de beheerder gaten uit de Excel moeten aanvullen.</li>
+    <li>Contractgegevens die bij de leasemaatschappij of MKB Autobeheer liggen en niet in de Excel staan, moeten handmatig worden overgenomen.</li>
+    <li>De tankpas-pincodes staan nu leesbaar in een Excel die meerdere mensen kunnen openen. In de app staan ze versleuteld en afgeschermd. Na de overstap is het verstandig de Excel te verwijderen of de pincodes eruit te halen.</li>
+  </ul>
+  <h3>Risico's</h3>
+  <div class="tbl wide"><table>
+    <thead><tr><th>Risico of vraag</th><th>Gevolg</th><th>Aanpak</th></tr></thead>
+    <tbody>
+      <tr><td>Excel is onvolledig: kilometerstanden ontbreken bijna overal, vier APK-datums zijn verstreken, onderhoud en schade zijn vrije tekst</td><td>Deadlines en historie kloppen niet vanaf dag één</td><td>Import accepteert gaten en zet verstreken APK's direct als taak. Eerste kilometerronde bij livegang. Liever 54 auto's met halve data dan geen systeem.</td></tr>
+      <tr><td>Beleid en Excel spreken elkaar tegen over garages</td><td>Verkeerd onderhoudsadres in herinneringen</td><td>Het beleid zegt "Renault vrije dealerkeuze", de Excel noemt MKB Autobeheer en Stokman voor Renault. De Excel is leidend; de beheerder kan het per merk aanpassen in Contacten.</td></tr>
+      <tr><td>Geen Apple Developer-account</td><td>Geen App Store-app</td><td>Webapp voor telefoon. Geen blokkade voor donderdag.</td></tr>
+      <tr><td>Overlap met Hero assets</td><td>Twee plekken voor dezelfde auto's, of werk dat al bestaat</td><td>Dinsdag eerst uitzoeken wat Hero assets is (prototype of in gebruik) en wie hem bouwt. Het datamodel in dit plan past in beide varianten.</td></tr>
+      <tr><td>Framework-app kost meer inrichting dan een losse app</td><td>Dinsdag gaat op aan module federation en omgevingen in plaats van aan functies</td><td>Toegang tot de kickstart-repository vóór dinsdag. Terugvalplan: type Standalone of de ATS-opzet, later overzetten naar Framework.</td></tr>
+      <tr><td>Te veel bouwen, te weinig af</td><td>Druk scherm, verstopte functies (de ATS-les)</td><td>Ontwerpprincipes in hoofdstuk 3 en de schuiflijst in hoofdstuk 11. Elke dag eindigt met iets dat werkt.</td></tr>
+      <tr><td>Microsoft-login inrichten kost tijd</td><td>Dinsdag loopt uit</td><td>Terugvalplan: inloggen met een magic link per e-mail via Graph. Zelfde accounts, geen wachtwoord.</td></tr>
+      <tr><td>Wie is de beheerder?</td><td>Rollenmodel klopt niet</td><td>Beslispunt 1. Het model ondersteunt beide varianten.</td></tr>
+      <tr><td>Rol van MKB Autobeheer onduidelijk</td><td>Als zij de leasecontracten beheren, zitten de contractgegevens bij hen en niet in de Excel</td><td>Dinsdag navragen bij de beheerder. Het systeem werkt in beide gevallen; het bepaalt alleen waar de contractdata vandaan komt.</td></tr>
+      <tr><td>Privacy van boetes en schades</td><td>Collega's zien elkaars overtredingen</td><td>Rechten op de server per rol en cel. Bestuurder ziet alleen zichzelf.</td></tr>
+      <tr><td>Twee bronnen na de start</td><td>Excel en app lopen uit elkaar</td><td>Excel vrijdag bevriezen. Export uit de app vervangt de Excel voor wie een lijst wil.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 13 -->
+<section id="s13">
+  <h2 class="sec"><span class="n">13</span>Beslispunten voor feedback</h2>
+  <p class="sec-intro">Tien vragen. Bij elke vraag staat wat ik doe als ik geen antwoord krijg, zodat de bouw dinsdag hoe dan ook kan starten.</p>
+  <ol class="decide">
+    <li><span class="box"></span><div><b>1. Blijft Annemiek de uitvoerende beheerder?</b><span>Zij is PA en office manager en doet de wagenparktaken nu. Blijft dat zo, met het systeem als bewaker, of handelt elke celdirecteur de eigen vestiging af?</span><span class="opt">Standaard: Annemiek als beheerder voor alles, celdirecteuren kijken mee en vragen aan.</span></div></li>
+    <li><span class="box"></span><div><b>2. Wie is celdirecteur van welke vestiging?</b><span>De vestigingen ken ik uit de Excel: Wognum, Alkmaar, Hoorn, Schiphol. Nodig om rechten en overzichten per vestiging te maken.</span><span class="opt">Standaard: vier vestigingen, celdirecteuren vraag ik dinsdag.</span></div></li>
+    <li><span class="box"></span><div><b>3. Krijgen bestuurders toegang in de eerste versie?</b><span>Het bestuurdersportaal is een must in dit plan, omdat het de beheerder werk uit handen neemt. Het kan ook eerst beheerder-only.</span><span class="opt">Standaard: ja, bestuurders loggen in.</span></div></li>
+    <li><span class="box"></span><div><b>4. Moet de kickstart-repository in GitHub worden gebruikt?</b><span>Die bestaat (hero-framework-kickstart). Als hij verplicht is, bouw ik daarop. Zo niet, dan de ATS-opzet die al bij Hero draait.</span><span class="opt">Standaard: kickstart als ik er dinsdag toegang toe heb, anders ATS-opzet.</span></div></li>
+    <li><span class="box"></span><div><b>5. Mag ik de Microsoft-login en het mailadres van het ATS hergebruiken?</b><span>Scheelt een dag inrichten. Vraagt mogelijk toestemming van wie de app-registratie beheert.</span><span class="opt">Standaard: ja, zelfde app-registratie.</span></div></li>
+    <li><span class="box"></span><div><b>6. Welke herinneringstermijnen?</b><span>90/30/7 dagen vooraf is een gok. Leasemaatschappijen hanteren vaak 3 tot 6 maanden opzegtermijn.</span><span class="opt">Standaard: 90/30/7, instelbaar in de app.</span></div></li>
+    <li><span class="box"></span><div><b>7. Boetes en eigen risico: altijd doorbelasten, zonder uitzondering?</b><span>Het beleid zegt "voor eigen rekening". Vraag is of de beheerder een uitzondering mag maken, bijvoorbeeld bij een zakelijke parkeerboete tijdens een klantbezoek.</span><span class="opt">Standaard: altijd doorbelasten; uitzondering alleen door de beheerder, met reden in het logboek.</span></div></li>
+    <li><span class="box"></span><div><b>8. Is MKB Autobeheer de leasepartner of alleen het onderhoudsadres voor overige merken?</b><span>Bepaalt waar de contractgegevens vandaan komen en of hun contactpersoon een rol in het systeem moet krijgen.</span><span class="opt">Standaard: alleen onderhoudsadres; contracten komen uit het tabblad Contacten en de Excel.</span></div></li>
+    <li><span class="box"></span><div><b>9. Eigen app, of onderdeel van Hero assets?</b><span>Op heroapp.nl/assets staat al een app met een pagina Wagenpark en een rol Wagenparkbeheerder. Is dat een prototype of in gebruik, en wie bouwt eraan?</span><span class="opt">Standaard: eigen app Wagenpark, met een datamodel dat later in Hero assets kan worden opgenomen.</span></div></li>
+    <li><span class="box"></span><div><b>10. App-type in Appjes: Framework of Standalone?</b><span>Framework geeft het keuzemenu in de linkerbalk zoals de andere apps, maar vraagt de kickstart-repository en meer inrichting. Standalone is sneller op te zetten.</span><span class="opt">Standaard: Framework als de kickstart dinsdag toegankelijk is, anders Standalone en later overzetten.</span></div></li>
+  </ol>
+</section>
+
+<footer>Ontwerpplan wagenparkbeheer · versie 0.3 · 14-09-2026 · Jaden Bakker · concept, niets gebouwd</footer>
+</div>

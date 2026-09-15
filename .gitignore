@@ -1,0 +1,8 @@
+# Oude conceptversies in de hoofdmap blijven lokaal
+/*.docx
+node_modules/
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db

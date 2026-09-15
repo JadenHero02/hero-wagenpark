@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">
+  <style>
+    body { margin: 0; font-family: Exo, Arial, Helvetica, sans-serif; color: #03153f; background: #ffffff; }
+    a { color: #073889; } a:hover { color: #0065cc; }
+    .msr { font-family: 'Material Symbols Rounded', sans-serif; font-weight: 400; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; }
+    .nav { display: flex; flex-direction: row; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; font-size: 14px; color: #03153f; }
+    .nav.on { background: #e9f3f8; color: #073889; font-weight: 600; }
+    .sub { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 6px 12px 6px 34px; border-radius: 8px; font-size: 13px; color: #03153f; }
+    .sub.on { background: #e9f3f8; color: #073889; font-weight: 600; }
+    .dot { display: inline-block; width: 5px; height: 5px; border-radius: 3px; background: #b8c2c7; margin-right: 8px; }
+    .plate { font-family: Arial, sans-serif; font-weight: 700; font-size: 12px; background: #f2c230; color: #111111; padding: 3px 7px; border-radius: 3px; letter-spacing: 0.05em; white-space: nowrap; }
+    .pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 10px; white-space: nowrap; }
+    .card { background: #ffffff; border: 1px solid #dfe4e6; border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #9496a1; display: flex; flex-direction: row; align-items: center; gap: 6px; }
+    .row { display: flex; flex-direction: row; justify-content: space-between; align-items: center; font-size: 13px; }
+    .btn { display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 9px 14px; border: 1px solid #073889; border-radius: 8px; color: #073889; font-size: 13px; font-weight: 600; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #f3f6f9; overflow: hidden;">
+
+  <div style="height: 58px; background: #ffffff; border-bottom: 1px solid #dfe4e6; display: flex; flex-direction: row; align-items: center; padding: 0 20px; gap: 20px;">
+    <img src="hero-logo-blauw.svg" style="width: 46px; height: 39px;" alt="Hero">
+    <div style="flex-grow: 1; display: flex; flex-direction: row; justify-content: center;">
+      <div style="width: 440px; display: flex; flex-direction: row; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid #dfe4e6; border-radius: 10px; background: #f8fafc; color: #9496a1; font-size: 13px;">
+        <span style="font-weight: 600; color: #03153f;">Alle</span><span class="msr" style="font-size: 18px;">search</span><span style="flex-grow: 1;">Zoeken in Hero...</span><span style="font-size: 11px; border: 1px solid #dfe4e6; border-radius: 4px; padding: 1px 6px;">Ctrl+K</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 14px;">
+      <span class="msr" style="color: #073889;">view_column</span>
+      <span class="msr" style="color: #9496a1;">notifications</span>
+      <span class="msr" style="color: #9496a1;">widgets</span>
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: #073889; color: #ffffff; font-size: 13px; font-weight: 700;"><span class="msr" style="font-size: 18px;">auto_awesome</span>Hera</div>
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: #f46015; color: #ffffff; font-size: 13px; font-weight: 700;"><span class="msr" style="font-size: 18px;">call</span>Bellen</div>
+      <div style="width: 34px; height: 34px; border-radius: 17px; background: #d3e6f0; color: #073889; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;">An</div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: row; overflow: hidden;">
+    <div style="width: 232px; background: #ffffff; border-right: 1px solid #dfe4e6; display: flex; flex-direction: column; padding: 14px 10px 12px 10px; gap: 4px;">
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid #dfe4e6; border-radius: 8px; color: #9496a1; font-size: 13px; margin-bottom: 6px;"><span class="msr" style="font-size: 16px;">search</span>Zoeken</div>
+      <div class="nav"><span class="msr" style="color: #f46015;">grid_view</span>Dashboard</div>
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 12px 12px 4px 12px; font-size: 12px; color: #9496a1;"><span class="msr" style="font-size: 16px; color: #f2c230;">star</span>Favorieten</div>
+      <div class="nav on"><span class="msr" style="color: #073889;">directions_car</span><span style="flex-grow: 1;">Wagenpark</span><span class="msr" style="font-size: 16px; color: #9496a1;">expand_less</span></div>
+      <div class="sub"><span><span class="dot"></span>Dashboard</span></div>
+      <div class="sub on"><span><span class="dot" style="background: #073889;"></span>Wagenpark</span><span style="font-size: 11px; color: #9496a1;">54</span></div>
+      <div class="sub"><span><span class="dot"></span>Bestuurders</span></div>
+      <div class="sub"><span><span class="dot"></span>Wachtlijst</span><span style="font-size: 11px; color: #9496a1;">1</span></div>
+      <div class="sub"><span><span class="dot"></span>Uitleen</span><span style="font-size: 11px; color: #9496a1;">3</span></div>
+      <div class="sub"><span><span class="dot"></span>Taken</span><span style="font-size: 11px; font-weight: 700; color: #ffffff; background: #f46015; border-radius: 9px; padding: 0 6px;">9</span></div>
+      <div class="sub"><span><span class="dot"></span>Incidenten</span></div>
+      <div class="sub"><span><span class="dot"></span>Boetes</span></div>
+      <div class="sub"><span><span class="dot"></span>Contacten</span></div>
+      <div class="sub"><span><span class="dot"></span>Documenten</span></div>
+      <div class="sub"><span><span class="dot"></span>Archief</span></div>
+      <div class="sub"><span><span class="dot"></span>Rapporten</span></div>
+      <div class="sub"><span><span class="dot"></span>Processen</span></div>
+      <div class="sub"><span><span class="dot"></span>Instellingen</span></div>
+      <div class="nav" style="margin-top: 6px;"><span class="msr" style="color: #073889;">group</span>Kats</div>
+      <div class="nav"><span class="msr" style="color: #073889;">check_box</span>To do app</div>
+      <div style="margin-top: auto; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #dfe4e6; border-radius: 8px; font-size: 13px; color: #03153f;"><span style="display: flex; flex-direction: row; align-items: center; gap: 8px;"><span class="msr" style="font-size: 18px;">apps</span>Alle apps</span><span style="font-size: 11px; color: #9496a1;">Ctrl+.</span></div>
+    </div>
+
+    <div style="flex-grow: 1; display: flex; flex-direction: column; padding: 22px 32px; gap: 16px; overflow: hidden;">
+
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; font-size: 12px; color: #9496a1;"><span>Wagenpark</span><span class="msr" style="font-size: 14px;">chevron_right</span><span style="color: #03153f;">AB-123-C</span></div>
+
+      <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 14px;">
+          <div class="plate" style="font-size: 18px; padding: 6px 12px; border-radius: 4px; border: 1px solid #b48b00;">AB-123-C</div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <div style="font-size: 24px; font-weight: 800; color: #073889;">Renault Megane E-Tech</div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; font-size: 13px; color: #9496a1;">
+              <span style="display: flex; flex-direction: row; align-items: center; gap: 4px;"><span class="msr" style="font-size: 16px;">bolt</span>Elektrisch</span>
+              <span style="display: flex; flex-direction: row; align-items: center; gap: 4px;"><span class="msr" style="font-size: 16px;">location_on</span>Wognum</span>
+              <span>2024 · eigendom · bijtelling ja · winter- en zomerbanden</span>
+            </div>
+          </div>
+          <span class="pill" style="background: #dff5e3; color: #1f7a2e;">actief</span>
+        </div>
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+          <div class="btn"><span class="msr" style="font-size: 18px;">edit</span>Bewerken</div>
+          <div class="btn"><span class="msr" style="font-size: 18px;">checklist</span>Proces starten</div>
+          <div class="btn" style="background: #f46015; border-color: #f46015; color: #ffffff; font-weight: 800;"><span class="msr" style="font-size: 18px;">key_off</span>Innemen</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+        <div class="card">
+          <div class="lbl"><span class="msr" style="font-size: 16px; color: #f46015;">person</span>BESTUURDER</div>
+          <div style="font-size: 17px; font-weight: 800; color: #073889;">Sanne Jansen</div>
+          <div style="font-size: 13px;">Wognum · sinds 4 maart 2024</div>
+          <div style="font-size: 13px;">Rijbewijs geldig tot 2031</div>
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px; font-size: 13px; color: #073889; font-weight: 600; margin-top: 4px;">Historie: 2 eerdere bestuurders<span class="msr" style="font-size: 16px;">arrow_forward</span></div>
+        </div>
+        <div class="card">
+          <div class="lbl"><span class="msr" style="font-size: 16px; color: #f46015;">credit_card</span>EIGENDOM EN TANKPAS</div>
+          <div style="font-size: 15px; font-weight: 700;">Eigendom Hero · gekocht maart 2024</div>
+          <div style="font-size: 13px;">Verzekering via Hypotheekshop Hoorn</div>
+          <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px;">
+            <div style="font-size: 13px;">MKB Brandstof · 7034 5512 ••••</div>
+            <div class="btn" style="padding: 5px 10px; font-size: 12px;"><span class="msr" style="font-size: 16px;">visibility</span>Toon pincode</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="lbl"><span class="msr" style="font-size: 16px; color: #f46015;">event</span>DEADLINES</div>
+          <div class="row"><span>APK</span><span class="pill" style="background: #b71525; color: #ffffff;">18 sep 2026</span></div>
+          <div class="row"><span>Winterbanden</span><span class="pill" style="background: #fde1b6; color: #944100;">vóór 1 nov</span></div>
+          <div class="row"><span>Volgende beurt</span><span>bij 45.000 km</span></div>
+          <div class="row"><span>Onderhoudsadres</span><span style="color: #073889; font-weight: 600;">Renault: vrije dealerkeuze</span></div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+        <div class="card">
+          <div class="lbl"><span class="msr" style="font-size: 16px; color: #f46015;">speed</span>KILOMETERSTAND</div>
+          <div class="row"><span>1 sep 2026</span><span style="font-weight: 700;">38.412</span></div>
+          <div class="row"><span>1 aug 2026</span><span>36.190</span></div>
+          <div class="row"><span>1 jul 2026</span><span>34.020</span></div>
+          <div style="font-size: 12px; color: #9496a1; margin-top: 4px;">Gemiddeld 2.200 km per maand</div>
+        </div>
+        <div class="card">
+          <div class="lbl"><span class="msr" style="font-size: 16px; color: #f46015;">build</span>ONDERHOUD EN INCIDENTEN</div>
+          <div class="row"><span>Grote beurt · 11 dec 2025</span><span class="pill" style="background: #dff5e3; color: #1f7a2e;">afgerond</span></div>
+          <div class="row"><span>Parkeerschade · 6 jun 2026</span><span class="pill" style="background: #dff5e3; color: #1f7a2e;">afgerond</span></div>
+          <div class="row"><span>Boete € 109 · 12 aug 2026</span><span class="pill" style="background: #fde1b6; color: #944100;">doorbelast</span></div>
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px; font-size: 13px; color: #073889; font-weight: 600; margin-top: 4px;">Alles tonen<span class="msr" style="font-size: 16px;">arrow_forward</span></div>
+        </div>
+        <div class="card">
+          <div class="lbl"><span class="msr" style="font-size: 16px; color: #f46015;">folder</span>DOCUMENTEN</div>
+          <div class="row"><span>APK-rapport · 3 sep 2025</span><span class="pill" style="background: #dff5e3; color: #1f7a2e;">goedgekeurd</span></div>
+          <div class="row"><span>Kentekenbewijs · polis · groene kaart</span><span style="color: #9496a1;">mrt 2024</span></div>
+          <div class="row"><span>Foto's uitgifte (8)</span><span style="color: #9496a1;">mrt 2024</span></div>
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px; font-size: 13px; color: #073889; font-weight: 600; margin-top: 4px;"><span class="msr" style="font-size: 16px;">upload</span>Document uploaden</div>
+        </div>
+      </div>
+
+      <div class="card" style="gap: 8px;">
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <div class="lbl"><span class="msr" style="font-size: 16px; color: #f46015;">history</span>LOGBOEK</div>
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px; font-size: 12px; color: #073889; font-weight: 600;">Alles tonen<span class="msr" style="font-size: 16px;">arrow_forward</span></div>
+        </div>
+        <div style="display: flex; flex-direction: row; gap: 12px; font-size: 13px;"><span style="color: #9496a1; width: 110px;">9 sep 2026</span><span>Kilometerstand doorgegeven door Sanne Jansen</span></div>
+        <div style="display: flex; flex-direction: row; gap: 12px; font-size: 13px;"><span style="color: #9496a1; width: 110px;">28 aug 2026</span><span>Pincode getoond aan Sanne Jansen</span></div>
+        <div style="display: flex; flex-direction: row; gap: 12px; font-size: 13px;"><span style="color: #9496a1; width: 110px;">14 aug 2026</span><span>Boete doorbelast door wagenparkbeheer</span></div>
+      </div>
+
+      <div style="font-size: 11px; color: #9496a1; margin-top: auto;">Schets · voorbeeldgegevens, kentekens en namen verzonnen</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">
+  <style>
+    body { margin: 0; font-family: Exo, Arial, Helvetica, sans-serif; color: #03153f; background: #ffffff; }
+    a { color: #073889; } a:hover { color: #0065cc; }
+    .msr { font-family: 'Material Symbols Rounded', sans-serif; font-weight: 400; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; }
+    .nav { display: flex; flex-direction: row; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; font-size: 14px; color: #03153f; }
+    .nav.on { background: #e9f3f8; color: #073889; font-weight: 600; }
+    .sub { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 6px 12px 6px 34px; border-radius: 8px; font-size: 13px; color: #03153f; }
+    .sub.on { background: #e9f3f8; color: #073889; font-weight: 600; }
+    .dot { display: inline-block; width: 5px; height: 5px; border-radius: 3px; background: #b8c2c7; margin-right: 8px; }
+    .plate { font-family: Arial, sans-serif; font-weight: 700; font-size: 12px; background: #f2c230; color: #111111; padding: 3px 7px; border-radius: 3px; letter-spacing: 0.05em; white-space: nowrap; }
+    .pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 10px; white-space: nowrap; }
+    .card { background: #ffffff; border: 1px solid #dfe4e6; border-radius: 12px; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #9496a1; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #f3f6f9; overflow: hidden;">
+
+  <!-- Topbar zoals heroapp.nl -->
+  <div style="height: 58px; background: #ffffff; border-bottom: 1px solid #dfe4e6; display: flex; flex-direction: row; align-items: center; padding: 0 20px; gap: 20px;">
+    <img src="hero-logo-blauw.svg" style="width: 46px; height: 39px;" alt="Hero">
+    <div style="flex-grow: 1; display: flex; flex-direction: row; justify-content: center;">
+      <div style="width: 440px; display: flex; flex-direction: row; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid #dfe4e6; border-radius: 10px; background: #f8fafc; color: #9496a1; font-size: 13px;">
+        <span style="font-weight: 600; color: #03153f;">Alle</span><span class="msr" style="font-size: 18px;">search</span><span style="flex-grow: 1;">Zoeken in Hero...</span><span style="font-size: 11px; border: 1px solid #dfe4e6; border-radius: 4px; padding: 1px 6px;">Ctrl+K</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 14px;">
+      <span class="msr" style="color: #073889;">view_column</span>
+      <span class="msr" style="color: #9496a1;">notifications</span>
+      <span class="msr" style="color: #9496a1;">widgets</span>
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: #073889; color: #ffffff; font-size: 13px; font-weight: 700;"><span class="msr" style="font-size: 18px;">auto_awesome</span>Hera</div>
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: #f46015; color: #ffffff; font-size: 13px; font-weight: 700;"><span class="msr" style="font-size: 18px;">call</span>Bellen</div>
+      <div style="width: 34px; height: 34px; border-radius: 17px; background: #d3e6f0; color: #073889; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;">An</div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: row; overflow: hidden;">
+
+    <!-- Sidebar zoals heroapp.nl -->
+    <div style="width: 232px; background: #ffffff; border-right: 1px solid #dfe4e6; display: flex; flex-direction: column; padding: 14px 10px 12px 10px; gap: 4px;">
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid #dfe4e6; border-radius: 8px; color: #9496a1; font-size: 13px; margin-bottom: 6px;"><span class="msr" style="font-size: 16px;">search</span>Zoeken</div>
+      <div class="nav"><span class="msr" style="color: #f46015;">grid_view</span>Dashboard</div>
+      <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 12px 12px 4px 12px; font-size: 12px; color: #9496a1;"><span class="msr" style="font-size: 16px; color: #f2c230;">star</span>Favorieten</div>
+      <div class="nav on"><span class="msr" style="color: #073889;">directions_car</span><span style="flex-grow: 1;">Wagenpark</span><span class="msr" style="font-size: 16px; color: #9496a1;">expand_less</span></div>
+      <div class="sub on"><span><span class="dot" style="background: #073889;"></span>Dashboard</span></div>
+      <div class="sub"><span><span class="dot"></span>Wagenpark</span><span style="font-size: 11px; color: #9496a1;">54</span></div>
+      <div class="sub"><span><span class="dot"></span>Bestuurders</span></div>
+      <div class="sub"><span><span class="dot"></span>Wachtlijst</span><span style="font-size: 11px; color: #9496a1;">1</span></div>
+      <div class="sub"><span><span class="dot"></span>Uitleen</span><span style="font-size: 11px; color: #9496a1;">3</span></div>
+      <div class="sub"><span><span class="dot"></span>Taken</span><span style="font-size: 11px; font-weight: 700; color: #ffffff; background: #f46015; border-radius: 9px; padding: 0 6px;">9</span></div>
+      <div class="sub"><span><span class="dot"></span>Incidenten</span></div>
+      <div class="sub"><span><span class="dot"></span>Boetes</span></div>
+      <div class="sub"><span><span class="dot"></span>Contacten</span></div>
+      <div class="sub"><span><span class="dot"></span>Documenten</span></div>
+      <div class="sub"><span><span class="dot"></span>Archief</span></div>
+      <div class="sub"><span><span class="dot"></span>Rapporten</span></div>
+      <div class="sub"><span><span class="dot"></span>Processen</span></div>
+      <div class="sub"><span><span class="dot"></span>Instellingen</span></div>
+      <div class="nav" style="margin-top: 6px;"><span class="msr" style="color: #073889;">group</span>Kats</div>
+      <div class="nav"><span class="msr" style="color: #073889;">check_box</span>To do app</div>
+      <div style="margin-top: auto; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #dfe4e6; border-radius: 8px; font-size: 13px; color: #03153f;"><span style="display: flex; flex-direction: row; align-items: center; gap: 8px;"><span class="msr" style="font-size: 18px;">apps</span>Alle apps</span><span style="font-size: 11px; color: #9496a1;">Ctrl+.</span></div>
+    </div>
+
+    <!-- Main -->
+    <div style="flex-grow: 1; display: flex; flex-direction: column; padding: 24px 32px; gap: 18px; overflow: hidden;">
+
+      <div style="display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <div class="lbl" style="color: #f46015;">WAGENPARK</div>
+          <div style="font-size: 26px; font-weight: 800; color: #073889;">Dashboard</div>
+          <div style="font-size: 13px; color: #9496a1;">Maandag 14 september · alle vestigingen</div>
+        </div>
+        <div style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 9px 12px; border: 1px solid #dfe4e6; border-radius: 8px; background: #ffffff; font-size: 13px; color: #03153f;"><span class="msr" style="font-size: 18px; color: #9496a1;">location_on</span>Alle vestigingen<span class="msr" style="font-size: 18px; color: #9496a1;">expand_more</span></div>
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 8px; background: #f46015; color: #ffffff; font-size: 13px; font-weight: 800;"><span class="msr" style="font-size: 18px;">add</span>Nieuw voertuig</div>
+        </div>
+      </div>
+
+      <!-- KPI's zoals in Kats: label, groot getal, 'van', pill -->
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+        <div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+          <div class="lbl">ACTIEF</div>
+          <div style="display: flex; flex-direction: row; align-items: baseline; gap: 8px;"><span style="font-size: 32px; font-weight: 800; color: #073889;">54</span><span style="font-size: 13px; color: #9496a1;">van 66</span><span class="pill" style="background: #d3e6f0; color: #073889;">82%</span></div>
+          <div style="font-size: 12px; color: #9496a1;">Wognum 22 · Alkmaar 10 · Hoorn 9 · Schiphol 13</div>
+        </div>
+        <div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+          <div class="lbl">BESTELD</div>
+          <div style="display: flex; flex-direction: row; align-items: baseline; gap: 8px;"><span style="font-size: 32px; font-weight: 800; color: #073889;">12</span><span style="font-size: 13px; color: #9496a1;">levering oktober</span></div>
+          <div style="font-size: 12px; color: #9496a1;">6 Tesla Model 3 · 6 Renault Megane</div>
+        </div>
+        <div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+          <div class="lbl">OP VOORRAAD, TE LEEN</div>
+          <div style="display: flex; flex-direction: row; align-items: baseline; gap: 8px;"><span style="font-size: 32px; font-weight: 800; color: #073889;">3</span><span style="font-size: 13px; color: #9496a1;">auto's</span><span class="pill" style="background: #fde1b6; color: #944100;">1 verzoek wacht</span></div>
+          <div style="font-size: 12px; color: #9496a1;">Lavendelbus, verhuisbus, Renault Clio</div>
+        </div>
+        <div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+          <div class="lbl">OPEN TAKEN</div>
+          <div style="display: flex; flex-direction: row; align-items: baseline; gap: 8px;"><span style="font-size: 32px; font-weight: 800; color: #f46015;">9</span><span class="pill" style="background: #f8dad7; color: #b71525;">3 te laat</span></div>
+          <div style="font-size: 12px; color: #9496a1;">6 deze maand</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 16px;">
+        <div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #073889;"><span class="msr" style="color: #f46015;">flag</span>Vandaag voor jou</div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 4px; font-size: 12px; color: #073889; font-weight: 600;">Naar taken<span class="msr" style="font-size: 16px;">arrow_forward</span></div>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #dfe4e6;">
+              <span class="msr" style="color: #b71525;">error</span><span class="plate">AB-123-C</span>
+              <div style="flex-grow: 1; font-size: 13.5px;">APK verstreken · Renault Clio · Wognum</div>
+              <span class="pill" style="background: #b71525; color: #ffffff;">4 maanden te laat</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #dfe4e6;">
+              <span class="msr" style="color: #b71525;">error</span><span class="plate">DE-456-F</span>
+              <div style="flex-grow: 1; font-size: 13.5px;">APK verstreken · in uitleen · Hoorn</div>
+              <span class="pill" style="background: #b71525; color: #ffffff;">18 dagen te laat</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #dfe4e6;">
+              <span class="msr" style="color: #f46015;">key</span><span class="plate">GH-789-J</span>
+              <div style="flex-grow: 1; font-size: 13.5px;">Leenauto over retourdatum · Schiphol</div>
+              <span class="pill" style="background: #fde1b6; color: #944100;">6 dagen</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #dfe4e6;">
+              <span class="msr" style="color: #f46015;">how_to_reg</span><span class="plate">KL-012-M</span>
+              <div style="flex-grow: 1; font-size: 13.5px;">Leenverzoek Renault Clio · Alkmaar · 3 dagen</div>
+              <span class="pill" style="background: #fde1b6; color: #944100;">goedkeuren</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #dfe4e6;">
+              <span class="msr" style="color: #073889;">ac_unit</span><span class="pill" style="background: #d3e6f0; color: #073889; border-radius: 3px;">SEIZOEN</span>
+              <div style="flex-grow: 1; font-size: 13.5px;">Winterbanden monteren · 34 auto's</div>
+              <span class="pill" style="background: #d3e6f0; color: #073889;">vanaf 1 oktober</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #073889;"><span class="msr" style="color: #f46015;">pending_actions</span>Nog te doen</div>
+          <div style="display: flex; flex-direction: column;">
+            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #dfe4e6;"><span style="font-size: 13.5px;">Uitleen zonder retourdatum</span><span style="font-size: 16px; font-weight: 800; color: #073889;">2</span></div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #dfe4e6;"><span style="font-size: 13.5px;">Op de wachtlijst</span><span style="font-size: 16px; font-weight: 800; color: #073889;">1</span></div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #dfe4e6;"><span style="font-size: 13.5px;">Besteld, levering oktober</span><span style="font-size: 16px; font-weight: 800; color: #073889;">12</span></div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #dfe4e6;"><span style="font-size: 13.5px;">Kilometerstand onbekend of ouder dan 60 dagen</span><span style="font-size: 16px; font-weight: 800; color: #b71525;">50</span></div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #dfe4e6;"><span style="font-size: 13.5px;">Incidenten open</span><span style="font-size: 16px; font-weight: 800; color: #073889;">1</span></div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #dfe4e6;"><span style="font-size: 13.5px;">APK-rapporten wachten op goedkeuring</span><span style="font-size: 16px; font-weight: 800; color: #f46015;">2</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 16px;">
+        <div class="card" style="padding: 16px 20px; display: flex; flex-direction: row; align-items: center; gap: 20px;">
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; color: #073889; width: 200px;"><span class="msr" style="color: #38bd47;">eco</span>Verduurzaming 2026</div>
+          <div style="flex-grow: 1; display: flex; flex-direction: row; height: 12px; border-radius: 6px; overflow: hidden;">
+            <div style="width: 50%; background: #38bd47;"></div><div style="width: 9%; background: #4197cb;"></div><div style="width: 41%; background: #dfe4e6;"></div>
+          </div>
+          <div style="display: flex; flex-direction: row; gap: 14px; font-size: 12px; color: #03153f; white-space: nowrap;">
+            <span><span style="color: #38bd47; font-weight: 800;">50%</span> elektrisch</span><span><span style="color: #4197cb; font-weight: 800;">9%</span> hybride</span><span><span style="color: #9496a1; font-weight: 800;">41%</span> benzine</span>
+          </div>
+        </div>
+        <div class="card" style="padding: 16px 20px; display: flex; flex-direction: row; align-items: center; gap: 14px;">
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; color: #073889;"><span class="msr" style="color: #f46015;">bolt</span>Snelle acties</div>
+          <div style="display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap;">
+            <span class="pill" style="border: 1px solid #073889; color: #073889; padding: 6px 10px;">Boete invoeren</span>
+            <span class="pill" style="border: 1px solid #073889; color: #073889; padding: 6px 10px;">Leenverzoek</span>
+            <span class="pill" style="border: 1px solid #073889; color: #073889; padding: 6px 10px;">Proces starten</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size: 11px; color: #9496a1; margin-top: auto;">Schets · voorbeeldgegevens, kentekens en namen verzonnen</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
