@@ -164,13 +164,14 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .milieu-legenda { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 13px; }
 /* Processen: vier proceskaarten met uitklapbare stappenreeks, lopende processen als kaarten met voortgangsbalk */
 .proces-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.proces-grid > .card { margin-top: 0; }
 .proces-kaart { display: flex; flex-direction: column; gap: 12px; }
-.pk-kop { display: flex; align-items: flex-start; gap: 12px; }
+.pk-kop { display: flex; align-items: flex-start; gap: 12px; min-height: 74px; }
 .pk-titel { min-width: 0; line-height: 1.35; } .pk-titel strong { display: block; font-size: 14.5px; color: var(--blauw); }
 .pk-icoon { width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: var(--blauw-hair); color: var(--blauw); }
 .pk-icoon .msr { font-size: 24px; } .pk-icoon.klein { width: 34px; height: 34px; border-radius: 10px; } .pk-icoon.klein .msr { font-size: 20px; }
 .pk-icoon.oranje { background: var(--oranje-thin); color: var(--oranje-bold); } .pk-icoon.groen { background: var(--groen-soft); color: var(--groen-text); } .pk-icoon.grijs { background: var(--grijs-thin); color: var(--blauw-black); }
-.pk-feiten { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pk-feiten { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 26px; }
 .pk-stappen summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--blauw); }
 .pk-stappen summary::-webkit-details-marker { display: none; } .pk-stappen summary .msr { font-size: 20px; transition: transform .15s; }
 .pk-stappen[open] summary .msr { transform: rotate(180deg); } .pk-stappen .open { display: none; } .pk-stappen[open] .open { display: inline; } .pk-stappen[open] .dicht { display: none; }
