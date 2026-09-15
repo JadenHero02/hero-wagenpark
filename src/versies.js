@@ -4,8 +4,11 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.5", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "exporteren naar Excel (tip van Vasco, voor finance): menu Export geeft één werkboek met een tabblad per onderdeel; in het wagenpark exporteer je precies de rijen die je gefilterd hebt. Zonder pincodes, elke export in het logboek", commit: "" },
+  ] },
   { versie: "0.2.4", datum: "2026-09-15", punten: [
-    { soort: "verbeterd", tekst: "een bestuurder ziet in het menu alleen nog Mijn auto; Dashboard en Mijn auto waren voor hem dezelfde pagina (feedback Vasco). Het zoekveld bovenin is er alleen voor wie het wagenpark mag zien", commit: "" },
+    { soort: "verbeterd", tekst: "een bestuurder ziet in het menu alleen nog Mijn auto; Dashboard en Mijn auto waren voor hem dezelfde pagina (feedback Vasco). Het zoekveld bovenin is er alleen voor wie het wagenpark mag zien", commit: "49946f9" },
   ] },
   { versie: "0.2.3", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "de naam Wagenpark staat in de blauwe balk naast het logo en niet meer boven het menu; dat leek te veel op de menuregel Wagenpark (feedback Huub)", commit: "1f4b6c7" },

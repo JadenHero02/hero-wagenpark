@@ -1,0 +1,19 @@
+<%- include("../partials/header") %>
+<div class="page-head"><div><div class="eyebrow">Rapportage</div><h1>Exporteren naar Excel</h1><div class="sub">De live gegevens uit de app, op het moment dat je klikt. Zonder pincodes.</div></div></div>
+<div class="grid-2">
+  <div class="card">
+    <div class="lbl"><span class="msr">table_view</span>Alles in één werkboek</div>
+    <p style="margin-top:8px">Eén Excel met een tabblad per onderdeel: wagenpark (<%= n.voertuigen %>), bestuurders (<%= n.bestuurders %>), toewijzingen (<%= n.toewijzingen %>), kilometerstanden (<%= n.km %>), boetes (<%= n.boetes %>), incidenten (<%= n.incidenten %>), open taken (<%= n.taken %>), wachtlijst, contacten en archief (<%= n.archief %>). Elk tabblad heeft een filterrij; datums zijn echte Excel-datums.</p>
+    <a href="/export.xlsx" class="btn primary"><span class="msr">download</span>Download alles</a>
+  </div>
+  <div class="card">
+    <div class="lbl"><span class="msr">filter_alt</span>Alleen een selectie</div>
+    <p style="margin-top:8px">Ga naar het wagenpark, zoek en filter wat je nodig hebt (vestiging, status, brandstof, soort eigendom) en klik daar op Exporteren. Je krijgt precies de rijen die op het scherm staan.</p>
+    <div class="actions">
+      <a href="/voertuigen" class="btn"><span class="msr">directions_car</span>Naar het wagenpark</a>
+      <% vestigingen.forEach(ve => { %><a href="/voertuigen/export.xlsx?vestiging=<%= ve.id %>" class="btn ghost small"><span class="msr">download</span><%= ve.naam %></a><% }) %>
+    </div>
+  </div>
+</div>
+<p class="muted small" style="margin-top:14px">Elke export staat in het logboek met naam en datum.</p>
+<%- include("../partials/footer") %>

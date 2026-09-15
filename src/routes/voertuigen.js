@@ -18,10 +18,10 @@ async function lookups() {
   return { vestigingen: await db.all("SELECT * FROM vestigingen ORDER BY volgorde"), LABELS };
 }
 
-// Overzicht
-router.get("/", auth.requireRole("directie"), async (req, res) => {
-  const q = clean(req.query.q);
-  const f = { status: clean(req.query.status), vestiging: Number(req.query.vestiging) || null, milieu: clean(req.query.milieu), eigendom: clean(req.query.eigendom), km: clean(req.query.km), leen: clean(req.query.leen) };
+// De lijst met zoekterm en filters, ook gebruikt door de Excel-export
+async function zoekVoertuigen(query) {
+  const q = clean(query.q);
+  const f = { status: clean(query.status), vestiging: Number(query.vestiging) || null, milieu: clean(query.milieu), eigendom: clean(query.eigendom), km: clean(query.km), leen: clean(query.leen) };
   const where = ["v.status <> 'archief'"]; const params = [];
   const add = (sql, val) => { params.push(val); where.push(sql.replace("?", `$${params.length}`)); };
   if (q) add("(v.kenteken ILIKE ? OR v.merk ILIKE ? OR v.model ILIKE ? OR b.naam ILIKE ? OR v.notitie ILIKE ?)".replace(/\?/g, `$${params.length + 1}`), `%${q}%`);
@@ -42,8 +42,14 @@ router.get("/", auth.requireRole("directie"), async (req, res) => {
     LEFT JOIN bestuurders b ON b.id = t.bestuurder_id
     WHERE ${where.join(" AND ")}
     ORDER BY CASE v.status WHEN 'actief' THEN 1 WHEN 'uitgeleend' THEN 2 WHEN 'op_voorraad' THEN 3 WHEN 'besteld' THEN 4 ELSE 5 END, ve.volgorde NULLS LAST, v.merk, v.kenteken`, params);
+  return { rows, q, f };
+}
+
+// Overzicht
+router.get("/", auth.requireRole("directie"), async (req, res) => {
+  const { rows, q, f } = await zoekVoertuigen(req.query);
   const counts = await db.one("SELECT COUNT(*) FILTER (WHERE status = 'actief') AS actief, COUNT(*) FILTER (WHERE status = 'uitgeleend') AS uitgeleend, COUNT(*) FILTER (WHERE status = 'op_voorraad') AS op_voorraad, COUNT(*) FILTER (WHERE status = 'besteld') AS besteld FROM voertuigen");
-  res.render("voertuigen/index", { title: "Wagenpark", rows, q, f, counts, ...(await lookups()) });
+  res.render("voertuigen/index", { title: "Wagenpark", rows, q, f, counts, exportQuery: new URLSearchParams(Object.entries(req.query).filter(([, v]) => v)).toString(), ...(await lookups()) });
 });
 
 // Nieuw
@@ -225,4 +231,4 @@ archief.post("/:id/terug", auth.requireRole("admin"), async (req, res, next) => 
   res.redirect(`/voertuigen/${req.params.id}`);
 });
 
-module.exports = { router, archief };
+module.exports = { router, archief, zoekVoertuigen };
