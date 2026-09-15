@@ -60,7 +60,7 @@
 
     <div class="actions" style="margin-top:12px">
       <a href="/voertuigen/<%= v.id %>/documenten" class="btn small ghost"><span class="msr">folder</span>Documenten<% const nd = documenten.filter(d => d.voertuig_id === v.id).length; if (nd) { %> (<%= nd %>)<% } %></a>
-      <a href="/mijn-auto/auto/<%= v.id %><%= meekijken ? "?als=" + meekijken.id : "" %>" class="btn small ghost"><span class="msr">info</span>Over deze auto</a>
+      <a href="/mijn-auto/auto/<%= v.id %><%= meekijken ? "?als=" + meekijken.id : "" %>" class="btn small primary"><span class="msr">info</span>Over deze auto</a>
     </div>
 
     <% if (v.toewijzing_soort === "uitleen") { %>
