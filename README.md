@@ -28,3 +28,24 @@ Wagenparkbeheer in de Hero-app. Vervangt de Excel met negen tabbladen door een e
 - Documenten per auto in de app, meldingen per mail vanaf wagenparkbeheer@hero.eu.
 
 Geen persoonsgegevens, echte kentekens of pincodes in deze repository. Alle gegevens in de schetsen zijn verzonnen.
+
+## De app
+
+Node.js 24, Express, EJS en Postgres op Supabase (project "Hero Database", eigen schema `hero_wagenpark`, eigen databaserol `hero_wagenpark_app`). Inloggen met het Hero Microsoft-account via Supabase Auth, getoetst aan de medewerkerslijst `framework.users`. Dezelfde opzet als het ATS.
+
+```bash
+npm install                 # één keer
+npm start                   # http://localhost:3000 (leest .env, zie .env.example)
+npm run dev                 # herstart bij elke wijziging
+npm run import -- --reset   # leest de Excel (EXCEL_PATH) in en wist eerst alle wagenparkdata; foutlijst in data/import-foutlijst.txt
+```
+
+Variabelen (lokaal in `.env`, op Railway als Variables): `DATABASE_URL`, `DB_SCHEMA`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PUBLIC_BASE_URL`, `PINCODE_KEY` (sleutel voor de versleutelde pincodes; nooit wijzigen zonder de pincodes opnieuw in te voeren), en voor mail `MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET`, `MAIL_FROM`. Lokaal inloggen zonder Microsoft kan met `DEV_LOGIN_EMAIL` (niet in productie).
+
+Rollen: admin (Annemiek), beheerder (celdirecteuren en office managers), bestuurder, directie. Wie welke rol krijgt bij de eerste login staat in de tabel `instellingen` (`admin_emails`, `beheerder_emails`, `directie_emails`); iedereen anders wordt bestuurder.
+
+Mapstructuur: `server.js` (start en routes), `src/db.js` (database), `src/auth.js` (sessies en rollen), `src/routes/` (per onderdeel), `views/` (EJS-templates), `public/` (stijl, lettertypen, logo), `scripts/import-excel.js` (de import).
+
+## Stappen
+
+1. Fundament (15 september): repository, schema en rol in Supabase, login, dashboard, wagenpark met detail, bestuurders, contacten, Mijn auto (kern), pincodes versleuteld, Excel-import met foutlijst.
