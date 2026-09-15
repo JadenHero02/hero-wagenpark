@@ -125,4 +125,18 @@ router.get("/mijn-auto", async (req, res) => {
   res.render("mijn-auto", { title: "Mijn auto", autos, garages, taken, boetes, verzoeken, incidenten, documenten, contacten, vrij: vrij.n, meekijken: als });
 });
 
+// Over deze auto: de gegevens van de auto voor de bestuurder, uit de RDW en de app. Alleen de eigen auto, of als beheerder/admin.
+router.get("/mijn-auto/auto/:id", async (req, res, next) => {
+  if (!/^\d+$/.test(req.params.id)) return next();
+  const als = res.locals.can("admin") && Number(req.query.als) ? await db.one("SELECT * FROM bestuurders WHERE id = $1", [Number(req.query.als)]) : null;
+  const b = als || req.bestuurder;
+  const v = await db.one("SELECT v.*, ve.naam AS vestiging FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id WHERE v.id = $1", [Number(req.params.id)]);
+  if (!v) return next();
+  const eigen = b ? await db.one("SELECT 1 FROM toewijzingen WHERE voertuig_id = $1 AND bestuurder_id = $2 AND status = 'actief'", [v.id, b.id]) : null;
+  if (!eigen && !res.locals.can("directie")) return res.status(403).render("error", { title: "Geen toegang", message: "Je kunt alleen je eigen auto bekijken." });
+  const garages = await db.all("SELECT * FROM contacten WHERE soort = 'garage' ORDER BY naam");
+  const garage = garages.find((g) => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(" ")[0])) || garages.find((g) => (g.merk || "").toLowerCase() === "alle") || null;
+  res.render("mijn-auto-info", { title: `Over ${v.kenteken || v.merk}`, v, garage, meekijken: als });
+});
+
 module.exports = { router };

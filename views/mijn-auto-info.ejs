@@ -1,0 +1,80 @@
+<%- include("partials/header") %>
+<%
+  // Over deze auto: wat de bestuurder over zijn auto wil weten, uit het kentekenregister van de RDW en de app.
+  // Bewust zonder de beheerdersgegevens (BPM, massa, catalogusprijs): die staan op de voertuigpagina.
+  const x = v.rdw_extra || {};
+  const d = h.daysUntil(v.apk_vervaldatum);
+  const pk = x.vermogen_kw ? Math.round(x.vermogen_kw * 1.36) : null;
+  const bouwjaar = v.rdw_eerste_toelating ? String(v.rdw_eerste_toelating).slice(0, 4) : h.bouwjaarFmt ? h.bouwjaarFmt(v.bouwjaar) : v.bouwjaar;
+  const rij = (k, w) => (w === null || w === undefined || w === "" ? "" : `<div><span class="k">${k}</span><span class="v">${w}</span></div>`);
+%>
+<div class="muted small" style="margin-bottom:10px"><a href="/mijn-auto<%= meekijken ? "?als=" + meekijken.id : "" %>">Mijn auto</a> › Over deze auto</div>
+<div style="max-width:560px">
+  <div class="card">
+    <div class="vehicle-head">
+      <span class="plate big"><%= v.kenteken || "besteld" %></span>
+      <div><h2><%= v.merk %> <%= v.model || "" %></h2><div class="meta"><span><%= v.vestiging || "" %></span><% if (bouwjaar) { %><span><%= bouwjaar %></span><% } %><% if (v.rdw_kleur) { %><span><%= v.rdw_kleur %></span><% } %></div></div>
+    </div>
+    <% if (v.rdw_opgehaald_op) { %>
+    <div class="rdw-status" style="margin-top:14px">
+      <% if (v.rdw_wam_verzekerd === false) { %><span class="pill bad"><span class="msr">gpp_bad</span>Niet WA-verzekerd, bel wagenparkbeheer</span><% } else if (v.rdw_wam_verzekerd) { %><span class="pill ok"><span class="msr">verified_user</span>WA-verzekerd</span><% } %>
+      <% if (v.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'ok' %>"><span class="msr">event_available</span>APK tot <%= h.formatDate(v.apk_vervaldatum) %></span><% } %>
+      <% if (x.terugroepactie) { %><span class="pill bad"><span class="msr">campaign</span>Open terugroepactie</span><% } %>
+    </div>
+    <% } %>
+  </div>
+
+  <% if (!v.rdw_opgehaald_op) { %>
+    <div class="card"><div class="muted">De gegevens van de RDW zijn nog niet opgehaald. Probeer het morgen opnieuw.</div></div>
+  <% } else { %>
+    <div class="card">
+      <div class="lbl"><span class="msr">directions_car</span>Voertuig</div>
+      <div class="rows" style="margin-top:4px">
+        <%- rij("Soort", [v.rdw_voertuigsoort, x.inrichting].filter(Boolean).join(" · ")) %>
+        <%- rij("Bouwjaar", bouwjaar) %>
+        <%- rij("Kleur", [v.rdw_kleur, x.tweede_kleur].filter(Boolean).join(" / ")) %>
+        <%- rij("Zitplaatsen", x.zitplaatsen ? x.zitplaatsen + (x.deuren ? " · " + x.deuren + " deuren" : "") : null) %>
+        <%- rij("Afmetingen", x.lengte ? `${x.lengte} × ${x.breedte || "?"}${x.hoogte ? " × " + x.hoogte : ""} cm` : null) %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl"><span class="msr">bolt</span>Motor en verbruik</div>
+      <div class="rows" style="margin-top:4px">
+        <%- rij("Brandstof", v.rdw_brandstof) %>
+        <%- rij("Vermogen", pk ? `${pk} pk (${x.vermogen_kw} kW)` : null) %>
+        <%- rij("Verbruik", x.verbruik ? x.verbruik.toLocaleString("nl-NL") + " l/100 km" : null) %>
+        <%- rij("CO₂", x.co2 !== null && x.co2 !== undefined ? x.co2 + " g/km" : null) %>
+        <%- rij("Energielabel", x.energielabel) %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl"><span class="msr">luggage</span>Praktisch</div>
+      <div class="rows" style="margin-top:4px">
+        <%- rij("Trekgewicht", x.trekken_geremd ? `${h.num(x.trekken_geremd)} kg geremd${x.trekken_ongeremd ? " · " + h.num(x.trekken_ongeremd) + " kg ongeremd" : ""}` : "geen trekhaakgegevens") %>
+        <%- rij("Gewicht rijklaar", x.massa_rijklaar ? h.num(x.massa_rijklaar) + " kg" : null) %>
+        <%- rij("Maximaal beladen", x.max_massa ? h.num(x.max_massa) + " kg" : null) %>
+        <%- rij("Banden", v.banden ? h.label("banden", v.banden) : null) %>
+        <%- rij(h.tankpasLeverancier(v.tankpas_nummer) === "E-Flux" ? "Laadpas" : "Tankpas", v.tankpas_nummer ? (h.tankpasLeverancier(v.tankpas_nummer) || "") : "geen") %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl"><span class="msr">build</span>Onderhoud</div>
+      <div class="rows" style="margin-top:4px">
+        <%- rij("Garage", garage ? `<strong>${h.esc(garage.naam)}</strong>${garage.telefoon ? ` <a href="tel:${garage.telefoon.replace(/\s/g, "")}" class="btn small" style="margin-left:6px"><span class="msr">call</span>${h.esc(garage.telefoon)}</a>` : ""}` : "geen garage bekend voor " + h.esc(v.merk)) %>
+        <%- rij("APK", v.apk_vervaldatum ? `geldig tot ${h.formatDate(v.apk_vervaldatum)}${v.apk_afspraak ? " · afspraak " + h.formatDate(v.apk_afspraak) : ""}` : "onbekend") %>
+        <%- rij("Eigendom", h.label("eigendom", v.eigendom) + (v.leasemaatschappij ? " · " + h.esc(v.leasemaatschappij) : "") + (v.contract_einde ? " · tot " + h.formatDate(v.contract_einde) : "")) %>
+      </div>
+    </div>
+
+    <div class="muted small" style="margin:4px 0 12px">Gegevens uit het kentekenregister van de RDW, bijgewerkt <%= h.formatDate(v.rdw_opgehaald_op) %>. Klopt er iets niet? Bel wagenparkbeheer.</div>
+  <% } %>
+
+  <div class="actions">
+    <a href="/mijn-auto<%= meekijken ? "?als=" + meekijken.id : "" %>" class="btn ghost"><span class="msr">arrow_back</span>Mijn auto</a>
+    <a href="/voertuigen/<%= v.id %>/documenten" class="btn"><span class="msr">folder</span>Documenten</a>
+  </div>
+</div>
+<%- include("partials/footer") %>

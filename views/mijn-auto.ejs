@@ -15,7 +15,7 @@
   </div>
 <% }) %>
 
-<% autos.forEach(v => { const dagen = h.daysUntil(v.apk_vervaldatum); const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(" ")[0])) || garages.find(g => (g.merk || "").toLowerCase() === "alle"); const mijnTaken = taken.filter(t => t.voertuig_id === v.id || !t.voertuig_id); %>
+<% autos.forEach(v => { const dagen = h.daysUntil(v.apk_vervaldatum); const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(" ")[0])) || garages.find(g => (g.merk || "").toLowerCase() === "alle"); const mijnTaken = taken.filter(t => (t.voertuig_id === v.id || !t.voertuig_id) && !["apk", "apk_rapport"].includes(t.soort)); %>
   <div class="card">
     <div class="vehicle-head">
       <span class="plate big"><%= v.kenteken || "besteld" %></span>
@@ -60,7 +60,7 @@
 
     <div class="actions" style="margin-top:12px">
       <a href="/voertuigen/<%= v.id %>/documenten" class="btn small ghost"><span class="msr">folder</span>Documenten<% const nd = documenten.filter(d => d.voertuig_id === v.id).length; if (nd) { %> (<%= nd %>)<% } %></a>
-      <a href="/incidenten/nieuw?voertuig=<%= v.id %>" class="btn small ghost"><span class="msr">car_crash</span>Incident melden</a>
+      <a href="/mijn-auto/auto/<%= v.id %><%= meekijken ? "?als=" + meekijken.id : "" %>" class="btn small ghost"><span class="msr">info</span>Over deze auto</a>
     </div>
 
     <% if (v.toewijzing_soort === "uitleen") { %>

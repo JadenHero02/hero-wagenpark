@@ -4,6 +4,10 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.26", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "in Mijn auto de knop \"Over deze auto\": een eigen pagina met wat de bestuurder over zijn auto wil weten, uit het kentekenregister van de RDW en de app. Bovenaan WA-verzekerd, APK en een eventuele terugroepactie; daaronder voertuig (soort, bouwjaar, kleur, zitplaatsen, afmetingen), motor en verbruik (brandstof, pk, verbruik, CO₂, energielabel), praktisch (trekgewicht, gewicht, banden, tankpas) en onderhoud (garage met belknop, APK, eigendom). Beheerdersgegevens zoals BPM en catalogusprijs staan er bewust niet op", commit: "" },
+    { soort: "opgelost", tekst: "APK stond twee keer in Mijn auto: als \"Actie nodig\" én als losse taak. Nu alleen als Actie nodig", commit: "" },
+  ] },
   { versie: "0.2.25", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "admin kan meekijken: op de pagina van een bestuurder de knop \"Bekijk als bestuurder\" opent Mijn auto precies zoals die persoon het ziet, met een oranje balk bovenaan als herinnering", commit: "" },
   ] },
