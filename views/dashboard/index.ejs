@@ -27,10 +27,10 @@
     <div class="row"><span class="big <%= counts.apk_ok < counts.met_kenteken ? 'warn' : '' %>"><%= counts.apk_ok %></span><span class="muted">van <%= counts.met_kenteken %></span></div>
     <div class="muted small"><%= counts.apk_ok < counts.met_kenteken ? (counts.met_kenteken - counts.apk_ok) + " verlopen of onbekend" : "geldige APK, via de RDW" %></div>
   </a>
-  <a class="tile" href="/voertuigen?km=oud<%= vId ? "&vestiging=" + vId : "" %>">
-    <div class="lbl">Km-stand actueel</div>
-    <div class="row"><span class="big <%= counts.km_ok < counts.rijdend ? 'warn' : '' %>"><%= counts.km_ok %></span><span class="muted">van <%= counts.rijdend %></span></div>
-    <div class="muted small">stand jonger dan 60 dagen</div>
+  <a class="tile" href="/taken<%= vId ? "?vestiging=" + vId : "" %>">
+    <div class="lbl">Open taken</div>
+    <div class="row"><span class="big <%= openTaken.te_laat > 0 ? 'warn' : '' %>"><%= openTaken.n %></span><span class="muted"><%= openTaken.n === 1 ? "taak" : "taken" %></span></div>
+    <div class="muted small"><%= openTaken.te_laat > 0 ? openTaken.te_laat + " over de deadline" : openTaken.n ? "geen over de deadline" : "alles afgerond" %></div>
   </a>
   <a class="tile" href="/uitleen">
     <div class="lbl">Leenverzoeken</div>

@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.22", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "stuurgetal \"Km-stand actueel\" vervangen door \"Open taken\" (zoals in het ontwerpplan): het aantal open taken voor de beheerder, oranje als er taken over de deadline zijn; klik opent de takenlijst. Kilometerstanden blijven op de voertuigpagina, in Mijn auto en als filter in de wagenparklijst; de maandelijkse kilometerronde komt in stap 3", commit: "" },
+  ] },
   { versie: "0.2.21", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "dashboard bewust rustig gehouden (ATS-feedback, en met het oog op de iOS-app): de blokken \"Laatste activiteit\" en \"Per vestiging\" zijn weer weg. Wat overblijft: vier stuurgetallen, Vandaag voor jou, Komende weken, Snel en Verduurzaming", commit: "" },
   ] },

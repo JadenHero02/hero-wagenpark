@@ -29,10 +29,11 @@ router.get("/", async (req, res) => {
            COUNT(*) FILTER (WHERE v.kenteken IS NOT NULL AND v.status IN ('actief','uitgeleend','op_voorraad')) AS met_kenteken,
            COUNT(*) FILTER (WHERE v.kenteken IS NOT NULL AND v.status IN ('actief','uitgeleend','op_voorraad') AND v.apk_vervaldatum >= current_date) AS apk_ok,
            COUNT(*) FILTER (WHERE v.status IN ('actief','uitgeleend')) AS rijdend,
-           COUNT(*) FILTER (WHERE v.status IN ('actief','uitgeleend') AND EXISTS (SELECT 1 FROM kilometerstanden k WHERE k.voertuig_id = v.id AND k.datum > current_date - 60)) AS km_ok,
            COUNT(*) FILTER (WHERE v.kenteken IS NOT NULL AND v.status IN ('actief','uitgeleend','op_voorraad') AND EXISTS (SELECT 1 FROM documenten d WHERE d.voertuig_id = v.id AND d.soort = 'kentekenbewijs')) AS doc_ok
     FROM voertuigen v WHERE v.status <> 'archief' ${where}`, params);
   const perVestiging = await db.all("SELECT ve.naam, COUNT(v.id) AS n FROM vestigingen ve LEFT JOIN voertuigen v ON v.vestiging_id = ve.id AND v.status IN ('actief','uitgeleend','op_voorraad') GROUP BY ve.id, ve.naam, ve.volgorde ORDER BY ve.volgorde");
+  // Open taken voor de beheerder (zelfde telling als de badge in het menu), en hoeveel daarvan over de deadline zijn
+  const openTaken = await db.one(`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE t.deadline < current_date) AS te_laat FROM taken t LEFT JOIN voertuigen v ON v.id = t.voertuig_id LEFT JOIN bestuurders b ON b.id = t.bestuurder_id WHERE t.status = 'open' AND t.voor = 'beheerder' ${vId ? "AND COALESCE(v.vestiging_id, b.vestiging_id) = $1" : ""}`, params);
   const leensnelheid = await db.one("SELECT COUNT(*) AS n, ROUND(AVG(EXTRACT(EPOCH FROM (besloten_op - created_at)) / 86400)::numeric, 1) AS dagen FROM leenverzoeken WHERE besloten_op IS NOT NULL AND created_at > current_date - 90");
 
   // ---- Vandaag voor jou: elke regel één knop ----
@@ -96,7 +97,7 @@ router.get("/", async (req, res) => {
 
   const milieu = await db.all(`SELECT COALESCE(v.milieu, 'onbekend') AS milieu, COUNT(*) AS n FROM voertuigen v WHERE v.status IN ('actief','uitgeleend','op_voorraad') ${where} GROUP BY 1 ORDER BY n DESC`, params);
   const vestigingNaam = vId ? (vestigingen.find((v) => v.id === vId) || {}).naam : null;
-  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, vestigingNaam, counts, perVestiging, leensnelheid, vandaag, komend, besteld, milieu });
+  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, vestigingNaam, counts, perVestiging, openTaken, leensnelheid, vandaag, komend, besteld, milieu });
 });
 
 // Mijn auto: de bestuurder op de telefoon. Voorlopig de kern; de rest volgt donderdag.
