@@ -68,7 +68,6 @@
       <% if (v.banden === "winter_zomer") { %><div><span class="k">Winterbanden</span><span class="v"><span class="pill warn">vóór 1 nov</span></span></div><% } %>
       <% if (bw) { %><div><span class="k">Bandenwissel <%= bw.seizoen %></span><span class="v"><span class="pill <%= bw.gewisseld ? 'ok' : 'warn' %>"><%= bw.gewisseld ? "gewisseld" : "nog niet" %></span></span></div><% } %>
       <% if (v.contract_einde) { %><div><span class="k">Contract eindigt</span><span class="v"><%= h.formatDate(v.contract_einde) %></span></div><% } %>
-      <div><span class="k">RDW</span><span class="v small"><% if (v.rdw_opgehaald_op) { %><%= [v.rdw_kleur, v.rdw_brandstof, v.rdw_catalogusprijs ? "cat. " + h.euro(v.rdw_catalogusprijs) : null, v.rdw_wam_verzekerd === false ? "NIET WA-verzekerd" : v.rdw_wam_verzekerd ? "WA-verzekerd" : null].filter(Boolean).join(" · ") %><div class="muted">opgehaald <%= h.formatDate(v.rdw_opgehaald_op) %></div><% } else { %><span class="muted">nog niet opgehaald</span><% } %><% if (can("beheerder") && v.kenteken) { %> <form method="POST" action="/voertuigen/<%= v.id %>/rdw" class="inline"><button class="btn small ghost" type="submit" title="Merk, bouwjaar, brandstof en APK-datum ophalen bij de RDW"><span class="msr">sync</span>RDW</button></form><% } %></span></div>
       <div><span class="k">Onderhoudsadres</span><span class="v"><% if (garage) { %><strong><%= garage.naam %></strong><% if (garage.telefoon) { %> <span class="muted small"><%= garage.telefoon %></span><% } %><% } else { %><span class="muted">geen garage voor <%= v.merk %></span><% } %></span></div>
     </div>
   </div>
@@ -115,6 +114,66 @@
     </form>
     <% } %>
   </div>
+</div>
+
+<% const x = v.rdw_extra || {}; const pk = x.vermogen_kw ? Math.round(x.vermogen_kw * 1.36) : null; const heeftRdw = Boolean(v.rdw_opgehaald_op); %>
+<div class="card rdw-kaart" style="margin-top:16px">
+  <div class="card-head">
+    <div class="lbl"><span class="msr">verified</span>Kentekenregister (RDW)</div>
+    <div class="actions" style="gap:8px">
+      <% if (heeftRdw) { %><span class="muted small">opgehaald <%= h.formatDate(v.rdw_opgehaald_op, true) %></span><% } %>
+      <% if (can("beheerder") && v.kenteken) { %><form method="POST" action="/voertuigen/<%= v.id %>/rdw" class="inline"><button class="btn small ghost" type="submit" title="Nu opnieuw ophalen bij de RDW"><span class="msr">sync</span>Vernieuwen</button></form><% } %>
+    </div>
+  </div>
+  <% if (!heeftRdw) { %>
+    <div class="muted"><%= v.kenteken ? "Nog niet opgehaald. De app haalt de gegevens elke nacht op; met Vernieuwen doe je het nu." : "Zonder kenteken zijn er geen RDW-gegevens." %></div>
+  <% } else { %>
+    <div class="rdw-status">
+      <% if (v.rdw_wam_verzekerd === false) { %><span class="pill bad"><span class="msr">gpp_bad</span>Niet WA-verzekerd</span><% } else if (v.rdw_wam_verzekerd) { %><span class="pill ok"><span class="msr">verified_user</span>WA-verzekerd</span><% } %>
+      <% if (v.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'ok' %>"><span class="msr">event_available</span>APK tot <%= h.formatDate(v.apk_vervaldatum) %></span><% } %>
+      <% if (x.tellerstand_oordeel) { %><span class="pill <%= x.tellerstand_oordeel === 'Logisch' ? 'ok' : x.tellerstand_oordeel === 'Onlogisch' ? 'bad' : 'grey' %>"><span class="msr">speed</span>Tellerstand <%= x.tellerstand_oordeel.toLowerCase() %><%= x.tellerstand_jaar ? " (" + x.tellerstand_jaar + ")" : "" %></span><% } %>
+      <% if (x.terugroepactie) { %><span class="pill bad"><span class="msr">campaign</span>Open terugroepactie</span><% } %>
+      <% if (x.export) { %><span class="pill warn"><span class="msr">flight_takeoff</span>Geëxporteerd</span><% } %>
+      <% if (x.taxi) { %><span class="pill warn"><span class="msr">local_taxi</span>Taxi</span><% } %>
+      <% if (x.tenaamstellen_mogelijk === false) { %><span class="pill warn"><span class="msr">block</span>Tenaamstellen niet mogelijk</span><% } %>
+    </div>
+    <div class="rdw-grid">
+      <div>
+        <div class="rdw-kop">Voertuig</div>
+        <dl class="kv rdw-kv">
+          <dt>Soort</dt><dd><%= [v.rdw_voertuigsoort, x.inrichting].filter(Boolean).join(" · ") || "–" %></dd>
+          <dt>Kleur</dt><dd><%= [v.rdw_kleur, x.tweede_kleur].filter(Boolean).join(" / ") || "–" %></dd>
+          <dt>Eerste toelating</dt><dd><%= h.formatDate(v.rdw_eerste_toelating) || "–" %></dd>
+          <dt>Op naam sinds</dt><dd><%= h.formatDate(x.tenaamstelling) || "–" %></dd>
+          <dt>Zitplaatsen / deuren</dt><dd><%= [x.zitplaatsen, x.deuren].filter(n => n !== null && n !== undefined).join(" / ") || "–" %></dd>
+          <% if (x.lengte) { %><dt>Afmetingen</dt><dd><%= x.lengte %> × <%= x.breedte || "?" %><%= x.hoogte ? " × " + x.hoogte : "" %> cm</dd><% } %>
+        </dl>
+      </div>
+      <div>
+        <div class="rdw-kop">Motor en verbruik</div>
+        <dl class="kv rdw-kv">
+          <dt>Brandstof</dt><dd><%= v.rdw_brandstof || "–" %></dd>
+          <dt>Vermogen</dt><dd><%= pk ? pk + " pk (" + x.vermogen_kw + " kW)" : "–" %></dd>
+          <% if (x.cilinderinhoud) { %><dt>Cilinderinhoud</dt><dd><%= h.num(x.cilinderinhoud) %> cm³<%= x.cilinders ? " · " + x.cilinders + " cil." : "" %></dd><% } %>
+          <dt>CO₂</dt><dd><%= x.co2 !== null && x.co2 !== undefined ? x.co2 + " g/km" : "–" %></dd>
+          <dt>Verbruik</dt><dd><%= x.verbruik ? x.verbruik.toLocaleString("nl-NL") + " l/100 km" : "–" %></dd>
+          <dt>Energielabel</dt><dd><%= x.energielabel ? x.energielabel + (x.emissie ? " · " + x.emissie : "") : (x.emissie || "–") %></dd>
+        </dl>
+      </div>
+      <div>
+        <div class="rdw-kop">Waarde en gewicht</div>
+        <dl class="kv rdw-kv">
+          <dt>Catalogusprijs</dt><dd><%= v.rdw_catalogusprijs ? h.euro(v.rdw_catalogusprijs) : "–" %></dd>
+          <dt>Bruto BPM</dt><dd><%= x.bruto_bpm ? h.euro(x.bruto_bpm) : "–" %></dd>
+          <dt>Massa rijklaar</dt><dd><%= x.massa_rijklaar ? h.num(x.massa_rijklaar) + " kg" : "–" %></dd>
+          <dt>Max. toegestaan</dt><dd><%= x.max_massa ? h.num(x.max_massa) + " kg" : "–" %></dd>
+          <dt>Trekgewicht</dt><dd><%= x.trekken_geremd ? h.num(x.trekken_geremd) + " kg geremd" + (x.trekken_ongeremd ? " · " + h.num(x.trekken_ongeremd) + " kg ongeremd" : "") : "–" %></dd>
+          <% if (x.categorie) { %><dt>EU-categorie</dt><dd><%= x.categorie %></dd><% } %>
+        </dl>
+      </div>
+    </div>
+    <% if (!x.inrichting && !x.massa_rijklaar) { %><div class="muted small" style="margin-top:8px">De uitgebreide gegevens komen bij de volgende nachtelijke ronde, of nu met Vernieuwen.</div><% } %>
+  <% } %>
 </div>
 
 <% if (taken.length) { %>

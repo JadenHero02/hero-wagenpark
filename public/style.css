@@ -189,6 +189,12 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .voortgang { height: 7px; border-radius: 4px; background: var(--grijs-thin); overflow: hidden; } .voortgang i { display: block; height: 100%; background: var(--groen); border-radius: 4px; min-width: 4px; }
 .lk-regel { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .lk-volgende { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; color: var(--blauw-black); } .lk-volgende .msr { font-size: 18px; color: var(--oranje); flex-shrink: 0; }
+/* Kentekenregister (RDW) op de voertuigpagina: statuspillen bovenaan, drie kolommen met kerngegevens */
+.rdw-status { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 14px; }
+.rdw-status .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; padding: 5px 11px; } .rdw-status .pill .msr { font-size: 16px; }
+.rdw-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 28px; }
+.rdw-kop { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--grijs); padding-bottom: 6px; margin-bottom: 8px; border-bottom: 1px solid var(--grijs-thin); }
+.kv.rdw-kv { grid-template-columns: 130px 1fr; gap: 5px 12px; font-size: 13.5px; } .kv.rdw-kv dd { font-weight: 600; color: var(--blauw-black); }
 .milieu-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 13.5px; }
 .kv dt { color: var(--grijs); } .kv dd { margin: 0; }
@@ -235,6 +241,7 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
   .sidenav { width: 196px; }
   .grid-2.dash-grid { grid-template-columns: minmax(0, 1fr); }
   .proces-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .lopend-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rdw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .main { padding: 18px 20px 40px; }
   .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -283,6 +290,7 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
   .tiles { grid-template-columns: 1fr !important; }
   .tiles.dash-tiles { grid-template-columns: 1fr 1fr !important; gap: 10px; }
   .proces-grid, .lopend-grid { grid-template-columns: 1fr; }
+  .rdw-grid { grid-template-columns: 1fr; } .kv.rdw-kv { grid-template-columns: 120px 1fr; }
   .rows.dash .dash-tekst { flex: 1 1 100%; } .rows.dash .dash-knop { width: 100%; justify-content: flex-end; }
   .tiles.dash-tiles .tile { padding: 12px; } .tiles.dash-tiles .tile .big { font-size: 26px; } .tiles.dash-tiles .tile .muted.small { font-size: 12px; }
   .brand img { width: 38px; height: 32px; }

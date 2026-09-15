@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.24", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "eigen kaart \"Kentekenregister (RDW)\" op de voertuigpagina: bovenaan in één oogopslag WA-verzekerd, APK, tellerstandoordeel en eventuele terugroepactie of export; daaronder in drie kolommen voertuig (soort, kleur, eerste toelating, op naam sinds, zitplaatsen), motor en verbruik (brandstof, vermogen in pk, CO₂, verbruik, energielabel) en waarde en gewicht (catalogusprijs, BPM, massa, trekgewicht). Vernieuwen haalt het direct op; de nachtelijke ronde houdt het bij", commit: "" },
+  ] },
   { versie: "0.2.23", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "pagina Processen als kaarten in plaats van lange lijsten: per proces een kaart met icoon, korte uitleg, hoeveel er lopen, een uitklapbare stappenreeks (genummerd, de app-stappen grijs) en een startknop. Lopende processen zijn kaarten met voortgangsbalk en de volgende stap. Vier naast elkaar op de computer, twee op de tablet, één op de telefoon", commit: "" },
   ] },

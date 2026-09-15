@@ -1,6 +1,7 @@
 // src/rdw.js
 // Voertuiggegevens van de RDW, via de open data (opendata.rdw.nl, gratis, geen sleutel nodig).
-// Op kenteken: merk, model, eerste toelating (bouwjaar en -maand), brandstof, APK-vervaldatum, kleur, catalogusprijs, WA-verzekerd.
+// Op kenteken: merk, model, eerste toelating (bouwjaar en -maand), brandstof, APK-vervaldatum, kleur, catalogusprijs, WA-verzekerd,
+// plus de uitgebreide gegevens (inrichting, tenaamstelling, massa, vermogen, verbruik, tellerstandoordeel, indicatoren) als JSON in rdw_extra.
 //
 //   const g = await rdw.opvragen("TD-600-K");              // null als het kenteken onbekend is
 //   const r = await rdw.bijwerken(voertuig, userId);        // vult lege velden, zet de APK-datum van de RDW, logt wat er veranderde
@@ -34,6 +35,26 @@ function milieuVan(brandstoffen) {
   return null;
 }
 
+// De uitgebreide gegevens voor de kaart "Kentekenregister" op de voertuigpagina. Alleen wat een beheerder iets zegt.
+const getal = (x) => (x !== undefined && x !== null && x !== "" && !isNaN(Number(x)) ? Number(x) : null);
+const jaNee = (x) => (x === "Ja" ? true : x === "Nee" ? false : null);
+function extraVan(v, brandstof) {
+  const b = brandstof[0] || {};
+  const tekst = (x) => (x && x !== "Niet geregistreerd" && x !== "Geen verstrekking in Open Data" ? String(x) : null);
+  return {
+    inrichting: tekst(v.inrichting), categorie: tekst(v.europese_voertuigcategorie), tweede_kleur: tekst(v.tweede_kleur),
+    deuren: getal(v.aantal_deuren), zitplaatsen: getal(v.aantal_zitplaatsen),
+    tenaamstelling: datum(v.datum_tenaamstelling), eerste_tenaamstelling_nl: datum(v.datum_eerste_tenaamstelling_in_nederland),
+    bruto_bpm: getal(v.bruto_bpm), massa_rijklaar: getal(v.massa_rijklaar), massa_ledig: getal(v.massa_ledig_voertuig), max_massa: getal(v.toegestane_maximum_massa_voertuig),
+    trekken_geremd: getal(v.maximum_trekken_massa_geremd), trekken_ongeremd: getal(v.maximum_massa_trekken_ongeremd),
+    cilinders: getal(v.aantal_cilinders), cilinderinhoud: getal(v.cilinderinhoud), vermogen_kw: getal(b.nettomaximumvermogen),
+    verbruik: getal(b.brandstofverbruik_gecombineerd), co2: getal(b.co2_uitstoot_gecombineerd), energielabel: tekst(v.zuinigheidsclassificatie), emissie: tekst(b.uitlaatemissieniveau),
+    tellerstand_oordeel: tekst(v.tellerstandoordeel), tellerstand_jaar: getal(v.jaar_laatste_registratie_tellerstand),
+    terugroepactie: jaNee(v.openstaande_terugroepactie_indicator), export: jaNee(v.export_indicator), taxi: jaNee(v.taxi_indicator), tenaamstellen_mogelijk: jaNee(v.tenaamstellen_mogelijk),
+    lengte: getal(v.lengte), breedte: getal(v.breedte), hoogte: getal(v.hoogte_voertuig), wielbasis: getal(v.wielbasis),
+  };
+}
+
 async function opvragen(kenteken) {
   const k = strip(kenteken);
   if (k.length < 6) return null;
@@ -48,6 +69,7 @@ async function opvragen(kenteken) {
     kleur: v.eerste_kleur && v.eerste_kleur !== "Niet geregistreerd" ? titel(v.eerste_kleur) : null,
     catalogusprijs: v.catalogusprijs ? Number(v.catalogusprijs) : null, wam_verzekerd: v.wam_verzekerd ? v.wam_verzekerd === "Ja" : null,
     zitplaatsen: v.aantal_zitplaatsen ? Number(v.aantal_zitplaatsen) : null, co2: brandstof[0] && brandstof[0].co2_uitstoot_gecombineerd ? Number(brandstof[0].co2_uitstoot_gecombineerd) : null,
+    extra: extraVan(v, brandstof),
   };
 }
 
@@ -70,7 +92,7 @@ async function bijwerken(v, userId = null, t = db) {
   if (g.milieu && v.milieu !== g.milieu) zet("milieu", g.milieu, `milieu ${v.milieu || "leeg"} naar ${g.milieu}`);
   if (g.apk_vervaldatum && g.apk_vervaldatum !== v.apk_vervaldatum) zet("apk_vervaldatum", g.apk_vervaldatum, `APK ${formatDate(v.apk_vervaldatum) || "onbekend"} naar ${formatDate(g.apk_vervaldatum)}`);
   zet("rdw_kleur", g.kleur); zet("rdw_voertuigsoort", g.voertuigsoort); zet("rdw_catalogusprijs", g.catalogusprijs); zet("rdw_wam_verzekerd", g.wam_verzekerd);
-  zet("rdw_eerste_toelating", g.eerste_toelating); zet("rdw_brandstof", g.brandstof);
+  zet("rdw_eerste_toelating", g.eerste_toelating); zet("rdw_brandstof", g.brandstof); zet("rdw_extra", JSON.stringify(g.extra));
   sets.push("rdw_opgehaald_op = local_now()");
   await t.run(`UPDATE voertuigen SET ${sets.join(", ")} WHERE id = $1`, params);
   if (gewijzigd.length) {
