@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.27", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "zoeken in Wagenpark en Bestuurders filtert nu terwijl je typt: na een paar letters zie je alleen de regels die erbij horen, met een teller. Kentekens vind je ook zonder streepjes. Enter of Zoeken doet nog steeds de volledige zoekopdracht, bijvoorbeeld op tankpasnummer", commit: "" },
+  ] },
   { versie: "0.2.26", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "in Mijn auto de knop \"Over deze auto\": een eigen pagina met wat de bestuurder over zijn auto wil weten, uit het kentekenregister van de RDW en de app. Bovenaan WA-verzekerd, APK en een eventuele terugroepactie; daaronder voertuig (soort, bouwjaar, kleur, zitplaatsen, afmetingen), motor en verbruik (brandstof, pk, verbruik, CO₂, energielabel), praktisch (trekgewicht, gewicht, banden, tankpas) en onderhoud (garage met belknop, APK, eigendom). Beheerdersgegevens zoals BPM en catalogusprijs staan er bewust niet op", commit: "" },
     { soort: "opgelost", tekst: "APK stond twee keer in Mijn auto: als \"Actie nodig\" én als losse taak. Nu alleen als Actie nodig", commit: "" },

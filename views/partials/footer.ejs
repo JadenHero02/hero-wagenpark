@@ -4,6 +4,22 @@
 <div class="versie-nieuw" id="versie-nieuw" hidden><span class="msr">system_update</span>Er staat een nieuwe versie klaar.<button type="button" onclick="location.reload()">Vernieuwen</button></div>
 <script>
 (function () {
+  // Lijsten filteren terwijl je typt: het zoekveld met data-live-filter verbergt regels die de getypte letters niet bevatten.
+  // Kentekens matchen ook zonder streepjes. Enter of de knop Zoeken doet nog steeds de volledige zoekopdracht op de server.
+  var veld = document.querySelector("[data-live-filter]");
+  if (!veld) return;
+  var teller = document.querySelector("[data-live-count]");
+  var norm = function (s) { return String(s || "").toLowerCase().replace(/[^a-z0-9à-ÿ]/g, ""); };
+  var rijen = null;
+  function filter() {
+    if (!rijen) rijen = Array.prototype.slice.call(document.querySelectorAll(veld.getAttribute("data-live-filter"))).map(function (tr) { return { tr: tr, t: tr.textContent.toLowerCase(), n: norm(tr.textContent) }; });
+    var q = veld.value.trim().toLowerCase(), qn = norm(q), aantal = 0;
+    rijen.forEach(function (r) { var ok = !q || r.t.indexOf(q) >= 0 || (qn && r.n.indexOf(qn) >= 0); r.tr.hidden = !ok; if (ok) aantal++; });
+    if (teller) teller.textContent = q ? (aantal ? aantal + " van " + rijen.length : "niets gevonden op deze pagina, druk op Enter om overal te zoeken") : "";
+  }
+  veld.addEventListener("input", filter);
+})();
+(function () {
   // Menu op de telefoon: knop in de balk opent het volledige menu als paneel; sluit via kruisje, achtergrond, Escape of een keuze
   var nav = document.getElementById("sidenav"), knop = document.getElementById("menu-knop"), achter = document.getElementById("menu-achter"), sluit = document.getElementById("menu-sluit");
   if (!nav || !knop) return;

@@ -4,10 +4,10 @@
   <div class="actions"><% if (can("beheerder")) { %><a href="/bestuurders/nieuw" class="btn primary"><span class="msr">person_add</span>Nieuwe bestuurder</a><% } %></div>
 </div>
 <form method="GET" class="filters">
-  <input type="search" name="q" value="<%= q || "" %>" placeholder="Naam, e-mail of kenteken" style="min-width:240px">
+  <input type="search" name="q" value="<%= q || "" %>" placeholder="Naam, e-mail of kenteken" style="min-width:240px" data-live-filter="table.list tbody tr.click" autocomplete="off">
   <select name="vestiging" onchange="this.form.submit()"><option value="">Alle vestigingen</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= vId === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select>
   <div class="chips"><a class="chip <%= zonder ? "on" : "" %>" href="?<%= zonder ? "" : "zonder=1" %>">Zonder auto</a></div>
-  <button type="submit" class="btn ghost small">Zoeken</button>
+  <button type="submit" class="btn ghost small">Zoeken</button><span class="muted small" data-live-count></span>
 </form>
 <div class="card" style="padding:0">
   <table class="list">

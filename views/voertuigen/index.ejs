@@ -4,7 +4,7 @@
   <div class="actions"><% if (can("admin")) { %><form method="POST" action="/voertuigen/rdw-alles" class="inline" onsubmit="this.querySelector('button').disabled=true"><button class="btn ghost" type="submit" title="Alle kentekens langs de RDW: lege velden invullen en APK-data bijwerken (duurt een halve minuut)"><span class="msr">sync</span>RDW bijwerken</button></form><% } %><a href="/voertuigen/export.xlsx<%= exportQuery ? "?" + exportQuery : "" %>" class="btn" title="Deze lijst, met de huidige zoekterm en filters, naar Excel"><span class="msr">download</span>Exporteren (<%= rows.length %>)</a><% if (can("beheerder")) { %><a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a><% } %></div>
 </div>
 <form method="GET" class="filters">
-  <input type="search" name="q" value="<%= q || "" %>" placeholder="Kenteken, merk, bestuurder..." style="min-width:240px">
+  <input type="search" name="q" value="<%= q || "" %>" placeholder="Kenteken, merk, bestuurder..." style="min-width:240px" data-live-filter="table.list tbody tr.click" autocomplete="off">
   <select name="vestiging" onchange="this.form.submit()"><option value="">Alle vestigingen</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= f.vestiging === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select>
   <select name="milieu" onchange="this.form.submit()"><option value="">Alle brandstoffen</option><% Object.entries(LABELS.milieu).forEach(([k, l]) => { %><option value="<%= k %>" <%= f.milieu === k ? "selected" : "" %>><%= l %></option><% }) %></select>
   <select name="eigendom" onchange="this.form.submit()"><option value="">Alle soorten</option><% Object.entries(LABELS.eigendom).forEach(([k, l]) => { %><option value="<%= k %>" <%= f.eigendom === k ? "selected" : "" %>><%= l %></option><% }) %></select>
@@ -12,7 +12,7 @@
     <% const chip = (key, val, lbl) => { const on = f[key] === val; const p = new URLSearchParams(); if (q) p.set("q", q); Object.entries(f).forEach(([k, v]) => { if (v && k !== key) p.set(k, v); }); if (!on) p.set(key, val); return `<a class="chip ${on ? "on" : ""}" href="?${p}">${lbl}</a>`; }; %>
     <%- chip("status", "actief", "Actief") %><%- chip("status", "uitgeleend", "Uitgeleend") %><%- chip("status", "op_voorraad", "Op voorraad") %><%- chip("status", "besteld", "Besteld") %><%- chip("leen", "1", "Leenauto's") %><%- chip("km", "oud", "Km-stand ontbreekt") %>
   </div>
-  <button type="submit" class="btn ghost small">Zoeken</button>
+  <button type="submit" class="btn ghost small">Zoeken</button><span class="muted small" data-live-count></span>
 </form>
 <div class="card" style="padding:0">
   <table class="list">
