@@ -4,8 +4,11 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.10", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "het zoekveld bovenin toont direct resultaten terwijl je typt: auto's (ook op kenteken zonder streepjes en op tankpasnummer), bestuurders en contacten. Pijltjes en Enter om te kiezen, Escape sluit; Enter zonder keuze opent de gefilterde lijst", commit: "" },
+  ] },
   { versie: "0.2.9", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "de app herkent aan het pasnummer of het een tankpas van MKB Brandstof of een laadpas van E-Flux is; Mijn auto en de voertuigpagina laten dat zien en \"wie bel je waarvoor\" toont alleen de leverancier van jouw pas. Wagenparkbeheer (Niels) en de twee pasleveranciers staan in de contacten", commit: "" },
+    { soort: "nieuw", tekst: "de app herkent aan het pasnummer of het een tankpas van MKB Brandstof of een laadpas van E-Flux is; Mijn auto en de voertuigpagina laten dat zien en \"wie bel je waarvoor\" toont alleen de leverancier van jouw pas. Wagenparkbeheer (Niels) en de twee pasleveranciers staan in de contacten", commit: "7d0bc6d" },
   ] },
   { versie: "0.2.8", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "wie inlogt krijgt de vestiging van zijn bestuurdersrecord, zodat beheerders meteen de mails van hun eigen vestiging krijgen. Celdirecteuren van alle vier de vestigingen staan in de contacten; beheerders en directie zijn ingesteld (namen van Niels)", commit: "19b5be3" },

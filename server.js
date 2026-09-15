@@ -90,6 +90,7 @@ app.use("/wachtlijst", require("./src/routes/wachtlijst").router);
 app.use("/instellingen", require("./src/routes/instellingen").router);
 app.use("/", require("./src/routes/versie").router);
 app.use("/", require("./src/routes/export").router);
+app.use("/", require("./src/routes/zoeken").router);
 
 // 404 en fouten
 app.use((req, res) => res.status(404).render("error", { title: "Niet gevonden", message: "Deze pagina bestaat niet." }));

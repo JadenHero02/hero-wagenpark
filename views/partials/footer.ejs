@@ -4,6 +4,45 @@
 <div class="versie-nieuw" id="versie-nieuw" hidden><span class="msr">system_update</span>Er staat een nieuwe versie klaar.<button type="button" onclick="location.reload()">Vernieuwen</button></div>
 <script>
 (function () {
+  // Zoeken terwijl je typt: vanaf twee tekens, resultaten onder het zoekveld; pijltjes en Enter, Escape sluit
+  var veld = document.getElementById("topzoek"), lijst = document.getElementById("zoek-lijst");
+  if (!veld || !lijst) return;
+  var timer = null, keuze = -1, laatste = "";
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function sluit() { lijst.hidden = true; lijst.innerHTML = ""; keuze = -1; }
+  function items() { return lijst.querySelectorAll("a.zoek-item"); }
+  function markeer(i) { var all = items(); if (!all.length) return; keuze = (i + all.length) % all.length; all.forEach(function (a, n) { a.classList.toggle("on", n === keuze); }); all[keuze].scrollIntoView({ block: "nearest" }); }
+  function toon(data, q) {
+    if (!data.groepen.length) { lijst.innerHTML = '<div class="zoek-leeg">Niets gevonden voor "' + esc(q) + '"</div>'; lijst.hidden = false; return; }
+    var html = "";
+    data.groepen.forEach(function (g) {
+      html += '<div class="zoek-kop">' + esc(g.titel) + "</div>";
+      g.items.forEach(function (it) {
+        html += '<a class="zoek-item" href="' + esc(it.url) + '">' + (it.plaat ? '<span class="plate">' + esc(it.plaat) + "</span>" : '<span class="msr">' + esc(it.icoon || "search") + "</span>") + '<span class="zoek-tekst"><strong>' + esc(it.titel) + "</strong>" + (it.sub ? '<span class="muted small"> · ' + esc(it.sub) + "</span>" : "") + "</span></a>";
+      });
+    });
+    html += '<a class="zoek-item zoek-alles" href="' + esc(data.alles) + '"><span class="msr">list</span><span class="zoek-tekst">Alle resultaten in het wagenpark</span></a>';
+    lijst.innerHTML = html; lijst.hidden = false; keuze = -1;
+  }
+  function zoek() {
+    var q = veld.value.trim();
+    if (q.length < 2) { sluit(); return; }
+    if (q === laatste && !lijst.hidden) return;
+    laatste = q;
+    fetch("/zoeken.json?q=" + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (d) { if (veld.value.trim() === q) toon(d, q); }).catch(function () {});
+  }
+  veld.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(zoek, 180); });
+  veld.addEventListener("focus", function () { if (veld.value.trim().length >= 2) zoek(); });
+  veld.addEventListener("keydown", function (e) {
+    if (lijst.hidden) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); markeer(keuze + 1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); markeer(keuze - 1); }
+    else if (e.key === "Enter" && keuze >= 0) { e.preventDefault(); location.href = items()[keuze].href; }
+    else if (e.key === "Escape") { sluit(); }
+  });
+  document.addEventListener("click", function (e) { if (!veld.parentNode.contains(e.target)) sluit(); });
+})();
+(function () {
   // Versienummer: eenmalig het tekstballonnetje, tot je erop klikt
   try {
     var b = document.getElementById("versie-bubble"), l = document.getElementById("versie-link");

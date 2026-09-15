@@ -36,7 +36,8 @@
     <a href="/" class="brand"><img src="/img/Hero_logo_wit.svg" alt="Hero" width="46" height="39"><span class="brand-app"><span class="msr">directions_car</span>Wagenpark</span></a>
     <% if (can("directie")) { %><form class="topsearch" method="GET" action="/voertuigen" role="search">
       <span class="msr">search</span>
-      <input type="search" name="q" placeholder="Zoeken op kenteken, bestuurder, merk..." aria-label="Zoeken">
+      <input type="search" name="q" id="topzoek" placeholder="Zoeken op kenteken, bestuurder, merk..." aria-label="Zoeken" autocomplete="off">
+      <div class="zoek-lijst" id="zoek-lijst" hidden></div>
     </form><% } %>
     <div class="topbar-right">
       <% if (user) { %>

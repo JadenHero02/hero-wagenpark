@@ -30,6 +30,16 @@ p { margin: 0 0 10px; }
 .topsearch input { flex: 1; border: 0; background: transparent; font: inherit; color: var(--wit); outline: none; }
 .topsearch input::placeholder { color: rgba(255,255,255,.7); }
 .topsearch:focus-within input { color: var(--blauw-black); } .topsearch:focus-within input::placeholder { color: var(--grijs); }
+.topsearch { position: relative; }
+.zoek-lijst { position: absolute; left: -1px; right: -1px; top: calc(100% + 6px); background: var(--wit); border: 1px solid var(--grijs-thin); border-radius: 12px; box-shadow: 0 12px 32px rgba(3,21,63,.18); padding: 6px; max-height: 70vh; overflow: auto; z-index: 40; text-align: left; color: var(--blauw-black); }
+.zoek-kop { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--grijs); padding: 8px 10px 4px; }
+.zoek-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--blauw-black); font-size: 13.5px; }
+.zoek-item:hover, .zoek-item.on { background: var(--blauw-hair); color: var(--blauw-black); }
+.zoek-item .msr { color: var(--grijs); font-size: 20px; width: 34px; text-align: center; flex-shrink: 0; }
+.zoek-item .plate { flex-shrink: 0; }
+.zoek-item .zoek-tekst { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zoek-alles { border-top: 1px solid var(--grijs-thin); margin-top: 4px; color: var(--blauw); font-weight: 600; }
+.zoek-leeg { padding: 14px 10px; color: var(--grijs); font-size: 13px; }
 .topbar-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
 .avatar { width: 34px; height: 34px; border-radius: 17px; background: var(--wit); color: var(--blauw); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
 .usermenu { position: relative; } .usermenu summary { list-style: none; cursor: pointer; } .usermenu summary::-webkit-details-marker { display: none; }
