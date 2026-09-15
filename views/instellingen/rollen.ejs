@@ -4,6 +4,37 @@
   <div><div class="eyebrow">Admin</div><h1>Wie heeft welke rol</h1><div class="sub"><%= totaal %> mensen · <%= groepen.map(g => g.rijen.length + " " + g.label.toLowerCase()).join(" · ") %></div></div>
 </div>
 
+<% const OK = '<span class="msr" style="color:var(--groen);font-size:20px">check</span>', NEE = '<span class="muted">–</span>', EIGEN = (t) => `<span class="small" style="color:var(--blauw-bold)">${t}</span>`;
+   const MATRIX = [
+     ["Zien", null],
+     ["Wagenpark, bestuurders, contacten, archief", OK, OK, OK, EIGEN("alleen eigen auto")],
+     ["Dashboard, taken, uitleen, processen", OK, OK, OK, NEE],
+     ["Boetes en incidenten", OK, OK, OK, EIGEN("alleen eigen")],
+     ["Pincode tankpas, na extra bevestiging", OK, NEE, OK, EIGEN("alleen eigen auto")],
+     ["Exporteren naar Excel", OK, OK, OK, NEE],
+     ["Doen", null],
+     ["Km-stand, APK-afspraak, rapport uploaden, incident melden, leenauto aanvragen", OK, EIGEN("leenauto aanvragen"), OK, EIGEN("eigen auto")],
+     ["Auto's invoeren, toewijzen, innemen, checklists", OK, NEE, OK, NEE],
+     ["Leenverzoeken en APK-rapporten goedkeuren", OK, NEE, OK, NEE],
+     ["Boetes bevestigen, uitzondering beoordelen", OK, NEE, OK, NEE],
+     ["Taken, documenten, contacten, wachtlijst beheren", OK, NEE, OK, NEE],
+     ["Naar het archief zetten", OK, NEE, EIGEN("via uitstroom"), NEE],
+     ["Beheren", null],
+     ["Rollen toekennen, accounts uitzetten", OK, NEE, NEE, NEE],
+     ["Instellingen: termijnen, HR-adres, maillog, RDW bijwerken", OK, NEE, NEE, NEE],
+     ["Contacten verwijderen, auto uit het archief halen", OK, NEE, NEE, NEE],
+   ]; %>
+<details class="card" style="margin-bottom:16px;padding:0" <%= totaal <= 3 ? "open" : "" %>>
+  <summary style="list-style:none;cursor:pointer;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px"><h2><span class="msr" style="color:var(--oranje)">shield_person</span> Wat mag welke rol</h2><span class="muted small">klik om te <span class="matrix-open">openen</span><span class="matrix-dicht">sluiten</span> · rechten worden op de server afgedwongen</span></summary>
+  <table class="list matrix">
+    <thead><tr><th></th><th><span class="pill bad">Admin</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">Annemiek</div></th><th><span class="pill">Directie</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0"><%= groepen[1].rijen.length %> personen</div></th><th><span class="pill warn">Beheerder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">celdirecteuren</div></th><th><span class="pill grey">Bestuurder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">iedereen met een auto</div></th></tr></thead>
+    <tbody>
+    <% MATRIX.forEach(r => { if (r[1] === null) { %><tr class="groep"><td colspan="5"><%= r[0] %></td></tr><% } else { %><tr><td><%= r[0] %></td><td><%- r[1] %></td><td><%- r[2] %></td><td><%- r[3] %></td><td><%- r[4] %></td></tr><% } }) %>
+    </tbody>
+  </table>
+  <div class="muted small" style="padding:8px 18px 14px"><span class="msr" style="color:var(--groen);font-size:16px">check</span> mag · <span style="color:var(--blauw-bold)">blauw</span> beperkt tot de eigen auto · – mag niet. Een hogere rol mag alles wat een lagere mag.</div>
+</details>
+
 <div class="card" style="margin-bottom:16px">
   <div class="lbl"><span class="msr">person_add</span>Rol toekennen</div>
   <form method="POST" action="/instellingen/rollen" class="actions" style="margin-top:10px">

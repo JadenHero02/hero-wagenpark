@@ -4,8 +4,11 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.16", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "op de pagina Rollen een inklapbare rechtenmatrix: per rol (admin, directie, beheerder, bestuurder) wat je mag zien, doen en beheren", commit: "" },
+  ] },
   { versie: "0.2.15", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "pagina Rollen voor de admin: één tabel met iedereen per rol (admin, directie, beheerder, bestuurder), met functie, vestiging, auto en of iemand al is ingelogd; rol toekennen of wijzigen per regel, ook voor wie nog nooit heeft ingelogd", commit: "" },
+    { soort: "nieuw", tekst: "pagina Rollen voor de admin: één tabel met iedereen per rol (admin, directie, beheerder, bestuurder), met functie, vestiging, auto en of iemand al is ingelogd; rol toekennen of wijzigen per regel, ook voor wie nog nooit heeft ingelogd", commit: "dbaf8e6" },
   ] },
   { versie: "0.2.14", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "dashboard opnieuw ingedeeld na de ATS-feedback: bovenaan \"Vandaag voor jou\" met per regel één knop (afspraak, beoordelen, innemen, bevestigen), daaronder wat er de komende weken aankomt (APK, leenauto's terug, contracten, rijbewijzen, wachtlijst, bestelde auto's), rechts vier stuurgetallen (rijdend, APK op orde, km-stand actueel, snelheid leenverzoeken) en de snelle acties. Opent op je eigen vestiging", commit: "5111b70" },

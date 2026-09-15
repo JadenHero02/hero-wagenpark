@@ -113,6 +113,12 @@ table.list td.num, table.list th.num { text-align: right; }
 .rows > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--grijs-thin); font-size: 13.5px; }
 .rows > div:first-child { border-top: 0; }
 .rows .k { color: var(--grijs); } .rows .v { text-align: right; }
+/* Rechtenmatrix op de pagina Rollen (inklapbaar) */
+details.card > summary::-webkit-details-marker { display: none; }
+details.card .matrix-dicht { display: none; } details.card[open] .matrix-dicht { display: inline; } details.card[open] .matrix-open { display: none; }
+table.matrix th { text-align: center; vertical-align: top; } table.matrix th:first-child { width: 42%; }
+table.matrix td { text-align: center; color: var(--grijs); } table.matrix td:first-child { text-align: left; color: var(--blauw-black); }
+table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 5px 10px; text-align: left; }
 .rows.dash > div { align-items: center; gap: 10px; }
 .rows.dash .dash-tekst { flex: 1; min-width: 0; line-height: 1.5; }
 .rows.dash .dash-tekst .msr { margin-right: 2px; }
