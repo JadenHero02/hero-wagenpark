@@ -4,6 +4,10 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.20", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "het zijmenu op de computer is nu ook in het Hero-blauw, met witte tekst en een oranje streep bij het actieve en aangewezen onderdeel, net als het menupaneel op de telefoon", commit: "" },
+    { soort: "nieuw", tekst: "dashboard op een groot scherm vult de ruimte beter: breder, met daaronder \"Laatste activiteit\" (de jongste acht regels uit het logboek) en rechts een tabel \"Per vestiging\" met rijden, voorraad, besteld en APK's binnen 30 dagen; klik op een regel om die vestiging te openen", commit: "" },
+  ] },
   { versie: "0.2.19", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "menu op telefoon en tablet: een menuknop links in de blauwe balk opent het volledige menu als paneel, met alle onderdelen onder elkaar (ook de veertien van de admin). Sluit met het kruisje, een tik naast het paneel of een keuze. De zijwaarts scrollende menurij is weg", commit: "25e6e96" },
     { soort: "verbeterd", tekst: "dat menupaneel in het Hero-blauw van de balk, met witte tekst en een oranje streep bij het actieve onderdeel", commit: "" },

@@ -32,7 +32,16 @@ router.get("/", async (req, res) => {
            COUNT(*) FILTER (WHERE v.status IN ('actief','uitgeleend') AND EXISTS (SELECT 1 FROM kilometerstanden k WHERE k.voertuig_id = v.id AND k.datum > current_date - 60)) AS km_ok,
            COUNT(*) FILTER (WHERE v.kenteken IS NOT NULL AND v.status IN ('actief','uitgeleend','op_voorraad') AND EXISTS (SELECT 1 FROM documenten d WHERE d.voertuig_id = v.id AND d.soort = 'kentekenbewijs')) AS doc_ok
     FROM voertuigen v WHERE v.status <> 'archief' ${where}`, params);
-  const perVestiging = await db.all("SELECT ve.naam, COUNT(v.id) AS n FROM vestigingen ve LEFT JOIN voertuigen v ON v.vestiging_id = ve.id AND v.status IN ('actief','uitgeleend','op_voorraad') GROUP BY ve.id, ve.naam, ve.volgorde ORDER BY ve.volgorde");
+  // Per vestiging: hoeveel rijden, op voorraad, besteld en APK binnen 30 dagen (voor de tabel rechts op een groot scherm)
+  const perVestiging = await db.all(`SELECT ve.id, ve.naam, COUNT(v.id) FILTER (WHERE v.status IN ('actief','uitgeleend','op_voorraad')) AS n,
+      COUNT(v.id) FILTER (WHERE v.status IN ('actief','uitgeleend')) AS rijdend, COUNT(v.id) FILTER (WHERE v.status = 'op_voorraad') AS voorraad,
+      COUNT(v.id) FILTER (WHERE v.status = 'besteld') AS besteld,
+      COUNT(v.id) FILTER (WHERE v.status IN ('actief','uitgeleend','op_voorraad') AND v.apk_vervaldatum < current_date + 30) AS apk
+    FROM vestigingen ve LEFT JOIN voertuigen v ON v.vestiging_id = ve.id AND v.status <> 'archief' GROUP BY ve.id, ve.naam, ve.volgorde ORDER BY ve.volgorde`);
+  // Laatste activiteit: de jongste regels uit het logboek, met kenteken en wie het deed
+  const activiteit = await db.all(`SELECT l.created_at, l.soort, l.omschrijving, v.id AS voertuig_id, v.kenteken, u.name AS door, b.naam AS bestuurder
+    FROM logboek l LEFT JOIN voertuigen v ON v.id = l.voertuig_id LEFT JOIN users u ON u.id = l.user_id LEFT JOIN bestuurders b ON b.id = l.bestuurder_id
+    WHERE l.soort <> 'rdw' ${vId ? "AND (v.vestiging_id = $1 OR (v.id IS NULL AND b.vestiging_id = $1))" : ""} ORDER BY l.created_at DESC, l.id DESC LIMIT 8`, params);
   const leensnelheid = await db.one("SELECT COUNT(*) AS n, ROUND(AVG(EXTRACT(EPOCH FROM (besloten_op - created_at)) / 86400)::numeric, 1) AS dagen FROM leenverzoeken WHERE besloten_op IS NOT NULL AND created_at > current_date - 90");
 
   // ---- Vandaag voor jou: elke regel één knop ----
@@ -96,7 +105,7 @@ router.get("/", async (req, res) => {
 
   const milieu = await db.all(`SELECT COALESCE(v.milieu, 'onbekend') AS milieu, COUNT(*) AS n FROM voertuigen v WHERE v.status IN ('actief','uitgeleend','op_voorraad') ${where} GROUP BY 1 ORDER BY n DESC`, params);
   const vestigingNaam = vId ? (vestigingen.find((v) => v.id === vId) || {}).naam : null;
-  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, vestigingNaam, counts, perVestiging, leensnelheid, vandaag, komend, besteld, milieu });
+  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, vestigingNaam, counts, perVestiging, activiteit, leensnelheid, vandaag, komend, besteld, milieu });
 });
 
 // Mijn auto: de bestuurder op de telefoon. Voorlopig de kern; de rest volgt donderdag.
