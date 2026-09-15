@@ -144,6 +144,20 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .rows.dash .dash-tekst .msr { margin-right: 2px; }
 .rows.dash .dash-knop { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .rows.dash .btn.small { min-width: 96px; justify-content: center; }
+/* Dashboard: maximale breedte, vier compacte tegels op één rij, daaronder taken breed links en snel/verduurzaming rechts */
+.dash-page { max-width: 1360px; }
+.tiles.dash-tiles { margin-bottom: 16px; }
+.tiles.dash-tiles .tile { padding: 14px 16px; gap: 4px; }
+.tiles.dash-tiles .tile .big { font-size: 30px; }
+.tiles.dash-tiles .tile .muted.small { line-height: 1.45; }
+.grid-2.dash-grid { grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: start; }
+.dash-snel { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dash-snel .btn { justify-content: center; padding: 9px 10px; }
+.dash-snel .btn.primary { grid-column: 1 / -1; }
+.milieu-balk { display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 2px; margin: 4px 0 10px; }
+.milieu-balk span { display: block; min-width: 3px; }
+.milieu-legenda { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 13px; }
+.milieu-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 13.5px; }
 .kv dt { color: var(--grijs); } .kv dd { margin: 0; }
 .empty { color: var(--grijs); padding: 24px; text-align: center; }
@@ -187,6 +201,7 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
 /* Tablet (tot 1100 px): smaller menu, tegels en kaarten in twee kolommen */
 @media (max-width: 1100px) {
   .sidenav { width: 196px; }
+  .grid-2.dash-grid { grid-template-columns: 1fr; }
   .main { padding: 18px 20px 40px; }
   .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -227,6 +242,8 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
 @media (max-width: 600px) {
   .brand-app { display: none; }
   .tiles { grid-template-columns: 1fr !important; }
+  .tiles.dash-tiles { grid-template-columns: 1fr 1fr !important; gap: 10px; }
+  .tiles.dash-tiles .tile { padding: 12px; } .tiles.dash-tiles .tile .big { font-size: 26px; } .tiles.dash-tiles .tile .muted.small { font-size: 12px; }
   .brand img { width: 38px; height: 32px; }
   .plate.big { --ph: 28px; font-size: 17px; }
   .vehicle-head h1 { font-size: 20px; }

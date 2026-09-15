@@ -1,4 +1,5 @@
 <%- include("../partials/header") %>
+<div class="dash-page">
 <div class="page-head">
   <div>
     <div class="eyebrow">Wagenpark</div>
@@ -15,7 +16,30 @@
   </div>
 </div>
 
-<div class="grid-2">
+<div class="tiles dash-tiles">
+  <a class="tile" href="/voertuigen<%= vId ? "?vestiging=" + vId : "" %>">
+    <div class="lbl">Wagenpark</div>
+    <div class="row"><span class="big"><%= counts.actief + counts.uitgeleend %></span><span class="muted">rijden</span></div>
+    <div class="muted small"><%= counts.op_voorraad %> op voorraad · <%= counts.besteld %> besteld<% if (!vId) { %><br><%= perVestiging.map(p => p.naam + " " + p.n).join(" · ") %><% } %></div>
+  </a>
+  <a class="tile" href="/voertuigen?sort=apk<%= vId ? "&vestiging=" + vId : "" %>">
+    <div class="lbl">APK op orde</div>
+    <div class="row"><span class="big <%= counts.apk_ok < counts.met_kenteken ? 'warn' : '' %>"><%= counts.apk_ok %></span><span class="muted">van <%= counts.met_kenteken %></span></div>
+    <div class="muted small"><%= counts.apk_ok < counts.met_kenteken ? (counts.met_kenteken - counts.apk_ok) + " verlopen of onbekend" : "geldige APK, via de RDW" %></div>
+  </a>
+  <a class="tile" href="/voertuigen?km=oud<%= vId ? "&vestiging=" + vId : "" %>">
+    <div class="lbl">Km-stand actueel</div>
+    <div class="row"><span class="big <%= counts.km_ok < counts.rijdend ? 'warn' : '' %>"><%= counts.km_ok %></span><span class="muted">van <%= counts.rijdend %></span></div>
+    <div class="muted small">stand jonger dan 60 dagen</div>
+  </a>
+  <a class="tile" href="/uitleen">
+    <div class="lbl">Leenverzoeken</div>
+    <div class="row"><span class="big"><%= leensnelheid.n ? leensnelheid.dagen : "–" %></span><span class="muted"><%= leensnelheid.n ? "dagen" : "" %></span></div>
+    <div class="muted small"><%= leensnelheid.n ? "gemiddeld tot besluit, laatste 90 dagen" : "nog geen verzoeken beantwoord" %></div>
+  </a>
+</div>
+
+<div class="grid-2 dash-grid">
   <div>
     <div class="card">
       <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">flag</span> Vandaag voor jou</h2><span class="muted small"><%= vandaag.length %></span></div>
@@ -51,32 +75,9 @@
   </div>
 
   <div>
-    <div class="tiles" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
-      <a class="tile" href="/voertuigen<%= vId ? "?vestiging=" + vId : "" %>">
-        <div class="lbl">Wagenpark</div>
-        <div class="row"><span class="big"><%= counts.actief + counts.uitgeleend %></span><span class="muted">rijden</span></div>
-        <div class="muted small"><%= counts.op_voorraad %> op voorraad · <%= counts.besteld %> besteld<% if (!vId) { %><br><%= perVestiging.map(p => p.naam + " " + p.n).join(" · ") %><% } %></div>
-      </a>
-      <a class="tile" href="/voertuigen?sort=apk<%= vId ? "&vestiging=" + vId : "" %>">
-        <div class="lbl">APK op orde</div>
-        <div class="row"><span class="big <%= counts.apk_ok < counts.met_kenteken ? 'warn' : '' %>"><%= counts.apk_ok %></span><span class="muted">van <%= counts.met_kenteken %></span></div>
-        <div class="muted small"><%= counts.apk_ok < counts.met_kenteken ? (counts.met_kenteken - counts.apk_ok) + " verlopen of onbekend" : "geldige APK, via de RDW" %></div>
-      </a>
-      <a class="tile" href="/voertuigen?km=oud<%= vId ? "&vestiging=" + vId : "" %>">
-        <div class="lbl">Km-stand actueel</div>
-        <div class="row"><span class="big <%= counts.km_ok < counts.rijdend ? 'warn' : '' %>"><%= counts.km_ok %></span><span class="muted">van <%= counts.rijdend %></span></div>
-        <div class="muted small">stand jonger dan 60 dagen</div>
-      </a>
-      <a class="tile" href="/uitleen">
-        <div class="lbl">Leenverzoeken</div>
-        <div class="row"><span class="big"><%= leensnelheid.n ? leensnelheid.dagen : "–" %></span><span class="muted"><%= leensnelheid.n ? "dagen" : "" %></span></div>
-        <div class="muted small"><%= leensnelheid.n ? "gemiddeld tot besluit, laatste 90 dagen" : "nog geen verzoeken beantwoord" %></div>
-      </a>
-    </div>
-
     <div class="card">
-      <div class="card-head"><h2>Snel</h2></div>
-      <div class="actions">
+      <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">bolt</span> Snel</h2></div>
+      <div class="dash-snel">
         <% if (can("beheerder")) { %>
           <a href="/uitleen/toewijzen" class="btn"><span class="msr">person_add</span>Toewijzen</a>
           <a href="/uitleen/toewijzen?soort=uitleen" class="btn"><span class="msr">key</span>Uitlenen</a>
@@ -92,12 +93,14 @@
 
     <div class="card">
       <div class="card-head"><h2><span class="msr" style="color:var(--groen)">eco</span> Verduurzaming</h2><a href="/export" class="small">Export →</a></div>
-      <% const tot = milieu.reduce((s, m) => s + m.n, 0) || 1; %>
-      <div class="rows">
-        <% milieu.forEach(m => { %><div><span class="k"><%= h.label("milieu", m.milieu) || m.milieu %></span><span class="v"><strong><%= Math.round(m.n * 100 / tot) %>%</strong> <span class="muted small">(<%= m.n %>)</span></span></div><% }) %>
+      <% const tot = milieu.reduce((s, m) => s + m.n, 0) || 1; const kleur = { elektrisch: "var(--groen)", hybride: "var(--blauw-soft)", benzine: "var(--oranje)", diesel: "var(--grijs)", onbekend: "var(--grijs-thin)" }; %>
+      <div class="milieu-balk"><% milieu.forEach(m => { %><span style="width:<%= m.n * 100 / tot %>%;background:<%= kleur[m.milieu] || kleur.onbekend %>" title="<%= h.label("milieu", m.milieu) || m.milieu %> <%= m.n %>"></span><% }) %></div>
+      <div class="milieu-legenda">
+        <% milieu.forEach(m => { %><span><i style="background:<%= kleur[m.milieu] || kleur.onbekend %>"></i><%= h.label("milieu", m.milieu) || m.milieu %> <strong><%= Math.round(m.n * 100 / tot) %>%</strong> <span class="muted">(<%= m.n %>)</span></span><% }) %>
       </div>
-      <div class="muted small" style="margin-top:8px">Gegevens compleet: <%= counts.doc_ok %> van <%= counts.met_kenteken %> auto's hebben een kentekenbewijs in de app.</div>
+      <div class="muted small" style="margin-top:10px"><%= counts.doc_ok %> van <%= counts.met_kenteken %> auto's hebben een kentekenbewijs in de app.</div>
     </div>
   </div>
+</div>
 </div>
 <%- include("../partials/footer") %>

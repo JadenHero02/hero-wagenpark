@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.18", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "dashboard opnieuw ingedeeld: de vier stuurgetallen op één rij bovenaan, daaronder \"Vandaag voor jou\" en \"Komende weken\" breed links en de snelle acties en verduurzaming (als één balk) rechts. De pagina rekt op een breed scherm niet meer eindeloos uit en de kolommen lopen niet meer scheef", commit: "" },
+  ] },
   { versie: "0.2.17", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "licht en donker thema: kies in het menu rechtsboven voor licht, donker of het systeem volgen. De keuze wordt per apparaat onthouden; de blauwe balk en de kentekens blijven zoals ze zijn", commit: "" },
   ] },
