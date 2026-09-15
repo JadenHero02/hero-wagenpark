@@ -2,7 +2,7 @@
 <div class="muted small" style="margin-bottom:10px"><a href="/bestuurders">Bestuurders</a> › <%= b.naam %></div>
 <div class="page-head">
   <div><h1><%= b.naam %><% if (b.is_extern) { %> <span class="pill grey" style="font-size:12px">extern</span><% } %></h1><div class="sub"><%= [b.vestiging, b.email, b.telefoon].filter(Boolean).join(" · ") %></div></div>
-  <% if (can("beheerder")) { %><div class="actions"><a href="/bestuurders/<%= b.id %>/bewerken" class="btn"><span class="msr">edit</span>Bewerken</a></div><% } %>
+  <% if (can("beheerder")) { %><div class="actions"><% if (can("admin")) { %><a href="/mijn-auto?als=<%= b.id %>" class="btn ghost" title="Mijn auto bekijken zoals deze bestuurder het ziet"><span class="msr">visibility</span>Bekijk als bestuurder</a><% } %><a href="/bestuurders/<%= b.id %>/bewerken" class="btn"><span class="msr">edit</span>Bewerken</a></div><% } %>
 </div>
 <div class="grid-2">
   <div class="card">

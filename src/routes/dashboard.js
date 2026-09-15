@@ -102,7 +102,9 @@ router.get("/", async (req, res) => {
 
 // Mijn auto: de bestuurder op de telefoon. Voorlopig de kern; de rest volgt donderdag.
 router.get("/mijn-auto", async (req, res) => {
-  const b = req.bestuurder;
+  // Meekijken: de admin ziet Mijn auto zoals een bestuurder het ziet (?als=<bestuurder-id>), om te controleren wat iemand te zien krijgt
+  const als = res.locals.can("admin") && Number(req.query.als) ? await db.one("SELECT * FROM bestuurders WHERE id = $1", [Number(req.query.als)]) : null;
+  const b = als || req.bestuurder;
   const autos = b ? await db.all(`
     SELECT v.*, t.id AS toewijzing_id, t.soort AS toewijzing_soort, t.van, t.tot, ve.naam AS vestiging,
       (SELECT stand FROM kilometerstanden k WHERE k.voertuig_id = v.id ORDER BY datum DESC, id DESC LIMIT 1) AS km_stand,
@@ -120,7 +122,7 @@ router.get("/mijn-auto", async (req, res) => {
   const vestigingId = (autos[0] && autos[0].vestiging_id) || (b && b.vestiging_id) || null;
   const contacten = await db.all("SELECT c.*, ve.naam AS vestiging FROM contacten c LEFT JOIN vestigingen ve ON ve.id = c.vestiging_id WHERE c.soort IN ('celdirecteur','wagenparkbeheer','verzekeraar','tankpas') AND (c.vestiging_id IS NULL OR c.vestiging_id = $1) ORDER BY CASE c.soort WHEN 'wagenparkbeheer' THEN 1 WHEN 'celdirecteur' THEN 2 WHEN 'verzekeraar' THEN 3 ELSE 4 END, c.naam", [vestigingId]);
   const vrij = await db.one("SELECT COUNT(*) AS n FROM voertuigen WHERE status = 'op_voorraad'");
-  res.render("mijn-auto", { title: "Mijn auto", autos, garages, taken, boetes, verzoeken, incidenten, documenten, contacten, vrij: vrij.n });
+  res.render("mijn-auto", { title: "Mijn auto", autos, garages, taken, boetes, verzoeken, incidenten, documenten, contacten, vrij: vrij.n, meekijken: als });
 });
 
 module.exports = { router };

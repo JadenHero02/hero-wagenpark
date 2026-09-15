@@ -1,5 +1,6 @@
 <%- include("partials/header") %>
-<div class="page-head"><div><div class="eyebrow">Mijn auto</div><h1><%= currentUser.name %></h1></div>
+<% if (meekijken) { %><div class="flash" style="background:var(--oranje-thin);color:var(--oranje-bold)"><span class="msr">visibility</span>Je kijkt mee als <%= meekijken.naam %>. Dit is wat deze bestuurder ziet in Mijn auto. <a href="/bestuurders/<%= meekijken.id %>" style="margin-left:auto;color:inherit;font-weight:600">Terug naar de bestuurder</a></div><% } %>
+<div class="page-head"><div><div class="eyebrow">Mijn auto</div><h1><%= meekijken ? meekijken.naam : currentUser.name %></h1></div>
   <div class="actions"><a href="/uitleen/aanvragen" class="btn"><span class="msr">key</span>Leenauto aanvragen</a><% if (autos.length) { %><a href="/incidenten/nieuw" class="btn primary"><span class="msr">car_crash</span>Incident melden</a><% } %></div>
 </div>
 <div style="max-width:560px">
@@ -18,7 +19,7 @@
   <div class="card">
     <div class="vehicle-head">
       <span class="plate big"><%= v.kenteken || "besteld" %></span>
-      <div><h2><%= v.merk %> <%= v.model || "" %></h2><div class="meta"><span><%= v.vestiging || "" %></span><span><%= v.toewijzing_soort === "uitleen" ? "leenauto" : "sinds " + h.formatDate(v.van) %></span></div></div>
+      <div><h2><%= v.merk %> <%= v.model || "" %></h2><div class="meta"><span><%= v.vestiging || "" %></span><span><%= v.toewijzing_soort === "uitleen" ? "leenauto" : (v.van ? "sinds " + h.formatDate(v.van) : "vaste auto") %></span></div></div>
     </div>
 
     <% if (dagen !== null && dagen < 90 && !v.apk_afspraak) { %>
