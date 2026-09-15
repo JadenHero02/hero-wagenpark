@@ -3,7 +3,7 @@
 <div class="page-head"><h1><%= v.id ? "Voertuig bewerken" : "Nieuw voertuig" %></h1></div>
 <div class="card">
 <form method="POST" action="<%= v.id ? "/voertuigen/" + v.id : "/voertuigen" %>" class="form">
-  <label>Kenteken <span class="hint">leeg als de auto nog besteld is</span><input name="kenteken" value="<%= v.kenteken || "" %>" placeholder="AB-123-C" style="text-transform:uppercase"></label>
+  <label>Kenteken <span class="hint">leeg als de auto nog besteld is; de app haalt de gegevens op bij de RDW</span><input name="kenteken" id="kenteken" value="<%= v.kenteken || "" %>" placeholder="AB-123-C" style="text-transform:uppercase" autocomplete="off"><span class="hint" id="rdw-hint" style="margin-top:4px;min-height:16px"></span></label>
   <label>Status<select name="status"><% Object.entries(LABELS.status).filter(([k]) => k !== "archief").forEach(([k, l]) => { %><option value="<%= k %>" <%= v.status === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
   <label>Merk<input name="merk" value="<%= v.merk || "" %>" required></label>
   <label>Model<input name="model" value="<%= v.model || "" %>" placeholder="Megane E-Tech"></label>
@@ -27,4 +27,27 @@
   <div class="buttons"><a href="<%= v.id ? "/voertuigen/" + v.id : "/voertuigen" %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
 </form>
 </div>
+<script>
+(function () {
+  // Kenteken ingevuld: gegevens bij de RDW ophalen en lege velden invullen
+  var veld = document.getElementById("kenteken"), hint = document.getElementById("rdw-hint"), laatste = "";
+  if (!veld) return;
+  function vul(naam, waarde) { var el = document.querySelector('[name="' + naam + '"]'); if (!el || !waarde) return false; if (el.value && el.value !== "") return false; el.value = waarde; el.style.background = "#fff3cc"; return true; }
+  function zoek() {
+    var k = veld.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (k.length < 6 || k === laatste) return; laatste = k;
+    hint.textContent = "Zoeken bij de RDW...";
+    fetch("/voertuigen/rdw/" + encodeURIComponent(k) + ".json").then(function (r) { return r.json(); }).then(function (g) {
+      if (g.fout) { hint.textContent = g.fout; hint.style.color = "var(--rood)"; return; }
+      hint.style.color = "";
+      var apk = g.apk_vervaldatum ? g.apk_vervaldatum.split("-").reverse().join("-") : "onbekend";
+      hint.textContent = "RDW: " + g.merk + " " + g.model + " · " + (g.bouwjaar || "") + " · " + (g.brandstof || "") + " · APK tot " + apk + (g.kleur ? " · " + g.kleur.toLowerCase() : "") + (g.bestaat ? " · LET OP: staat al in het wagenpark als " + g.bestaat.kenteken : "");
+      var n = 0; ["merk", "model", "bouwjaar", "milieu", "apk_vervaldatum"].forEach(function (f) { if (vul(f, g[f])) n++; });
+      if (n) hint.textContent += " (" + n + " velden ingevuld, geel)";
+    }).catch(function () { hint.textContent = "De RDW is even niet bereikbaar."; });
+  }
+  veld.addEventListener("change", zoek); veld.addEventListener("blur", zoek);
+  veld.addEventListener("keyup", function (e) { if (e.key === "Enter") { e.preventDefault(); zoek(); } });
+})();
+</script>
 <%- include("../partials/footer") %>

@@ -8,6 +8,7 @@ const pincode = require("../pincode");
 const processen = require("../processen");
 const taken = require("../taken");
 const msauth = require("./msauth");
+const rdw = require("../rdw");
 const { clean, cleanNumber, cleanDate, yes, kenteken: fmtKenteken, formatDate, bouwjaarNorm, LABELS } = require("../helpers");
 
 const router = express.Router();
@@ -44,6 +45,32 @@ async function zoekVoertuigen(query) {
     ORDER BY ${f.sort === "bouwjaar" ? "v.bouwjaar NULLS LAST," : f.sort === "bouwjaar_desc" ? "v.bouwjaar DESC NULLS LAST," : f.sort === "apk" ? "v.apk_vervaldatum NULLS LAST," : f.sort === "km" ? "km_datum NULLS FIRST," : ""} CASE v.status WHEN 'actief' THEN 1 WHEN 'uitgeleend' THEN 2 WHEN 'op_voorraad' THEN 3 WHEN 'besteld' THEN 4 ELSE 5 END, ve.volgorde NULLS LAST, v.merk, v.kenteken`, params);
   return { rows, q, f };
 }
+
+// RDW: gegevens op kenteken (voor het formulier), één auto bijwerken, of alle auto's (admin)
+router.get("/rdw/:kenteken.json", auth.requireRole("beheerder"), async (req, res) => {
+  try {
+    const g = await rdw.opvragen(req.params.kenteken);
+    if (!g) return res.status(404).json({ fout: "Kenteken niet gevonden bij de RDW." });
+    const bestaat = await db.one("SELECT id, kenteken FROM voertuigen WHERE regexp_replace(upper(kenteken), '[^A-Z0-9]', '', 'g') = $1", [g.kenteken]);
+    res.json({ ...g, bestaat: bestaat ? { id: bestaat.id, kenteken: bestaat.kenteken } : null });
+  } catch (err) { res.status(502).json({ fout: `De RDW is niet bereikbaar: ${err.message}` }); }
+});
+router.post("/rdw-alles", auth.requireRole("admin"), async (req, res) => {
+  const u = await rdw.alles(req.user.id);
+  res.flash(`RDW: ${u.gevonden} van ${u.totaal} kentekens gevonden, ${u.gewijzigd} auto's bijgewerkt${u.fouten ? `, ${u.fouten} fouten` : ""}.${u.regels.length ? " " + u.regels.slice(0, 6).join(" · ") + (u.regels.length > 6 ? " · ..." : "") : ""}`);
+  res.redirect("/voertuigen");
+});
+router.post("/:id/rdw", auth.requireRole("beheerder"), async (req, res, next) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return next();
+  if (!v.kenteken) { res.flash("Deze auto heeft nog geen kenteken.", "error"); return res.redirect(`/voertuigen/${v.id}`); }
+  try {
+    const r = await rdw.bijwerken(v, req.user.id);
+    if (!r.gevonden) res.flash(`Kenteken ${v.kenteken} is niet bekend bij de RDW. Klopt het kenteken?`, "error");
+    else res.flash(r.gewijzigd.length ? `Bijgewerkt vanuit de RDW: ${r.gewijzigd.join(", ")}.` : "RDW-gegevens opgehaald, alles klopte al.");
+  } catch (err) { res.flash(`De RDW is niet bereikbaar: ${err.message}`, "error"); }
+  res.redirect(`/voertuigen/${v.id}`);
+});
 
 // Overzicht
 router.get("/", auth.requireRole("directie"), async (req, res) => {

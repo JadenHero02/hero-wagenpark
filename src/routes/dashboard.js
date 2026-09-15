@@ -50,9 +50,10 @@ router.get("/", async (req, res) => {
   const rapporten = await db.all(`SELECT d.id, d.voertuig_id, v.kenteken, d.created_at FROM documenten d JOIN voertuigen v ON v.id = d.voertuig_id WHERE d.soort = 'apk_rapport' AND d.goedgekeurd_op IS NULL ${where} ORDER BY d.created_at LIMIT 8`, params);
   const boetesOpen = await db.one(`SELECT COUNT(*) FILTER (WHERE b.status = 'nieuw') AS nieuw, COUNT(*) FILTER (WHERE b.status = 'uitzondering_gevraagd') AS uitzondering FROM boetes b JOIN voertuigen v ON v.id = b.voertuig_id WHERE true ${where}`, params);
   const incidentenOpen = await db.one(`SELECT COUNT(*) AS n FROM incidenten i JOIN voertuigen v ON v.id = i.voertuig_id WHERE i.status <> 'afgerond' ${where}`, params);
+  const nietVerzekerd = await db.all(`SELECT v.id, v.kenteken, v.merk, v.model, ve.naam AS vestiging FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id WHERE v.rdw_wam_verzekerd = false AND v.status <> 'archief' ${where} ORDER BY v.kenteken`, params);
   const takenWeek = await db.all(`SELECT t.*, v.kenteken, (t.deadline - current_date) AS dagen FROM taken t LEFT JOIN voertuigen v ON v.id = t.voertuig_id WHERE t.status = 'open' AND t.voor = 'beheerder' AND t.deadline <= current_date + 7 AND t.soort NOT IN ('apk','uitleen') ${where} ORDER BY t.deadline LIMIT 8`, params);
 
-  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, counts, perVestiging, openTaken, apk, uitleenTeLaat, uitleenOpen: uitleenOpen.n, wachtlijst: wachtlijst.n, kmOntbreekt: kmOntbreekt.n, bandenwissel: bandenwissel.n, milieu, verzoeken, rapporten, boetesOpen, incidentenOpen: incidentenOpen.n, takenWeek });
+  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, counts, perVestiging, openTaken, apk, uitleenTeLaat, uitleenOpen: uitleenOpen.n, wachtlijst: wachtlijst.n, kmOntbreekt: kmOntbreekt.n, bandenwissel: bandenwissel.n, milieu, verzoeken, rapporten, boetesOpen, incidentenOpen: incidentenOpen.n, takenWeek, nietVerzekerd });
 });
 
 // Mijn auto: de bestuurder op de telefoon. Voorlopig de kern; de rest volgt donderdag.

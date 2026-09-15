@@ -9,7 +9,7 @@
       <div class="meta">
         <% if (v.milieu) { %><span><span class="msr">bolt</span><%= h.label("milieu", v.milieu) %></span><% } %>
         <% if (v.vestiging) { %><span><span class="msr">location_on</span><%= v.vestiging %></span><% } %>
-        <% if (v.bouwjaar) { %><span><%= v.bouwjaar %></span><% } %>
+        <% if (v.bouwjaar) { %><span><%= h.bouwjaarFmt(v.bouwjaar) %></span><% } %>
         <span><%= h.label("eigendom", v.eigendom) %></span>
         <% if (v.bijtelling !== null) { %><span>bijtelling <%= v.bijtelling ? "ja" : "nee" %></span><% } %>
         <% if (v.banden) { %><span><%= h.label("banden", v.banden) %></span><% } %>
@@ -68,6 +68,7 @@
       <% if (v.banden === "winter_zomer") { %><div><span class="k">Winterbanden</span><span class="v"><span class="pill warn">vóór 1 nov</span></span></div><% } %>
       <% if (bw) { %><div><span class="k">Bandenwissel <%= bw.seizoen %></span><span class="v"><span class="pill <%= bw.gewisseld ? 'ok' : 'warn' %>"><%= bw.gewisseld ? "gewisseld" : "nog niet" %></span></span></div><% } %>
       <% if (v.contract_einde) { %><div><span class="k">Contract eindigt</span><span class="v"><%= h.formatDate(v.contract_einde) %></span></div><% } %>
+      <div><span class="k">RDW</span><span class="v small"><% if (v.rdw_opgehaald_op) { %><%= [v.rdw_kleur, v.rdw_brandstof, v.rdw_catalogusprijs ? "cat. " + h.euro(v.rdw_catalogusprijs) : null, v.rdw_wam_verzekerd === false ? "NIET WA-verzekerd" : v.rdw_wam_verzekerd ? "WA-verzekerd" : null].filter(Boolean).join(" · ") %><div class="muted">opgehaald <%= h.formatDate(v.rdw_opgehaald_op) %></div><% } else { %><span class="muted">nog niet opgehaald</span><% } %><% if (can("beheerder") && v.kenteken) { %> <form method="POST" action="/voertuigen/<%= v.id %>/rdw" class="inline"><button class="btn small ghost" type="submit" title="Merk, bouwjaar, brandstof en APK-datum ophalen bij de RDW"><span class="msr">sync</span>RDW</button></form><% } %></span></div>
       <div><span class="k">Onderhoudsadres</span><span class="v"><% if (garage) { %><strong><%= garage.naam %></strong><% if (garage.telefoon) { %> <span class="muted small"><%= garage.telefoon %></span><% } %><% } else { %><span class="muted">geen garage voor <%= v.merk %></span><% } %></span></div>
     </div>
   </div>

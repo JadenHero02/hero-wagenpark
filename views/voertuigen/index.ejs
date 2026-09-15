@@ -1,7 +1,7 @@
 <%- include("../partials/header") %>
 <div class="page-head">
   <div><div class="eyebrow">Wagenpark</div><h1>Voertuigen</h1><div class="sub"><%= counts.actief %> actief · <%= counts.uitgeleend %> uitgeleend · <%= counts.op_voorraad %> op voorraad · <%= counts.besteld %> besteld</div></div>
-  <div class="actions"><a href="/voertuigen/export.xlsx<%= exportQuery ? "?" + exportQuery : "" %>" class="btn" title="Deze lijst, met de huidige zoekterm en filters, naar Excel"><span class="msr">download</span>Exporteren (<%= rows.length %>)</a><% if (can("beheerder")) { %><a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a><% } %></div>
+  <div class="actions"><% if (can("admin")) { %><form method="POST" action="/voertuigen/rdw-alles" class="inline" onsubmit="this.querySelector('button').disabled=true"><button class="btn ghost" type="submit" title="Alle kentekens langs de RDW: lege velden invullen en APK-data bijwerken (duurt een halve minuut)"><span class="msr">sync</span>RDW bijwerken</button></form><% } %><a href="/voertuigen/export.xlsx<%= exportQuery ? "?" + exportQuery : "" %>" class="btn" title="Deze lijst, met de huidige zoekterm en filters, naar Excel"><span class="msr">download</span>Exporteren (<%= rows.length %>)</a><% if (can("beheerder")) { %><a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a><% } %></div>
 </div>
 <form method="GET" class="filters">
   <input type="search" name="q" value="<%= q || "" %>" placeholder="Kenteken, merk, bestuurder..." style="min-width:240px">

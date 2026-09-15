@@ -4,8 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.7", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "RDW-koppeling: bij het invoeren van een kenteken vult de app merk, model, bouwjaar, brandstof en APK-datum in vanuit de open data van de RDW. Elke dag worden alle kentekens bijgewerkt; de APK-datum komt voortaan van de RDW en de knop RDW op de voertuigpagina doet het direct", commit: "" },
+    { soort: "opgelost", tekst: "APK-data uit de Excel die al verlopen leken maar volgens de RDW al vernieuwd waren, staan nu goed", commit: "" },
+  ] },
   { versie: "0.2.6", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "bouwjaar en -maand in de wagenparklijst, met sorteren op bouwjaar, APK en kilometerstand; ook in de Excel-export. De schrijfwijzen uit de Excel (\"Aug 2024\", \"Mei 2021\", \"2025-07\") zijn gelijkgetrokken", commit: "" },
+    { soort: "nieuw", tekst: "bouwjaar en -maand in de wagenparklijst, met sorteren op bouwjaar, APK en kilometerstand; ook in de Excel-export. De schrijfwijzen uit de Excel (\"Aug 2024\", \"Mei 2021\", \"2025-07\") zijn gelijkgetrokken", commit: "bf4e6d6" },
   ] },
   { versie: "0.2.5", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "exporteren naar Excel (tip van Vasco, voor finance): menu Export geeft één werkboek met een tabblad per onderdeel; in het wagenpark exporteer je precies de rijen die je gefilterd hebt. Zonder pincodes, elke export in het logboek", commit: "5246107" },

@@ -55,6 +55,12 @@
           <span class="pill warn"><%= u.dagen %> dagen</span>
         </div>
       <% }) %>
+      <% nietVerzekerd.forEach(n => { %>
+        <div>
+          <span><span class="msr" style="color:var(--rood)">gpp_bad</span> <a href="/voertuigen/<%= n.id %>"><span class="plate"><%= n.kenteken %></span></a> Volgens de RDW niet WA-verzekerd · <%= n.merk %> <%= n.model || "" %> · <%= n.vestiging || "" %></span>
+          <span class="pill bad">controleren</span>
+        </div>
+      <% }) %>
       <% verzoeken.forEach(l => { %>
         <div>
           <span><span class="msr" style="color:var(--oranje)">key</span> Leenverzoek van <strong><%= l.wie %></strong><% if (l.soort === "verlenging") { %> (meer tijd)<% } %><% if (l.kenteken) { %> · <span class="plate"><%= l.kenteken %></span><% } %> · <%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %></span>
@@ -79,7 +85,7 @@
           <span class="pill">vanaf 1 oktober</span>
         </div>
       <% } %>
-      <% if (!apk.length && !uitleenTeLaat.length && !bandenwissel && !verzoeken.length && !rapporten.length && !takenWeek.length) { %><div class="empty">Niets dat vandaag aandacht vraagt.</div><% } %>
+      <% if (!apk.length && !uitleenTeLaat.length && !bandenwissel && !verzoeken.length && !rapporten.length && !takenWeek.length && !nietVerzekerd.length) { %><div class="empty">Niets dat vandaag aandacht vraagt.</div><% } %>
     </div>
   </div>
   <div>

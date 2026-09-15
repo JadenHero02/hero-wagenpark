@@ -11,6 +11,7 @@
 
 const db = require("./db");
 const mail = require("./mail");
+const rdw = require("./rdw");
 const { formatDate, relativeDate, num } = require("./helpers");
 
 // Datum en uur in Nederland, ook als de server in UTC draait (Railway)
@@ -184,11 +185,20 @@ async function dagmail(now) {
   await mail.send({ to: users.map((u) => u.email), subject: `Wagenpark vandaag: ${taken.length} taken, ${verzoeken.n} leenverzoeken`, soort: "dagmail", ref, html });
 }
 
+// Eén keer per dag alle kentekens langs de RDW: APK-data en lege velden bijwerken, vóór de APK-ronde
+async function rondeRdw(today) {
+  if ((await setting("rdw_laatste_ronde", "")) === today) return;
+  const u = await rdw.alles(null);
+  await db.run("INSERT INTO instellingen (sleutel, waarde) VALUES ('rdw_laatste_ronde', $1) ON CONFLICT (sleutel) DO UPDATE SET waarde = EXCLUDED.waarde", [today]);
+  console.log(`RDW-ronde: ${u.gevonden}/${u.totaal} gevonden, ${u.gewijzigd} bijgewerkt, ${u.fouten} fouten`);
+}
+
 let running = false;
 async function run() {
   if (running) return;
   running = true;
   const now = nlNow();
+  try { await rondeRdw(now.date); } catch (err) { console.error("RDW-ronde mislukt:", err.message); }
   for (const [naam, fn] of [["apk", rondeApk], ["contract", rondeContract], ["rijbewijs", rondeRijbewijs], ["banden", rondeBanden], ["uitleen", rondeUitleen]]) {
     try { await fn(now.date); } catch (err) { console.error(`Takenronde ${naam} mislukt:`, err.message); }
   }
