@@ -1,0 +1,9 @@
+<%- include("../partials/header") %>
+<div class="page-head"><div><div class="eyebrow">Tankpas</div><h1><span class="plate big"><%= v.kenteken || "besteld" %></span> <%= v.merk %> <%= v.model || "" %></h1></div></div>
+<div class="card" style="max-width:420px;text-align:center">
+  <div class="lbl" style="justify-content:center">Pincode <%= v.tankpas_nummer || "" %></div>
+  <div style="font-size:40px;font-weight:800;letter-spacing:.2em;color:var(--blauw);margin:12px 0"><%= code %></div>
+  <p class="muted small">Dit is gelogd op naam van <%= currentUser.name %>. Deel de code niet door.</p>
+  <a href="<%= back %>" class="btn ghost"><span class="msr">arrow_back</span>Terug</a>
+</div>
+<%- include("../partials/footer") %>

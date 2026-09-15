@@ -1,0 +1,40 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/bestuurders">Bestuurders</a> › <%= b.naam %></div>
+<div class="page-head">
+  <div><h1><%= b.naam %><% if (b.is_extern) { %> <span class="pill grey" style="font-size:12px">extern</span><% } %></h1><div class="sub"><%= [b.vestiging, b.email, b.telefoon].filter(Boolean).join(" · ") %></div></div>
+  <% if (can("beheerder")) { %><div class="actions"><a href="/bestuurders/<%= b.id %>/bewerken" class="btn"><span class="msr">edit</span>Bewerken</a></div><% } %>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-head"><div class="lbl"><span class="msr">directions_car</span>Auto's</div></div>
+    <table class="list">
+      <thead><tr><th>Kenteken</th><th>Auto</th><th>Soort</th><th>Van</th><th>Tot</th><th></th></tr></thead>
+      <tbody>
+      <% toewijzingen.forEach(t => { %><tr class="click" onclick="location.href='/voertuigen/<%= t.voertuig_id %>'"><td><span class="plate"><%= t.kenteken || "besteld" %></span></td><td><%= t.merk %> <%= t.model || "" %></td><td><%= t.soort === "uitleen" ? "Uitleen" : "Vast" %></td><td><%= h.formatDate(t.van) %></td><td><%= h.formatDate(t.tot) %></td><td><% if (t.status === "actief") { %><span class="pill ok">actief</span><% } %></td></tr><% }) %>
+      <% if (!toewijzingen.length) { %><tr><td colspan="6" class="empty">Geen auto toegewezen.</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <div class="card">
+      <div class="lbl"><span class="msr">badge</span>Gegevens</div>
+      <dl class="kv" style="margin-top:8px">
+        <dt>Rijbewijs geldig tot</dt><dd><%= b.rijbewijs_geldig_tot ? h.formatDate(b.rijbewijs_geldig_tot) : "onbekend" %></dd>
+        <dt>Account</dt><dd><%= b.role ? h.label("role", b.role) + (b.last_login_at ? ", laatst ingelogd " + h.formatDate(b.last_login_at) : ", nog niet ingelogd") : "nog geen account (komt bij de eerste login)" %></dd>
+        <% if (b.opmerking) { %><dt>Opmerking</dt><dd><%= b.opmerking %></dd><% } %>
+      </dl>
+    </div>
+    <div class="card">
+      <div class="lbl"><span class="msr">receipt_long</span>Boetes</div>
+      <div class="rows" style="margin-top:4px">
+        <% boetes.forEach(x => { %><div><span class="k"><%= h.formatDate(x.datum) %> · <%= x.kenteken %></span><span class="v"><%= h.euro(x.bedrag) %> <span class="pill <%= x.status === 'doorbelast' ? 'warn' : 'grey' %>"><%= x.status.replace("_", " ") %></span></span></div><% }) %>
+        <% if (!boetes.length) { %><div class="muted">Geen boetes.</div><% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card" style="margin-top:16px">
+  <div class="lbl"><span class="msr">history</span>Logboek</div>
+  <div class="log" style="margin-top:6px"><% logboek.forEach(l => { %><div><span class="when"><%= h.formatDate(l.created_at, true) %></span><span><%= l.kenteken ? l.kenteken + " · " : "" %><%= l.omschrijving %></span></div><% }) %><% if (!logboek.length) { %><div class="muted">Nog niets gelogd.</div><% } %></div>
+</div>
+<%- include("../partials/footer") %>

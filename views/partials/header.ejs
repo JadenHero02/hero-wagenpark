@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#073889">
+  <title><%= title %> · Hero Wagenpark</title>
+  <link rel="icon" type="image/svg+xml" href="/img/Hero_logo_blauw.svg">
+  <link rel="stylesheet" href="/fonts/fonts.css?v=<%= assetVersion %>">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=block">
+  <link rel="stylesheet" href="/style.css?v=<%= assetVersion %>">
+</head>
+<body>
+<%
+  const p = currentPath || "";
+  const isActive = (prefix) => (prefix === "/" ? p === "/" : p.startsWith(prefix)) ? "on" : "";
+  const user = currentUser || null;
+  const menu = [
+    { href: "/", icon: "grid_view", label: "Dashboard", min: "bestuurder" },
+    { href: "/voertuigen", icon: "directions_car", label: "Wagenpark", min: "directie", badge: badges.voertuigen },
+    { href: "/bestuurders", icon: "group", label: "Bestuurders", min: "directie" },
+    { href: "/wachtlijst", icon: "hourglass_top", label: "Wachtlijst", min: "directie", badge: badges.wachtlijst },
+    { href: "/uitleen", icon: "key", label: "Uitleen", min: "directie", badge: badges.uitleen },
+    { href: "/taken", icon: "task_alt", label: "Taken", min: "directie", badge: badges.taken, hot: true },
+    { href: "/incidenten", icon: "car_crash", label: "Incidenten", min: "directie" },
+    { href: "/boetes", icon: "receipt_long", label: "Boetes", min: "directie" },
+    { href: "/contacten", icon: "contacts", label: "Contacten", min: "directie" },
+    { href: "/archief", icon: "inventory_2", label: "Archief", min: "directie" },
+    { href: "/processen", icon: "checklist", label: "Processen", min: "directie" },
+    { href: "/instellingen", icon: "settings", label: "Instellingen", min: "admin" },
+  ];
+%>
+<div class="shell">
+  <header class="topbar">
+    <a href="/" class="brand"><img src="/img/Hero_logo_blauw.svg" alt="Hero" width="46" height="39"></a>
+    <form class="topsearch" method="GET" action="/voertuigen" role="search">
+      <span class="msr">search</span>
+      <input type="search" name="q" placeholder="Zoeken op kenteken, bestuurder, merk..." aria-label="Zoeken">
+    </form>
+    <div class="topbar-right">
+      <% if (user) { %>
+        <details class="usermenu">
+          <summary><span class="avatar"><%= h.initials(user.name) %></span></summary>
+          <div class="usermenu-list">
+            <div class="usermenu-head"><strong><%= user.name %></strong><span class="muted small"><%= user.email %> · <%= h.label("role", user.role) %></span></div>
+            <a href="/mijn-auto"><span class="msr">directions_car</span>Mijn auto</a>
+            <form method="POST" action="/logout"><button type="submit"><span class="msr">logout</span>Uitloggen</button></form>
+          </div>
+        </details>
+      <% } %>
+    </div>
+  </header>
+  <div class="body">
+    <nav class="sidenav">
+      <div class="sidenav-title"><span class="msr">directions_car</span>Wagenpark</div>
+      <% menu.forEach((m) => { if (!can(m.min)) return; %>
+        <a href="<%= m.href %>" class="side-link <%= isActive(m.href) %>">
+          <span class="msr"><%= m.icon %></span><span class="label"><%= m.label %></span>
+          <% if (m.badge) { %><span class="side-badge <%= m.hot ? 'hot' : '' %>"><%= m.badge %></span><% } %>
+        </a>
+      <% }) %>
+      <% if (user && currentBestuurder) { %>
+        <div class="sidenav-sep"></div>
+        <a href="/mijn-auto" class="side-link <%= isActive('/mijn-auto') %>"><span class="msr">person_pin_circle</span><span class="label">Mijn auto</span></a>
+      <% } %>
+    </nav>
+    <main class="main">
+      <% if (typeof flash !== "undefined" && flash) { %><div class="flash <%= flashKind %>"><span class="msr"><%= flashKind === "error" ? "error" : "check_circle" %></span><%= flash %></div><% } %>

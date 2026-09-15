@@ -1,0 +1,30 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Wagenpark</div><h1>Bestuurders</h1><div class="sub"><%= rows.length %> bestuurders</div></div>
+  <div class="actions"><% if (can("beheerder")) { %><a href="/bestuurders/nieuw" class="btn primary"><span class="msr">person_add</span>Nieuwe bestuurder</a><% } %></div>
+</div>
+<form method="GET" class="filters">
+  <input type="search" name="q" value="<%= q || "" %>" placeholder="Naam, e-mail of kenteken" style="min-width:240px">
+  <select name="vestiging" onchange="this.form.submit()"><option value="">Alle vestigingen</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= vId === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select>
+  <div class="chips"><a class="chip <%= zonder ? "on" : "" %>" href="?<%= zonder ? "" : "zonder=1" %>">Zonder auto</a></div>
+  <button type="submit" class="btn ghost small">Zoeken</button>
+</form>
+<div class="card" style="padding:0">
+  <table class="list">
+    <thead><tr><th>Naam</th><th>Vestiging</th><th>Auto</th><th>Telefoon</th><th>Rijbewijs</th><th>Account</th></tr></thead>
+    <tbody>
+    <% if (!rows.length) { %><tr><td colspan="6" class="empty">Geen bestuurders gevonden.</td></tr><% } %>
+    <% rows.forEach(r => { const d = h.daysUntil(r.rijbewijs_geldig_tot); %>
+      <tr class="click" onclick="location.href='/bestuurders/<%= r.id %>'">
+        <td><strong><%= r.naam %></strong><% if (r.is_extern) { %> <span class="pill grey">extern</span><% } %><% if (r.email) { %><div class="muted small"><%= r.email %></div><% } %></td>
+        <td><%= r.vestiging || "" %></td>
+        <td><% if (r.voertuig_id) { %><a href="/voertuigen/<%= r.voertuig_id %>" onclick="event.stopPropagation()"><span class="plate"><%= r.kenteken || "besteld" %></span></a> <%= r.merk %> <%= r.model || "" %><% if (r.toewijzing_soort === "uitleen") { %> <span class="pill warn">leen</span><% } %><% } else { %><span class="muted">–</span><% } %></td>
+        <td class="small"><%= r.telefoon || "" %></td>
+        <td><% if (r.rijbewijs_geldig_tot) { %><span class="pill <%= d < 0 ? 'bad' : d < 90 ? 'warn' : 'grey' %>"><%= h.formatDate(r.rijbewijs_geldig_tot) %></span><% } else { %><span class="muted small">onbekend</span><% } %></td>
+        <td class="small"><%= r.role ? h.label("role", r.role) : "" %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include("../partials/footer") %>

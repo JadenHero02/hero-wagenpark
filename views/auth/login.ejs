@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#073889">
+  <title>Inloggen · Hero Wagenpark</title>
+  <link rel="icon" type="image/svg+xml" href="/img/Hero_logo_blauw.svg">
+  <link rel="stylesheet" href="/fonts/fonts.css?v=<%= assetVersion %>">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=block">
+  <link rel="stylesheet" href="/style.css?v=<%= assetVersion %>">
+</head>
+<body class="login-body">
+  <div class="login-card">
+    <img src="/img/Hero_logo_blauw.svg" alt="Hero" width="80" height="68">
+    <h1>Wagenpark</h1>
+    <p class="muted">Eén plek waar het wagenpark klopt en die zelf aan de bel trekt.</p>
+    <% if (error) { %><div class="flash error"><span class="msr">error</span><%= error %></div><% } %>
+    <% if (msLoginEnabled) { %>
+      <a class="btn primary wide" href="/auth/microsoft?next=<%= encodeURIComponent(next) %>"><span class="msr">login</span>Inloggen met je Hero-account</a>
+    <% } else { %>
+      <p class="muted small">Inloggen met Microsoft is nog niet ingesteld.</p>
+    <% } %>
+    <% if (devLogin) { %>
+      <form method="POST" action="/login/dev" class="dev-login">
+        <input type="hidden" name="next" value="<%= next %>">
+        <button type="submit" class="btn ghost wide"><span class="msr">construction</span>Lokaal inloggen als <%= devLogin %></button>
+      </form>
+    <% } %>
+  </div>
+</body>
+</html>

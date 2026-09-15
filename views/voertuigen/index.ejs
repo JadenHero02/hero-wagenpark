@@ -1,0 +1,37 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Wagenpark</div><h1>Voertuigen</h1><div class="sub"><%= counts.actief %> actief · <%= counts.uitgeleend %> uitgeleend · <%= counts.op_voorraad %> op voorraad · <%= counts.besteld %> besteld</div></div>
+  <div class="actions"><% if (can("beheerder")) { %><a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a><% } %></div>
+</div>
+<form method="GET" class="filters">
+  <input type="search" name="q" value="<%= q || "" %>" placeholder="Kenteken, merk, bestuurder..." style="min-width:240px">
+  <select name="vestiging" onchange="this.form.submit()"><option value="">Alle vestigingen</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= f.vestiging === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select>
+  <select name="milieu" onchange="this.form.submit()"><option value="">Alle brandstoffen</option><% Object.entries(LABELS.milieu).forEach(([k, l]) => { %><option value="<%= k %>" <%= f.milieu === k ? "selected" : "" %>><%= l %></option><% }) %></select>
+  <select name="eigendom" onchange="this.form.submit()"><option value="">Alle soorten</option><% Object.entries(LABELS.eigendom).forEach(([k, l]) => { %><option value="<%= k %>" <%= f.eigendom === k ? "selected" : "" %>><%= l %></option><% }) %></select>
+  <div class="chips">
+    <% const chip = (key, val, lbl) => { const on = f[key] === val; const p = new URLSearchParams(); if (q) p.set("q", q); Object.entries(f).forEach(([k, v]) => { if (v && k !== key) p.set(k, v); }); if (!on) p.set(key, val); return `<a class="chip ${on ? "on" : ""}" href="?${p}">${lbl}</a>`; }; %>
+    <%- chip("status", "actief", "Actief") %><%- chip("status", "uitgeleend", "Uitgeleend") %><%- chip("status", "op_voorraad", "Op voorraad") %><%- chip("status", "besteld", "Besteld") %><%- chip("leen", "1", "Leenauto's") %><%- chip("km", "oud", "Km-stand ontbreekt") %>
+  </div>
+  <button type="submit" class="btn ghost small">Zoeken</button>
+</form>
+<div class="card" style="padding:0">
+  <table class="list">
+    <thead><tr><th>Kenteken</th><th>Auto</th><th>Bestuurder</th><th>Vestiging</th><th>Status</th><th>Soort</th><th>APK</th><th class="num">Km-stand</th></tr></thead>
+    <tbody>
+    <% if (!rows.length) { %><tr><td colspan="8" class="empty">Geen voertuigen gevonden.</td></tr><% } %>
+    <% rows.forEach(r => { const d = h.daysUntil(r.apk_vervaldatum); const kmOud = r.km_datum ? h.daysUntil(r.km_datum) < -60 : true; %>
+      <tr class="click" onclick="location.href='/voertuigen/<%= r.id %>'">
+        <td><% if (r.kenteken) { %><span class="plate"><%= r.kenteken %></span><% } else { %><span class="muted">besteld</span><% } %></td>
+        <td><strong><%= r.merk %></strong> <%= r.model || "" %><% if (r.is_leenauto) { %> <span class="pill grey">leenauto</span><% } %><% if (r.notitie && !r.kenteken) { %><div class="muted small"><%= r.notitie %></div><% } %></td>
+        <td><% if (r.bestuurder) { %><a href="/bestuurders/<%= r.bestuurder_id %>" onclick="event.stopPropagation()"><%= r.bestuurder %></a><% } else if (r.extern_naam) { %><%= r.extern_naam %> <span class="muted small">extern</span><% } else { %><span class="muted">–</span><% } %><% if (r.toewijzing_soort === "uitleen") { %> <span class="pill warn">uitleen</span><% } %></td>
+        <td><%= r.vestiging || "" %></td>
+        <td><span class="pill <%= r.status === 'actief' ? 'ok' : r.status === 'uitgeleend' ? 'warn' : 'grey' %>"><%= h.label("status", r.status) %></span></td>
+        <td class="small"><%= h.label("eigendom", r.eigendom) %><br><span class="muted"><%= h.label("milieu", r.milieu) %></span></td>
+        <td><% if (r.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'grey' %>"><%= h.formatDate(r.apk_vervaldatum) %></span><% } else if (r.status !== 'besteld') { %><span class="muted small">onbekend</span><% } %></td>
+        <td class="num"><% if (r.km_stand) { %><%= h.num(r.km_stand) %><div class="muted small" style="color:<%= kmOud ? 'var(--rood)' : '' %>"><%= h.formatDate(r.km_datum) %></div><% } else if (r.status === 'actief' || r.status === 'uitgeleend') { %><span class="muted small" style="color:var(--rood)">onbekend</span><% } %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include("../partials/footer") %>

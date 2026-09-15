@@ -1,0 +1,21 @@
+{
+  "name": "hero-wagenpark",
+  "version": "0.1.0",
+  "description": "Wagenparkbeheer in de Hero-app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "import": "node scripts/import-excel.js"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "pg": "^8.23.0",
+    "xlsx": "^0.18.5"
+  },
+  "engines": { "node": "24.x" }
+}

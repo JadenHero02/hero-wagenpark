@@ -1,0 +1,19 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/contacten">Contacten</a> › <%= c.id ? c.naam : "Nieuw" %></div>
+<div class="page-head"><h1><%= c.id ? "Contact bewerken" : "Nieuw contact" %></h1></div>
+<div class="card">
+<form method="POST" action="<%= c.id ? "/contacten/" + c.id : "/contacten" %>" class="form">
+  <label>Naam<input name="naam" value="<%= c.naam || "" %>" required></label>
+  <label>Soort<select name="soort"><% Object.entries(soorten).forEach(([k, l]) => { %><option value="<%= k %>" <%= c.soort === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+  <label>Merk <span class="hint">voor garages: Renault, BMW / MINI, Tesla, Alle</span><input name="merk" value="<%= c.merk || "" %>"></label>
+  <label>Vestiging <span class="hint">voor celdirecteur en wagenparkbeheer</span><select name="vestiging_id"><option value="">–</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= c.vestiging_id === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select></label>
+  <label>Telefoon<input name="telefoon" value="<%= c.telefoon || "" %>"></label>
+  <label>E-mail<input type="email" name="email" value="<%= c.email || "" %>"></label>
+  <label>Adres<input name="adres" value="<%= c.adres || "" %>"></label>
+  <label>Website<input name="website" value="<%= c.website || "" %>"></label>
+  <label class="full">Opmerking<textarea name="opmerking"><%= c.opmerking || "" %></textarea></label>
+  <div class="buttons"><a href="/contacten" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
+</form>
+<% if (c.id && can("admin")) { %><form method="POST" action="/contacten/<%= c.id %>/verwijderen" style="margin-top:12px" onsubmit="return confirm('Dit contact verwijderen?')"><button class="btn ghost small" type="submit"><span class="msr">delete</span>Verwijderen</button></form><% } %>
+</div>
+<%- include("../partials/footer") %>

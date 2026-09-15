@@ -1,0 +1,27 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div><div class="eyebrow">Wagenpark</div><h1>Contacten</h1><div class="sub">Garages per merk, verzekeraar, tankpas, bestickering, wasstraat, en wie je belt per vestiging</div></div>
+  <% if (can("beheerder")) { %><div class="actions"><a href="/contacten/nieuw" class="btn primary"><span class="msr">add</span>Nieuw contact</a></div><% } %>
+</div>
+<% Object.entries(groups).forEach(([soort, list]) => { %>
+<div class="card">
+  <div class="lbl"><span class="msr">contacts</span><%= h.label("contact", soort) %></div>
+  <table class="list" style="margin-top:6px">
+    <thead><tr><th>Naam</th><th>Merk / vestiging</th><th>Telefoon</th><th>Adres</th><th>Opmerking</th><th></th></tr></thead>
+    <tbody>
+    <% list.forEach(c => { %>
+      <tr>
+        <td><strong><%= c.naam %></strong><% if (c.website) { %><div class="small"><a href="<%= c.website.startsWith("http") ? c.website : "https://" + c.website %>" target="_blank" rel="noopener"><%= c.website %></a></div><% } %><% if (c.email) { %><div class="small muted"><%= c.email %></div><% } %></td>
+        <td><%= c.merk || c.vestiging || "" %></td>
+        <td class="nowrap"><%= c.telefoon || "" %></td>
+        <td class="small"><%= c.adres || "" %></td>
+        <td class="small muted"><%= c.opmerking || "" %></td>
+        <td class="nowrap"><% if (can("beheerder")) { %><a href="/contacten/<%= c.id %>/bewerken" class="btn ghost small"><span class="msr">edit</span></a><% } %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+</div>
+<% }) %>
+<% if (!Object.keys(groups).length) { %><div class="card"><div class="empty">Nog geen contacten.</div></div><% } %>
+<%- include("../partials/footer") %>

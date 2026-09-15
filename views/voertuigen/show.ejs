@@ -1,0 +1,126 @@
+<%- include("../partials/header") %>
+<% const d = h.daysUntil(v.apk_vervaldatum); const wie = actief ? (actief.bestuurder || actief.extern_naam) : null; %>
+<div class="muted small" style="margin-bottom:10px"><a href="/voertuigen">Wagenpark</a> › <%= v.kenteken || "Besteld" %></div>
+<div class="page-head">
+  <div class="vehicle-head">
+    <span class="plate big"><%= v.kenteken || "BESTELD" %></span>
+    <div>
+      <h1 style="display:flex;align-items:center;gap:10px"><%= v.merk %> <%= v.model || "" %> <span class="pill <%= v.status === 'actief' ? 'ok' : v.status === 'uitgeleend' ? 'warn' : 'grey' %>" style="font-size:12px"><%= h.label("status", v.status) %></span><% if (v.is_leenauto) { %><span class="pill grey" style="font-size:12px">leenauto</span><% } %></h1>
+      <div class="meta">
+        <% if (v.milieu) { %><span><span class="msr">bolt</span><%= h.label("milieu", v.milieu) %></span><% } %>
+        <% if (v.vestiging) { %><span><span class="msr">location_on</span><%= v.vestiging %></span><% } %>
+        <% if (v.bouwjaar) { %><span><%= v.bouwjaar %></span><% } %>
+        <span><%= h.label("eigendom", v.eigendom) %></span>
+        <% if (v.bijtelling !== null) { %><span>bijtelling <%= v.bijtelling ? "ja" : "nee" %></span><% } %>
+        <% if (v.banden) { %><span><%= h.label("banden", v.banden) %></span><% } %>
+        <% if (v.notitie) { %><span><%= v.notitie %></span><% } %>
+      </div>
+    </div>
+  </div>
+  <% if (can("beheerder")) { %>
+  <div class="actions">
+    <a href="/voertuigen/<%= v.id %>/bewerken" class="btn"><span class="msr">edit</span>Bewerken</a>
+    <a href="/processen/start?voertuig=<%= v.id %>" class="btn"><span class="msr">checklist</span>Proces starten</a>
+    <% if (actief) { %><a href="/uitleen/innemen?voertuig=<%= v.id %>" class="btn primary"><span class="msr">key_off</span>Innemen</a><% } else if (v.status !== 'besteld') { %><a href="/uitleen/toewijzen?voertuig=<%= v.id %>" class="btn primary"><span class="msr">person_add</span>Toewijzen</a><% } %>
+  </div>
+  <% } %>
+</div>
+
+<div class="grid-3">
+  <div class="card">
+    <div class="lbl"><span class="msr">person</span>Bestuurder</div>
+    <% if (actief) { %>
+      <h3 style="margin-top:6px"><% if (actief.bestuurder_id) { %><a href="/bestuurders/<%= actief.bestuurder_id %>"><%= wie %></a><% } else { %><%= wie %> <span class="muted small">extern</span><% } %></h3>
+      <div class="small muted"><%= actief.soort === "uitleen" ? "Leenauto" : "Vast" %> · sinds <%= h.formatDate(actief.van) || "onbekend" %><% if (actief.tot) { %> · retour <%= h.formatDate(actief.tot) %><% } %><% if (actief.reden) { %> · <%= actief.reden %><% } %></div>
+      <% const eerder = toewijzingen.filter(t => t.status !== "actief").length; %>
+      <div class="small" style="margin-top:8px"><a href="#historie">Historie: <%= eerder %> eerdere <%= eerder === 1 ? "toewijzing" : "toewijzingen" %> →</a></div>
+    <% } else { %><p class="muted" style="margin-top:6px"><%= v.status === "besteld" ? "Nog niet geleverd." : "Niet toegewezen: op voorraad en te leen." %></p><% } %>
+  </div>
+  <div class="card">
+    <div class="lbl"><span class="msr">credit_card</span>Eigendom en tankpas</div>
+    <h3 style="margin-top:6px"><%= h.label("eigendom", v.eigendom) %><% if (v.leasemaatschappij) { %> · <%= v.leasemaatschappij %><% } %></h3>
+    <% if (v.contract_einde) { %><div class="small muted">Contract tot <%= h.formatDate(v.contract_einde) %></div><% } %>
+    <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span><%= v.tankpas_nummer ? v.tankpas_nummer : "Geen tankpas" %></span>
+      <% if (v.tankpas_pincode_enc) { %><form method="POST" action="/voertuigen/<%= v.id %>/pincode" class="inline"><button class="btn small" type="submit"><span class="msr">visibility</span>Toon pincode</button></form><% } else if (v.tankpas_nummer) { %><span class="muted small">geen pincode opgeslagen</span><% } %>
+    </div>
+  </div>
+  <div class="card">
+    <div class="lbl"><span class="msr">event</span>Deadlines</div>
+    <div class="rows" style="margin-top:4px">
+      <div><span class="k">APK</span><span class="v"><% if (v.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'ok' %>"><%= h.formatDate(v.apk_vervaldatum) %></span><% } else { %><span class="muted">onbekend</span><% } %></span></div>
+      <% const bw = bandenwissels[0]; %>
+      <% if (v.banden === "winter_zomer") { %><div><span class="k">Winterbanden</span><span class="v"><span class="pill warn">vóór 1 nov</span></span></div><% } %>
+      <% if (bw) { %><div><span class="k">Bandenwissel <%= bw.seizoen %></span><span class="v"><span class="pill <%= bw.gewisseld ? 'ok' : 'warn' %>"><%= bw.gewisseld ? "gewisseld" : "nog niet" %></span></span></div><% } %>
+      <% if (v.contract_einde) { %><div><span class="k">Contract eindigt</span><span class="v"><%= h.formatDate(v.contract_einde) %></span></div><% } %>
+      <div><span class="k">Onderhoudsadres</span><span class="v"><% if (garage) { %><strong><%= garage.naam %></strong><% if (garage.telefoon) { %> <span class="muted small"><%= garage.telefoon %></span><% } %><% } else { %><span class="muted">geen garage voor <%= v.merk %></span><% } %></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-3" style="margin-top:16px">
+  <div class="card">
+    <div class="card-head"><div class="lbl"><span class="msr">speed</span>Kilometerstand</div></div>
+    <div class="rows">
+      <% km.slice(0, 3).forEach((k, i) => { %><div><span class="k"><%= h.formatDate(k.datum) %></span><span class="v" style="<%= i === 0 ? 'font-weight:700' : '' %>"><%= h.num(k.stand) %><% if (k.bron === 'bestuurder') { %> <span class="muted small">bestuurder</span><% } %></span></div><% }) %>
+      <% if (!km.length) { %><div class="muted">Nog geen kilometerstand bekend.</div><% } %>
+    </div>
+    <% if (km.length >= 2) { const a = km[0], b = km[km.length - 1]; const dd = Math.max(1, h.daysUntil(a.datum) - h.daysUntil(b.datum)); %><div class="muted small" style="margin-top:6px">Gemiddeld <%= h.num(Math.round((a.stand - b.stand) / dd * 30)) %> km per maand</div><% } %>
+    <% if (can("beheerder") || (currentBestuurder && actief && actief.bestuurder_id === currentBestuurder.id)) { %>
+    <form method="POST" action="/voertuigen/<%= v.id %>/kilometerstand" class="actions" style="margin-top:10px">
+      <input type="number" name="stand" min="0" placeholder="Nieuwe stand" required style="width:130px;padding:8px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit">
+      <input type="date" name="datum" value="<%= new Date().toISOString().slice(0,10) %>" style="padding:8px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit">
+      <button class="btn small" type="submit">Doorgeven</button>
+    </form>
+    <% } %>
+  </div>
+  <div class="card">
+    <div class="card-head"><div class="lbl"><span class="msr">build</span>Onderhoud en incidenten</div></div>
+    <div class="rows">
+      <% incidenten.forEach(i => { %><div><span class="k"><%= i.soort %> · <%= h.formatDate(i.datum) %></span><span class="v"><span class="pill grey"><%= i.status %></span></span></div><% }) %>
+      <% boetes.forEach(b => { %><div><span class="k">Boete <%= h.euro(b.bedrag) %> · <%= h.formatDate(b.datum) %></span><span class="v"><span class="pill <%= b.status === 'doorbelast' ? 'warn' : 'grey' %>"><%= b.status.replace("_", " ") %></span></span></div><% }) %>
+      <% if (v.onderhoud_notitie) { %><div><span class="k">Uit de Excel</span><span class="v small"><%= v.onderhoud_notitie %></span></div><% } %>
+      <% if (v.schade_notitie) { %><div><span class="k">Schade (Excel)</span><span class="v small"><%= v.schade_notitie %></span></div><% } %>
+      <% if (!incidenten.length && !boetes.length && !v.onderhoud_notitie && !v.schade_notitie) { %><div class="muted">Niets geregistreerd.</div><% } %>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><div class="lbl"><span class="msr">folder</span>Documenten</div></div>
+    <div class="rows">
+      <% documenten.forEach(doc => { %><div><span class="k"><%= doc.soort.replace("_", " ") %> · <%= doc.bestandsnaam %></span><span class="v muted small"><%= h.formatDate(doc.created_at) %></span></div><% }) %>
+      <% if (!documenten.length) { %><div class="muted">Nog geen documenten. Uploaden komt woensdag.</div><% } %>
+    </div>
+  </div>
+</div>
+
+<% if (taken.length) { %>
+<div class="card" style="margin-top:16px">
+  <div class="card-head"><div class="lbl"><span class="msr">task_alt</span>Open taken</div></div>
+  <div class="rows"><% taken.forEach(t => { %><div><span><%= t.titel %></span><span class="v"><% if (t.deadline) { %><span class="pill <%= h.daysUntil(t.deadline) < 0 ? 'bad' : 'warn' %>"><%= h.formatDate(t.deadline) %></span><% } %></span></div><% }) %></div>
+</div>
+<% } %>
+
+<div class="card" style="margin-top:16px" id="historie">
+  <div class="card-head"><div class="lbl"><span class="msr">history</span>Toewijzingen</div></div>
+  <table class="list">
+    <thead><tr><th>Wie</th><th>Soort</th><th>Van</th><th>Tot</th><th>Reden</th><th></th></tr></thead>
+    <tbody>
+    <% toewijzingen.forEach(t => { %>
+      <tr><td><% if (t.bestuurder_id) { %><a href="/bestuurders/<%= t.bestuurder_id %>"><%= t.bestuurder %></a><% } else { %><%= t.extern_naam || "" %> <span class="muted small">extern</span><% } %></td><td><%= t.soort === "uitleen" ? "Uitleen" : "Vast" %></td><td><%= h.formatDate(t.van) %></td><td><%= h.formatDate(t.tot) %></td><td class="small"><%= t.reden || "" %><% if (t.opmerking) { %> <span class="muted"><%= t.opmerking %></span><% } %></td><td><% if (t.status === "actief") { %><span class="pill ok">actief</span><% } %></td></tr>
+    <% }) %>
+    <% if (!toewijzingen.length) { %><tr><td colspan="6" class="empty">Nog geen toewijzingen.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-head"><div class="lbl"><span class="msr">history</span>Logboek</div></div>
+  <div class="log">
+    <% logboek.forEach(l => { %><div><span class="when"><%= h.formatDate(l.created_at, true) %></span><span><%= l.omschrijving %></span></div><% }) %>
+    <% if (!logboek.length) { %><div class="muted">Nog niets gelogd.</div><% } %>
+  </div>
+</div>
+<% if (can("admin") && v.status !== "archief") { %>
+<form method="POST" action="/voertuigen/<%= v.id %>/archiveren" style="margin-top:16px" onsubmit="return confirm('Dit voertuig naar het archief zetten? De actieve toewijzing wordt afgesloten.')"><button class="btn ghost small" type="submit"><span class="msr">inventory_2</span>Naar het archief</button></form>
+<% } %>
+<%- include("../partials/footer") %>

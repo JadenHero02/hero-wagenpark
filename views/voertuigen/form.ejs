@@ -1,0 +1,30 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/voertuigen">Wagenpark</a> › <%= v.id ? (v.kenteken || v.merk) : "Nieuw voertuig" %></div>
+<div class="page-head"><h1><%= v.id ? "Voertuig bewerken" : "Nieuw voertuig" %></h1></div>
+<div class="card">
+<form method="POST" action="<%= v.id ? "/voertuigen/" + v.id : "/voertuigen" %>" class="form">
+  <label>Kenteken <span class="hint">leeg als de auto nog besteld is</span><input name="kenteken" value="<%= v.kenteken || "" %>" placeholder="AB-123-C" style="text-transform:uppercase"></label>
+  <label>Status<select name="status"><% Object.entries(LABELS.status).filter(([k]) => k !== "archief").forEach(([k, l]) => { %><option value="<%= k %>" <%= v.status === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+  <label>Merk<input name="merk" value="<%= v.merk || "" %>" required></label>
+  <label>Model<input name="model" value="<%= v.model || "" %>" placeholder="Megane E-Tech"></label>
+  <label>Vestiging<select name="vestiging_id"><option value="">–</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= v.vestiging_id === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select></label>
+  <label>Bouwjaar / maand<input name="bouwjaar" value="<%= v.bouwjaar || "" %>" placeholder="2024-03"></label>
+  <label>Soort eigendom<select name="eigendom"><% Object.entries(LABELS.eigendom).forEach(([k, l]) => { %><option value="<%= k %>" <%= v.eigendom === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+  <label>Leasemaatschappij / verhuurder<input name="leasemaatschappij" value="<%= v.leasemaatschappij || "" %>"></label>
+  <label>Milieu<select name="milieu"><option value="">–</option><% Object.entries(LABELS.milieu).forEach(([k, l]) => { %><option value="<%= k %>" <%= v.milieu === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+  <label>Banden<select name="banden"><option value="">–</option><% Object.entries(LABELS.banden).forEach(([k, l]) => { %><option value="<%= k %>" <%= v.banden === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
+  <label>Bijtelling<select name="bijtelling"><option value="" <%= v.bijtelling === null || v.bijtelling === undefined ? "selected" : "" %>>–</option><option value="1" <%= v.bijtelling === true ? "selected" : "" %>>Ja</option><option value="0" <%= v.bijtelling === false ? "selected" : "" %>>Nee</option></select></label>
+  <label class="check"><input type="checkbox" name="is_leenauto" <%= v.is_leenauto ? "checked" : "" %>> Leenauto (poolauto)</label>
+  <label>APK vervalt<input type="date" name="apk_vervaldatum" value="<%= v.apk_vervaldatum || "" %>"></label>
+  <label>Contract eindigt<input type="date" name="contract_einde" value="<%= v.contract_einde || "" %>"></label>
+  <label>Verwachte levering <span class="hint">bij besteld</span><input name="verwachte_levering" value="<%= v.verwachte_levering || "" %>" placeholder="oktober 2026"></label>
+  <label>Notitie <span class="hint">kort, staat in het overzicht</span><input name="notitie" value="<%= v.notitie || "" %>"></label>
+  <label>Tankpasnummer<input name="tankpas_nummer" value="<%= v.tankpas_nummer || "" %>"></label>
+  <label>Pincode tankpas <span class="hint"><%= v.tankpas_pincode_enc ? "er staat een pincode; laat leeg om te behouden" : "wordt versleuteld opgeslagen" %></span><input name="tankpas_pincode" value="" autocomplete="off" inputmode="numeric"><% if (v.tankpas_pincode_enc) { %><span class="hint" style="margin-top:4px"><input type="checkbox" name="tankpas_pincode_wissen"> pincode wissen</span><% } %></label>
+  <label class="full">Onderhoud / APK (vrije tekst)<textarea name="onderhoud_notitie"><%= v.onderhoud_notitie || "" %></textarea></label>
+  <label class="full">Schade (vrije tekst)<textarea name="schade_notitie"><%= v.schade_notitie || "" %></textarea></label>
+  <label class="full">Opmerkingen<textarea name="opmerkingen"><%= v.opmerkingen || "" %></textarea></label>
+  <div class="buttons"><a href="<%= v.id ? "/voertuigen/" + v.id : "/voertuigen" %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

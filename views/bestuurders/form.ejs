@@ -1,0 +1,17 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="/bestuurders">Bestuurders</a> › <%= b.id ? b.naam : "Nieuw" %></div>
+<div class="page-head"><h1><%= b.id ? "Bestuurder bewerken" : "Nieuwe bestuurder" %></h1></div>
+<div class="card">
+<form method="POST" action="<%= b.id ? "/bestuurders/" + b.id : "/bestuurders" %>" class="form">
+  <label>Naam<input name="naam" value="<%= b.naam || "" %>" required></label>
+  <label>E-mail <span class="hint">Hero-adres, zodat de bestuurder kan inloggen</span><input type="email" name="email" value="<%= b.email || "" %>"></label>
+  <label>Telefoon<input name="telefoon" value="<%= b.telefoon || "" %>"></label>
+  <label>Vestiging<select name="vestiging_id"><option value="">–</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= b.vestiging_id === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select></label>
+  <label>Rijbewijs geldig tot<input type="date" name="rijbewijs_geldig_tot" value="<%= b.rijbewijs_geldig_tot || "" %>"></label>
+  <label class="check"><input type="checkbox" name="is_extern" <%= b.is_extern ? "checked" : "" %>> Extern (geen Hero-medewerker)</label>
+  <label class="full">Opmerking<textarea name="opmerking"><%= b.opmerking || "" %></textarea></label>
+  <% if (b.id) { %><label class="check full"><input type="checkbox" name="inactief" <%= b.actief === false ? "checked" : "" %>> Niet meer actief (uit dienst)</label><% } %>
+  <div class="buttons"><a href="<%= b.id ? "/bestuurders/" + b.id : "/bestuurders" %>" class="btn ghost">Annuleren</a><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
+</form>
+</div>
+<%- include("../partials/footer") %>

@@ -1,0 +1,86 @@
+<%- include("../partials/header") %>
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Wagenpark</div>
+    <h1>Dashboard</h1>
+    <div class="sub"><%= new Date().toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" }) %> · <%= vId ? vestigingen.find(v => v.id === vId).naam : "alle vestigingen" %></div>
+  </div>
+  <div class="actions">
+    <form method="GET" class="filters" style="margin:0">
+      <select name="vestiging" onchange="this.form.submit()">
+        <option value="">Alle vestigingen</option>
+        <% vestigingen.forEach(v => { %><option value="<%= v.id %>" <%= vId === v.id ? "selected" : "" %>><%= v.naam %></option><% }) %>
+      </select>
+    </form>
+    <% if (can("beheerder")) { %><a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a><% } %>
+  </div>
+</div>
+
+<div class="tiles">
+  <a class="tile" href="/voertuigen?status=actief<%= vId ? "&vestiging=" + vId : "" %>">
+    <div class="lbl">Actief</div>
+    <div class="row"><span class="big"><%= counts.actief %></span><span class="muted">van <%= counts.totaal %></span></div>
+    <div class="muted small"><%= perVestiging.map(p => p.naam + " " + p.n).join(" · ") %></div>
+  </a>
+  <a class="tile" href="/voertuigen?status=besteld">
+    <div class="lbl">Besteld</div>
+    <div class="row"><span class="big"><%= counts.besteld %></span></div>
+    <div class="muted small">Nog zonder kenteken</div>
+  </a>
+  <a class="tile" href="/voertuigen?status=op_voorraad">
+    <div class="lbl">Op voorraad, te leen</div>
+    <div class="row"><span class="big"><%= counts.op_voorraad %></span><span class="muted">auto's</span><% if (counts.uitgeleend) { %><span class="pill warn"><%= counts.uitgeleend %> uitgeleend</span><% } %></div>
+    <div class="muted small">Elke auto op voorraad is op verzoek te leen</div>
+  </a>
+  <a class="tile" href="/taken">
+    <div class="lbl">Open taken</div>
+    <div class="row"><span class="big warn"><%= openTaken.n %></span><% if (openTaken.te_laat) { %><span class="pill soft"><%= openTaken.te_laat %> te laat</span><% } %></div>
+    <div class="muted small">Taken komen woensdag</div>
+  </a>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">flag</span> Vandaag voor jou</h2><a href="/taken" class="small">Naar taken →</a></div>
+    <div class="rows">
+      <% apk.forEach(a => { %>
+        <div>
+          <span><span class="msr" style="color:<%= a.dagen < 0 ? 'var(--rood)' : 'var(--oranje)' %>"><%= a.dagen < 0 ? "error" : "event" %></span> <a href="/voertuigen/<%= a.id %>"><span class="plate"><%= a.kenteken || "besteld" %></span></a> APK <%= a.dagen < 0 ? "verstreken" : "vervalt" %> · <%= a.merk %> <%= a.model || "" %> · <%= a.vestiging || "" %><%= a.bestuurder ? " · " + a.bestuurder : "" %></span>
+          <span class="pill <%= a.dagen < 0 ? 'bad' : 'warn' %>"><%= a.dagen < 0 ? h.relativeDate(a.apk_vervaldatum).replace("geleden", "te laat") : h.relativeDate(a.apk_vervaldatum) %></span>
+        </div>
+      <% }) %>
+      <% uitleenTeLaat.forEach(u => { %>
+        <div>
+          <span><span class="msr" style="color:var(--oranje)">key</span> <a href="/voertuigen/<%= u.id %>"><span class="plate"><%= u.kenteken %></span></a> Leenauto over retourdatum · <%= u.wie || "" %> · <%= u.vestiging || "" %></span>
+          <span class="pill warn"><%= u.dagen %> dagen</span>
+        </div>
+      <% }) %>
+      <% if (bandenwissel) { %>
+        <div>
+          <span><span class="msr" style="color:var(--blauw)">ac_unit</span> <span class="pill">SEIZOEN</span> Winterbanden monteren · <%= bandenwissel %> auto's</span>
+          <span class="pill">vanaf 1 oktober</span>
+        </div>
+      <% } %>
+      <% if (!apk.length && !uitleenTeLaat.length && !bandenwissel) { %><div class="empty">Niets dat vandaag aandacht vraagt.</div><% } %>
+    </div>
+  </div>
+  <div>
+    <div class="card">
+      <div class="card-head"><h2><span class="msr" style="color:var(--oranje)">pending_actions</span> Nog te doen</h2></div>
+      <div class="rows">
+        <div><span class="k">Uitleen zonder retourdatum</span><a class="v" href="/uitleen"><strong><%= uitleenOpen %></strong></a></div>
+        <div><span class="k">Op de wachtlijst</span><a class="v" href="/wachtlijst"><strong><%= wachtlijst %></strong></a></div>
+        <div><span class="k">Besteld</span><a class="v" href="/voertuigen?status=besteld"><strong><%= counts.besteld %></strong></a></div>
+        <div><span class="k">Kilometerstand onbekend of ouder dan 60 dagen</span><a class="v" href="/voertuigen?km=oud"><strong style="color:var(--rood)"><%= kmOntbreekt %></strong></a></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2><span class="msr" style="color:var(--groen)">eco</span> Verduurzaming</h2></div>
+      <% const tot = milieu.reduce((s, m) => s + m.n, 0) || 1; %>
+      <div class="rows">
+        <% milieu.forEach(m => { %><div><span class="k"><%= h.label("milieu", m.milieu) || m.milieu %></span><span class="v"><strong><%= Math.round(m.n * 100 / tot) %>%</strong> <span class="muted small">(<%= m.n %>)</span></span></div><% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include("../partials/footer") %>
