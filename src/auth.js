@@ -88,8 +88,9 @@ async function upsertUser({ email, name, supabaseUserId = null, isAdmin = false 
     // Elke login telt ook als "extra bevestiging" voor de pincode (zie voertuigen.js), een paar minuten lang
     await db.run("UPDATE users SET name = COALESCE($2, name), supabase_user_id = COALESCE(supabase_user_id, $3), last_login_at = local_now(), last_reauth_at = local_now() WHERE id = $1", [user.id, name, supabaseUserId]);
   }
-  // Bestuurder uit de Excel met hetzelfde e-mailadres koppelen aan dit account
+  // Bestuurder uit de Excel met hetzelfde e-mailadres koppelen aan dit account; de vestiging van de bestuurder wordt die van het account
   await db.run("UPDATE bestuurders SET user_id = $1 WHERE user_id IS NULL AND email IS NOT NULL AND lower(email) = lower($2)", [user.id, email]);
+  await db.run("UPDATE users SET vestiging_id = (SELECT vestiging_id FROM bestuurders WHERE user_id = $1 AND vestiging_id IS NOT NULL ORDER BY id LIMIT 1) WHERE id = $1 AND vestiging_id IS NULL", [user.id]);
   return user;
 }
 async function roleFor(email, isAdmin) {

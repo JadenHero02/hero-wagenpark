@@ -4,9 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.8", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "wie inlogt krijgt de vestiging van zijn bestuurdersrecord, zodat beheerders meteen de mails van hun eigen vestiging krijgen. Celdirecteuren van Alkmaar, Hoorn en Schiphol staan in de contacten; beheerders en directie zijn ingesteld (namen van Niels)", commit: "" },
+  ] },
   { versie: "0.2.7", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "RDW-koppeling: bij het invoeren van een kenteken vult de app merk, model, bouwjaar, brandstof en APK-datum in vanuit de open data van de RDW. Elke dag worden alle kentekens bijgewerkt; de APK-datum komt voortaan van de RDW en de knop RDW op de voertuigpagina doet het direct", commit: "" },
-    { soort: "opgelost", tekst: "APK-data uit de Excel die al verlopen leken maar volgens de RDW al vernieuwd waren, staan nu goed", commit: "" },
+    { soort: "nieuw", tekst: "RDW-koppeling: bij het invoeren van een kenteken vult de app merk, model, bouwjaar, brandstof en APK-datum in vanuit de open data van de RDW. Elke dag worden alle kentekens bijgewerkt; de APK-datum komt voortaan van de RDW en de knop RDW op de voertuigpagina doet het direct", commit: "84194d5" },
+    { soort: "opgelost", tekst: "APK-data uit de Excel die al verlopen leken maar volgens de RDW al vernieuwd waren, staan nu goed", commit: "84194d5" },
   ] },
   { versie: "0.2.6", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "bouwjaar en -maand in de wagenparklijst, met sorteren op bouwjaar, APK en kilometerstand; ook in de Excel-export. De schrijfwijzen uit de Excel (\"Aug 2024\", \"Mei 2021\", \"2025-07\") zijn gelijkgetrokken", commit: "bf4e6d6" },
