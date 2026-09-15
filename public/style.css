@@ -56,6 +56,9 @@ p { margin: 0 0 10px; }
 .zoek-item .zoek-tekst { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .zoek-alles { border-top: 1px solid var(--grijs-thin); margin-top: 4px; color: var(--blauw); font-weight: 600; }
 .zoek-leeg { padding: 14px 10px; color: var(--grijs); font-size: 13px; }
+.menu-knop, .menu-sluit { display: none; border: 0; background: none; color: #ffffff; padding: 6px; border-radius: 8px; cursor: pointer; line-height: 0; } .menu-knop .msr, .menu-sluit .msr { font-size: 26px; }
+.menu-knop:hover { background: rgba(255,255,255,.14); }
+.sidenav-kop, .menu-achter { display: none; }
 .topbar-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
 .avatar { width: 34px; height: 34px; border-radius: 17px; background: #ffffff; color: #073889; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
 .usermenu { position: relative; } .usermenu summary { list-style: none; cursor: pointer; } .usermenu summary::-webkit-details-marker { display: none; }
@@ -216,13 +219,18 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
   .topsearch .msr { font-size: 18px; }
   .zoek-lijst { position: fixed; left: 8px; right: 8px; top: 62px; max-height: 60vh; }
   .body { flex-direction: column; }
-  .sidenav { position: sticky; top: 58px; z-index: 15; height: auto; width: auto; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 2px; padding: 6px 8px; border-right: 0; border-bottom: 1px solid var(--grijs-thin); scrollbar-width: none; }
-  .sidenav::-webkit-scrollbar { display: none; }
-  .sidenav-title, .sidenav-sep, .versie-bubble { display: none; }
-  .side-link { padding: 6px 10px; font-size: 12.5px; white-space: nowrap; flex-shrink: 0; } .side-link .msr { font-size: 18px; }
-  .side-badge.hot { padding: 0 5px; }
-  .sidenav-foot { padding: 0; margin: 0 0 0 auto; flex-shrink: 0; display: flex; align-items: center; }
-  .versie-link { white-space: nowrap; padding: 6px 8px; }
+  .menu-knop { display: inline-flex; margin-left: -4px; }
+  .brand img { width: 40px; height: 34px; }
+  /* Menu als paneel van links: alle onderdelen onder elkaar, ook voor de admin met veertien knoppen */
+  .sidenav { position: fixed; top: 0; left: 0; bottom: 0; z-index: 45; width: min(300px, 86vw); height: auto; padding: 0 10px 12px; box-shadow: 0 12px 40px rgba(3,21,63,.28); transform: translateX(-104%); transition: transform .22s ease; }
+  .sidenav.open { transform: none; }
+  .sidenav-kop { display: flex; align-items: center; gap: 10px; height: 58px; margin: 0 -10px 8px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--grijs-thin); color: var(--blauw); font-size: 15px; }
+  .sidenav-kop .msr:first-child { font-size: 22px; } .sidenav-kop strong { flex: 1; }
+  .menu-sluit { display: inline-flex; color: var(--grijs); } .menu-sluit:hover { background: var(--blauw-hair); color: var(--blauw); }
+  .menu-achter { display: block; position: fixed; inset: 0; z-index: 44; background: rgba(3,21,63,.45); } .menu-achter[hidden] { display: none; }
+  body.menu-open { overflow: hidden; }
+  .side-link { padding: 10px 12px; font-size: 14.5px; }
+  .sidenav-title, .versie-bubble { display: none; }
   .main { padding: 14px 14px 40px; }
   .page-head { margin-bottom: 14px; } h1 { font-size: 22px; }
   .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }

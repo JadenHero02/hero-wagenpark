@@ -36,6 +36,7 @@
 %>
 <div class="shell">
   <header class="topbar">
+    <% if (user) { %><button type="button" class="menu-knop" id="menu-knop" aria-label="Menu openen" aria-controls="sidenav" aria-expanded="false"><span class="msr">menu</span></button><% } %>
     <a href="/" class="brand"><img src="/img/Hero_logo_wit.svg" alt="Hero" width="46" height="39"><span class="brand-app"><span class="msr">directions_car</span>Wagenpark</span></a>
     <% if (can("directie")) { %><form class="topsearch" method="GET" action="/voertuigen" role="search">
       <span class="msr">search</span>
@@ -57,7 +58,9 @@
     </div>
   </header>
   <div class="body">
-    <nav class="sidenav">
+    <div class="menu-achter" id="menu-achter" hidden></div>
+    <nav class="sidenav" id="sidenav">
+      <div class="sidenav-kop"><span class="msr" style="color:var(--oranje)">directions_car</span><strong>Wagenpark</strong><button type="button" class="menu-sluit" id="menu-sluit" aria-label="Menu sluiten"><span class="msr">close</span></button></div>
       <% menu.forEach((m) => { if (!can(m.min)) return; %>
         <a href="<%= m.href %>" class="side-link <%= isActive(m.href) %>">
           <span class="msr"><%= m.icon %></span><span class="label"><%= m.label %></span>

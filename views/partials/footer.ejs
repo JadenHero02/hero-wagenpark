@@ -4,6 +4,17 @@
 <div class="versie-nieuw" id="versie-nieuw" hidden><span class="msr">system_update</span>Er staat een nieuwe versie klaar.<button type="button" onclick="location.reload()">Vernieuwen</button></div>
 <script>
 (function () {
+  // Menu op de telefoon: knop in de balk opent het volledige menu als paneel; sluit via kruisje, achtergrond, Escape of een keuze
+  var nav = document.getElementById("sidenav"), knop = document.getElementById("menu-knop"), achter = document.getElementById("menu-achter"), sluit = document.getElementById("menu-sluit");
+  if (!nav || !knop) return;
+  function zet(open) { nav.classList.toggle("open", open); achter.hidden = !open; knop.setAttribute("aria-expanded", open ? "true" : "false"); document.body.classList.toggle("menu-open", open); if (open) { var on = nav.querySelector(".side-link.on"); if (on) on.scrollIntoView({ block: "nearest" }); } }
+  knop.addEventListener("click", function () { zet(!nav.classList.contains("open")); });
+  sluit.addEventListener("click", function () { zet(false); });
+  achter.addEventListener("click", function () { zet(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && nav.classList.contains("open")) zet(false); });
+  nav.addEventListener("click", function (e) { if (e.target.closest("a")) zet(false); });
+})();
+(function () {
   // Weergave: licht, donker of systeem. Keuze in localStorage; bij "systeem" volgt de app de instelling van het apparaat
   var knoppen = document.querySelectorAll("[data-thema-knop]");
   function pas(keuze) {
