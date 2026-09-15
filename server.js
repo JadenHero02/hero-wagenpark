@@ -87,6 +87,7 @@ app.use("/processen", require("./src/routes/processen").router);
 app.use("/boetes", require("./src/routes/boetes").router);
 app.use("/incidenten", require("./src/routes/incidenten").router);
 app.use("/wachtlijst", require("./src/routes/wachtlijst").router);
+app.use("/instellingen/rollen", require("./src/routes/rollen").router);
 app.use("/instellingen", require("./src/routes/instellingen").router);
 app.use("/", require("./src/routes/versie").router);
 app.use("/", require("./src/routes/export").router);

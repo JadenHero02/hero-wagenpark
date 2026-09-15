@@ -13,7 +13,6 @@
 <body>
 <%
   const p = currentPath || "";
-  const isActive = (prefix) => (prefix === "/" ? p === "/" : p.startsWith(prefix)) ? "on" : "";
   const user = currentUser || null;
   const menu = [
     { href: "/", icon: "grid_view", label: "Dashboard", min: "directie" },
@@ -28,8 +27,11 @@
     { href: "/archief", icon: "inventory_2", label: "Archief", min: "directie" },
     { href: "/processen", icon: "checklist", label: "Processen", min: "directie" },
     { href: "/export", icon: "download", label: "Export", min: "directie" },
+    { href: "/instellingen/rollen", icon: "manage_accounts", label: "Rollen", min: "admin" },
     { href: "/instellingen", icon: "settings", label: "Instellingen", min: "admin" },
   ];
+  // Actief: exact of een subpagina, tenzij een andere menuregel specifieker is (/instellingen/rollen onder /instellingen)
+  const isActive = (prefix) => (prefix === "/" ? p === "/" : (p === prefix || p.startsWith(prefix + "/")) && !menu.some((m) => m.href !== prefix && m.href.startsWith(prefix + "/") && p.startsWith(m.href))) ? "on" : "";
 %>
 <div class="shell">
   <header class="topbar">

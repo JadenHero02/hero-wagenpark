@@ -4,9 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.15", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "pagina Rollen voor de admin: één tabel met iedereen per rol (admin, directie, beheerder, bestuurder), met functie, vestiging, auto en of iemand al is ingelogd; rol toekennen of wijzigen per regel, ook voor wie nog nooit heeft ingelogd", commit: "" },
+  ] },
   { versie: "0.2.14", datum: "2026-09-15", punten: [
-    { soort: "verbeterd", tekst: "dashboard opnieuw ingedeeld na de ATS-feedback: bovenaan \"Vandaag voor jou\" met per regel één knop (afspraak, beoordelen, innemen, bevestigen), daaronder wat er de komende weken aankomt (APK, leenauto's terug, contracten, rijbewijzen, wachtlijst, bestelde auto's), rechts vier stuurgetallen (rijdend, APK op orde, km-stand actueel, snelheid leenverzoeken) en de snelle acties. Opent op je eigen vestiging", commit: "" },
-    { soort: "verbeterd", tekst: "bandenwissel staat alleen in het seizoen op het dashboard, als voortgang; APK's met een afspraak vragen geen actie meer", commit: "" },
+    { soort: "verbeterd", tekst: "dashboard opnieuw ingedeeld na de ATS-feedback: bovenaan \"Vandaag voor jou\" met per regel één knop (afspraak, beoordelen, innemen, bevestigen), daaronder wat er de komende weken aankomt (APK, leenauto's terug, contracten, rijbewijzen, wachtlijst, bestelde auto's), rechts vier stuurgetallen (rijdend, APK op orde, km-stand actueel, snelheid leenverzoeken) en de snelle acties. Opent op je eigen vestiging", commit: "5111b70" },
+    { soort: "verbeterd", tekst: "bandenwissel staat alleen in het seizoen op het dashboard, als voortgang; APK's met een afspraak vragen geen actie meer", commit: "5111b70" },
   ] },
   { versie: "0.2.13", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "\"wie bel je waarvoor\" in Mijn auto: dezelfde persoon met meer rollen staat op één regel (Niels: wagenparkbeheer en celdirecteur Wognum), zonder dubbele tekst", commit: "7fd7e45" },
