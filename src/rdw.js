@@ -63,9 +63,11 @@ async function bijwerken(v, userId = null, t = db) {
     zet("merk", g.merk, `merk ${v.merk || "leeg"} naar ${g.merk}`);
     if (v.merk && v.merk !== "Onbekend") zet("notitie", v.notitie ? `${v.merk} · ${v.notitie}` : v.merk, `"${v.merk}" als notitie bewaard`);
   }
+  // Model alleen invullen als het leeg is: de RDW-naam is vaak cryptisch ("Q6 Sb E-Tron"), de naam uit de Excel leesbaarder
   if (!v.model && g.model) zet("model", g.model, `model ${g.model}`);
-  if (!v.bouwjaar && g.bouwjaar) zet("bouwjaar", g.bouwjaar, `bouwjaar ${g.bouwjaar}`);
-  if (!v.milieu && g.milieu) zet("milieu", g.milieu, `milieu ${g.milieu}`);
+  // Bouwjaar (eerste toelating) en brandstof komen altijd van de RDW; de Excel had daar de leverdatum of een gok
+  if (g.bouwjaar && v.bouwjaar !== g.bouwjaar) zet("bouwjaar", g.bouwjaar, `bouwjaar ${v.bouwjaar || "leeg"} naar ${g.bouwjaar}`);
+  if (g.milieu && v.milieu !== g.milieu) zet("milieu", g.milieu, `milieu ${v.milieu || "leeg"} naar ${g.milieu}`);
   if (g.apk_vervaldatum && g.apk_vervaldatum !== v.apk_vervaldatum) zet("apk_vervaldatum", g.apk_vervaldatum, `APK ${formatDate(v.apk_vervaldatum) || "onbekend"} naar ${formatDate(g.apk_vervaldatum)}`);
   zet("rdw_kleur", g.kleur); zet("rdw_voertuigsoort", g.voertuigsoort); zet("rdw_catalogusprijs", g.catalogusprijs); zet("rdw_wam_verzekerd", g.wam_verzekerd);
   zet("rdw_eerste_toelating", g.eerste_toelating); zet("rdw_brandstof", g.brandstof);

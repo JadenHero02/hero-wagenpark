@@ -4,8 +4,11 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.11", datum: "2026-09-15", punten: [
+    { soort: "opgelost", tekst: "bouwjaar en brandstof komen nu altijd van de RDW (datum eerste toelating), ook als de Excel iets anders zei: vijf bouwjaren en drie brandstoffen gecorrigeerd. Model blijft de leesbare naam uit de Excel; vier modellen met de hand rechtgezet (o.a. de Verhuisbus is een Sprinter, GLB-29-K een i4 M50)", commit: "" },
+  ] },
   { versie: "0.2.10", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "het zoekveld bovenin toont direct resultaten terwijl je typt: auto's (ook op kenteken zonder streepjes en op tankpasnummer), bestuurders en contacten. Pijltjes en Enter om te kiezen, Escape sluit; Enter zonder keuze opent de gefilterde lijst", commit: "" },
+    { soort: "nieuw", tekst: "het zoekveld bovenin toont direct resultaten terwijl je typt: auto's (ook op kenteken zonder streepjes en op tankpasnummer), bestuurders en contacten. Pijltjes en Enter om te kiezen, Escape sluit; Enter zonder keuze opent de gefilterde lijst", commit: "a9bd54c" },
   ] },
   { versie: "0.2.9", datum: "2026-09-15", punten: [
     { soort: "nieuw", tekst: "de app herkent aan het pasnummer of het een tankpas van MKB Brandstof of een laadpas van E-Flux is; Mijn auto en de voertuigpagina laten dat zien en \"wie bel je waarvoor\" toont alleen de leverancier van jouw pas. Wagenparkbeheer (Niels) en de twee pasleveranciers staan in de contacten", commit: "7d0bc6d" },
