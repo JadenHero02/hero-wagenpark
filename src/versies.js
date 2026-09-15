@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.23", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "pagina Processen als kaarten in plaats van lange lijsten: per proces een kaart met icoon, korte uitleg, hoeveel er lopen, een uitklapbare stappenreeks (genummerd, de app-stappen grijs) en een startknop. Lopende processen zijn kaarten met voortgangsbalk en de volgende stap. Vier naast elkaar op de computer, twee op de tablet, één op de telefoon", commit: "" },
+  ] },
   { versie: "0.2.22", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "stuurgetal \"Km-stand actueel\" vervangen door \"Open taken\" (zoals in het ontwerpplan): het aantal open taken voor de beheerder, oranje als er taken over de deadline zijn; klik opent de takenlijst. Kilometerstanden blijven op de voertuigpagina, in Mijn auto en als filter in de wagenparklijst; de maandelijkse kilometerronde komt in stap 3", commit: "" },
   ] },
