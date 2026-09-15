@@ -16,13 +16,14 @@
 </form>
 <div class="card" style="padding:0">
   <table class="list">
-    <thead><tr><th>Kenteken</th><th>Auto</th><th>Bestuurder</th><th>Vestiging</th><th>Status</th><th>Soort</th><th>APK</th><th class="num">Km-stand</th></tr></thead>
+    <thead><tr><% const sortLink = (key, lbl) => { const p = new URLSearchParams(exportQuery); const cur = p.get("sort"); const next = key === "bouwjaar" && cur === "bouwjaar" ? "bouwjaar_desc" : key; if (cur === key || (key === "bouwjaar" && cur === "bouwjaar_desc")) { if (next === key && cur === key) p.delete("sort"); else p.set("sort", next); } else p.set("sort", key); return `<a href="?${p}" style="color:inherit" title="Sorteren">${lbl}${cur === key ? " ▲" : cur === key + "_desc" ? " ▼" : ""}</a>`; }; %><th>Kenteken</th><th>Auto</th><th><%- sortLink("bouwjaar", "Bouwjaar") %></th><th>Bestuurder</th><th>Vestiging</th><th>Status</th><th>Soort</th><th><%- sortLink("apk", "APK") %></th><th class="num"><%- sortLink("km", "Km-stand") %></th></tr></thead>
     <tbody>
-    <% if (!rows.length) { %><tr><td colspan="8" class="empty">Geen voertuigen gevonden.</td></tr><% } %>
+    <% if (!rows.length) { %><tr><td colspan="9" class="empty">Geen voertuigen gevonden.</td></tr><% } %>
     <% rows.forEach(r => { const d = h.daysUntil(r.apk_vervaldatum); const kmOud = r.km_datum ? h.daysUntil(r.km_datum) < -60 : true; %>
       <tr class="click" onclick="location.href='/voertuigen/<%= r.id %>'">
         <td><% if (r.kenteken) { %><span class="plate"><%= r.kenteken %></span><% } else { %><span class="muted">besteld</span><% } %></td>
         <td><strong><%= r.merk %></strong> <%= r.model || "" %><% if (r.is_leenauto) { %> <span class="pill grey">leenauto</span><% } %><% if (r.notitie && !r.kenteken) { %><div class="muted small"><%= r.notitie %></div><% } %></td>
+        <td class="nowrap"><%= h.bouwjaarFmt(r.bouwjaar) || "" %><% if (!r.bouwjaar) { %><span class="muted small">–</span><% } %></td>
         <td><% if (r.bestuurder) { %><a href="/bestuurders/<%= r.bestuurder_id %>" onclick="event.stopPropagation()"><%= r.bestuurder %></a><% } else if (r.extern_naam) { %><%= r.extern_naam %> <span class="muted small">extern</span><% } else { %><span class="muted">–</span><% } %><% if (r.toewijzing_soort === "uitleen") { %> <span class="pill warn">uitleen</span><% } %></td>
         <td><%= r.vestiging || "" %></td>
         <td><span class="pill <%= r.status === 'actief' ? 'ok' : r.status === 'uitgeleend' ? 'warn' : 'grey' %>"><%= h.label("status", r.status) %></span></td>

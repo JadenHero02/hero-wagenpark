@@ -8,7 +8,7 @@ const pincode = require("../pincode");
 const processen = require("../processen");
 const taken = require("../taken");
 const msauth = require("./msauth");
-const { clean, cleanNumber, cleanDate, yes, kenteken: fmtKenteken, formatDate, LABELS } = require("../helpers");
+const { clean, cleanNumber, cleanDate, yes, kenteken: fmtKenteken, formatDate, bouwjaarNorm, LABELS } = require("../helpers");
 
 const router = express.Router();
 // Alleen cijfers als id; anders valt het verzoek door naar de 404
@@ -21,7 +21,7 @@ async function lookups() {
 // De lijst met zoekterm en filters, ook gebruikt door de Excel-export
 async function zoekVoertuigen(query) {
   const q = clean(query.q);
-  const f = { status: clean(query.status), vestiging: Number(query.vestiging) || null, milieu: clean(query.milieu), eigendom: clean(query.eigendom), km: clean(query.km), leen: clean(query.leen) };
+  const f = { status: clean(query.status), vestiging: Number(query.vestiging) || null, milieu: clean(query.milieu), eigendom: clean(query.eigendom), km: clean(query.km), leen: clean(query.leen), sort: ["bouwjaar", "bouwjaar_desc", "apk", "km"].includes(query.sort) ? query.sort : null };
   const where = ["v.status <> 'archief'"]; const params = [];
   const add = (sql, val) => { params.push(val); where.push(sql.replace("?", `$${params.length}`)); };
   if (q) add("(v.kenteken ILIKE ? OR v.merk ILIKE ? OR v.model ILIKE ? OR b.naam ILIKE ? OR v.notitie ILIKE ?)".replace(/\?/g, `$${params.length + 1}`), `%${q}%`);
@@ -32,7 +32,7 @@ async function zoekVoertuigen(query) {
   if (f.leen) where.push("v.is_leenauto");
   if (f.km === "oud") where.push("v.status IN ('actief','uitgeleend') AND NOT EXISTS (SELECT 1 FROM kilometerstanden k WHERE k.voertuig_id = v.id AND k.datum > current_date - 60)");
   const rows = await db.all(`
-    SELECT v.id, v.kenteken, v.merk, v.model, v.status, v.milieu, v.eigendom, v.is_leenauto, v.apk_vervaldatum, v.notitie, v.banden,
+    SELECT v.id, v.kenteken, v.merk, v.model, v.bouwjaar, v.status, v.milieu, v.eigendom, v.is_leenauto, v.apk_vervaldatum, v.notitie, v.banden,
            ve.naam AS vestiging, b.naam AS bestuurder, b.id AS bestuurder_id, t.soort AS toewijzing_soort, t.extern_naam,
            (SELECT stand FROM kilometerstanden k WHERE k.voertuig_id = v.id ORDER BY datum DESC, id DESC LIMIT 1) AS km_stand,
            (SELECT datum FROM kilometerstanden k WHERE k.voertuig_id = v.id ORDER BY datum DESC, id DESC LIMIT 1) AS km_datum
@@ -41,7 +41,7 @@ async function zoekVoertuigen(query) {
     LEFT JOIN toewijzingen t ON t.voertuig_id = v.id AND t.status = 'actief'
     LEFT JOIN bestuurders b ON b.id = t.bestuurder_id
     WHERE ${where.join(" AND ")}
-    ORDER BY CASE v.status WHEN 'actief' THEN 1 WHEN 'uitgeleend' THEN 2 WHEN 'op_voorraad' THEN 3 WHEN 'besteld' THEN 4 ELSE 5 END, ve.volgorde NULLS LAST, v.merk, v.kenteken`, params);
+    ORDER BY ${f.sort === "bouwjaar" ? "v.bouwjaar NULLS LAST," : f.sort === "bouwjaar_desc" ? "v.bouwjaar DESC NULLS LAST," : f.sort === "apk" ? "v.apk_vervaldatum NULLS LAST," : f.sort === "km" ? "km_datum NULLS FIRST," : ""} CASE v.status WHEN 'actief' THEN 1 WHEN 'uitgeleend' THEN 2 WHEN 'op_voorraad' THEN 3 WHEN 'besteld' THEN 4 ELSE 5 END, ve.volgorde NULLS LAST, v.merk, v.kenteken`, params);
   return { rows, q, f };
 }
 
@@ -59,7 +59,7 @@ router.get("/nieuw", auth.requireRole("beheerder"), async (req, res) => {
 
 function fromBody(b) {
   return {
-    kenteken: fmtKenteken(b.kenteken), merk: clean(b.merk) || "Onbekend", model: clean(b.model), bouwjaar: clean(b.bouwjaar),
+    kenteken: fmtKenteken(b.kenteken), merk: clean(b.merk) || "Onbekend", model: clean(b.model), bouwjaar: bouwjaarNorm(b.bouwjaar),
     eigendom: LABELS.eigendom[b.eigendom] ? b.eigendom : "onbekend", bijtelling: b.bijtelling === "" || b.bijtelling === undefined ? null : yes(b.bijtelling),
     milieu: clean(b.milieu), banden: clean(b.banden), status: LABELS.status[b.status] ? b.status : "op_voorraad", is_leenauto: yes(b.is_leenauto),
     vestiging_id: Number(b.vestiging_id) || null, apk_vervaldatum: cleanDate(b.apk_vervaldatum), contract_einde: cleanDate(b.contract_einde),

@@ -51,6 +51,25 @@ function relativeDate(value) {
   if (d < 0) return d > -7 ? `${-d} dagen geleden` : d > -60 ? `${Math.round(-d / 7)} weken geleden` : `${Math.round(-d / 30)} maanden geleden`;
   return d < 7 ? `over ${d} dagen` : d < 60 ? `over ${Math.round(d / 7)} weken` : `over ${Math.round(d / 30)} maanden`;
 }
+// Bouwjaar/maand netjes opslaan als "2024-08" of "2024": accepteert "Aug 2024", "Mei 2021", "Sept 2019", "08-2024", "2024-08", "2024"
+const MAANDEN = { jan: 1, feb: 2, mrt: 3, mar: 3, maa: 3, apr: 4, mei: 5, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, okt: 10, oct: 10, nov: 11, dec: 12 };
+function bouwjaarNorm(value) {
+  const c = clean(value);
+  if (!c) return null;
+  let m = c.match(/^(\d{4})(?:[-/](\d{1,2}))?$/);
+  if (m) return m[2] ? `${m[1]}-${m[2].padStart(2, "0")}` : m[1];
+  m = c.match(/^(\d{1,2})[-/](\d{4})$/);
+  if (m) return `${m[2]}-${m[1].padStart(2, "0")}`;
+  m = c.match(/^([a-z]+)\.?\s+(\d{4})$/i);
+  if (m && MAANDEN[m[1].slice(0, 3).toLowerCase()]) return `${m[2]}-${String(MAANDEN[m[1].slice(0, 3).toLowerCase()]).padStart(2, "0")}`;
+  return c; // onbekende schrijfwijze: laten staan
+}
+// "2024-08" -> "aug 2024", "2024" -> "2024"
+const MAAND_KORT = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+function bouwjaarFmt(value) {
+  const m = String(value || "").match(/^(\d{4})-(\d{2})$/);
+  return m ? `${MAAND_KORT[Number(m[2]) - 1] || m[2]} ${m[1]}` : value || "";
+}
 // 38412 -> "38.412"
 const num = (n) => (n === null || n === undefined || n === "" ? "" : Number(n).toLocaleString("nl-NL"));
 const euro = (n) => (n === null || n === undefined || n === "" ? "" : "€ " + Number(n).toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -90,4 +109,4 @@ const label = (group, key) => (LABELS[group] && LABELS[group][key]) || key || ""
 // Voor tekst die een template met <%- %> invoegt
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label, esc };
+module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label, esc, bouwjaarNorm, bouwjaarFmt };

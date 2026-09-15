@@ -4,8 +4,11 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.6", datum: "2026-09-15", punten: [
+    { soort: "nieuw", tekst: "bouwjaar en -maand in de wagenparklijst, met sorteren op bouwjaar, APK en kilometerstand; ook in de Excel-export. De schrijfwijzen uit de Excel (\"Aug 2024\", \"Mei 2021\", \"2025-07\") zijn gelijkgetrokken", commit: "" },
+  ] },
   { versie: "0.2.5", datum: "2026-09-15", punten: [
-    { soort: "nieuw", tekst: "exporteren naar Excel (tip van Vasco, voor finance): menu Export geeft één werkboek met een tabblad per onderdeel; in het wagenpark exporteer je precies de rijen die je gefilterd hebt. Zonder pincodes, elke export in het logboek", commit: "" },
+    { soort: "nieuw", tekst: "exporteren naar Excel (tip van Vasco, voor finance): menu Export geeft één werkboek met een tabblad per onderdeel; in het wagenpark exporteer je precies de rijen die je gefilterd hebt. Zonder pincodes, elke export in het logboek", commit: "5246107" },
   ] },
   { versie: "0.2.4", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "een bestuurder ziet in het menu alleen nog Mijn auto; Dashboard en Mijn auto waren voor hem dezelfde pagina (feedback Vasco). Het zoekveld bovenin is er alleen voor wie het wagenpark mag zien", commit: "49946f9" },
