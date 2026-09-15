@@ -91,9 +91,20 @@
     <% autos.forEach(v => { const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(" ")[0])); if (!garage) return; %>
       <div><span><strong><%= garage.naam %></strong><div class="muted small">Garage, onderhoud en APK voor <%= v.merk %></div></span><span class="v"><% if (garage.telefoon) { %><a href="tel:<%= garage.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span><%= garage.telefoon %></a><% } %></span></div>
     <% }) %>
-    <% const leveranciers = autos.map(v => h.tankpasLeverancier(v.tankpas_nummer)).filter(Boolean); %>
-    <% contacten.filter(c => c.soort !== "tankpas" || leveranciers.some(l => c.naam.toLowerCase().includes(l.toLowerCase().split(" ")[0]))).forEach(c => { %>
-      <div><span><strong><%= c.naam %></strong><div class="muted small"><%= h.label("contact", c.soort) %><%= c.vestiging ? " · " + c.vestiging : "" %><%= c.opmerking ? " · " + c.opmerking : "" %></div></span><span class="v"><% if (c.telefoon) { %><a href="tel:<%= c.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span><%= c.telefoon %></a><% } else if (c.email) { %><a href="mailto:<%= c.email %>" class="btn small"><span class="msr">mail</span>Mail</a><% } %></span></div>
+    <% const leveranciers = autos.map(v => h.tankpasLeverancier(v.tankpas_nummer)).filter(Boolean);
+       // Zelfde persoon met meer rollen (Niels: wagenparkbeheer én celdirecteur) wordt één regel
+       const groep = new Map();
+       contacten.filter(c => c.soort !== "tankpas" || leveranciers.some(l => c.naam.toLowerCase().includes(l.toLowerCase().split(" ")[0]))).forEach(c => {
+         const key = c.naam.trim().toLowerCase();
+         const g = groep.get(key) || { naam: c.naam, telefoon: null, email: null, rollen: [], opmerkingen: [] };
+         g.telefoon = g.telefoon || c.telefoon; g.email = g.email || c.email;
+         const rol = h.label("contact", c.soort).toLowerCase() + (c.vestiging ? " " + c.vestiging : "");
+         if (!g.rollen.includes(rol)) g.rollen.push(rol);
+         if (c.opmerking && !new RegExp(rol, "i").test(c.opmerking)) g.opmerkingen.push(c.opmerking);
+         groep.set(key, g);
+       });
+       [...groep.values()].forEach(c => { const rollen = c.rollen.join(" en "); const tekst = rollen.charAt(0).toUpperCase() + rollen.slice(1) + (c.opmerkingen.length ? " · " + c.opmerkingen.join(" · ") : ""); %>
+      <div><span><strong><%= c.naam %></strong><div class="muted small"><%= tekst %></div></span><span class="v"><% if (c.telefoon) { %><a href="tel:<%= c.telefoon.replace(/s/g, "") %>" class="btn small"><span class="msr">call</span><%= c.telefoon %></a><% } else if (c.email) { %><a href="mailto:<%= c.email %>" class="btn small"><span class="msr">mail</span>Mail</a><% } %></span></div>
     <% }) %>
     <% if (!contacten.length) { %><div class="muted">Nog geen contactpersonen ingevuld.</div><% } %>
   </div>

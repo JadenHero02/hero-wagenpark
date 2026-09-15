@@ -4,8 +4,11 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.13", datum: "2026-09-15", punten: [
+    { soort: "verbeterd", tekst: "\"wie bel je waarvoor\" in Mijn auto: dezelfde persoon met meer rollen staat op één regel (Niels: wagenparkbeheer en celdirecteur Wognum), zonder dubbele tekst", commit: "" },
+  ] },
   { versie: "0.2.12", datum: "2026-09-15", punten: [
-    { soort: "verbeterd", tekst: "past nu op telefoon, tablet en computer: op de telefoon een scrollend menu in één rij, het zoekveld in de balk, alles in één kolom en tabellen die zijwaarts schuiven; op de tablet twee kolommen en een smaller menu", commit: "" },
+    { soort: "verbeterd", tekst: "past nu op telefoon, tablet en computer: op de telefoon een scrollend menu in één rij, het zoekveld in de balk, alles in één kolom en tabellen die zijwaarts schuiven; op de tablet twee kolommen en een smaller menu", commit: "70ab035" },
   ] },
   { versie: "0.2.11", datum: "2026-09-15", punten: [
     { soort: "opgelost", tekst: "bouwjaar en brandstof komen nu altijd van de RDW (datum eerste toelating), ook als de Excel iets anders zei: vijf bouwjaren en drie brandstoffen gecorrigeerd. Model blijft de leesbare naam uit de Excel; vier modellen met de hand rechtgezet (o.a. de Verhuisbus is een Sprinter, GLB-29-K een i4 M50)", commit: "32c0466" },
