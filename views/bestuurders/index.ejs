@@ -11,7 +11,7 @@
 </form>
 <div class="card" style="padding:0">
   <table class="list">
-    <thead><tr><th>Naam</th><th>Vestiging</th><th>Auto</th><th>Telefoon</th><th>Rijbewijs</th><th>Account</th></tr></thead>
+    <thead><tr><th>Naam</th><th>Vestiging</th><th>Auto</th><th>Telefoon</th><th>Rijbewijs</th><th>Rol</th></tr></thead>
     <tbody>
     <% if (!rows.length) { %><tr><td colspan="6" class="empty">Geen bestuurders gevonden.</td></tr><% } %>
     <% rows.forEach(r => { const d = h.daysUntil(r.rijbewijs_geldig_tot); %>
@@ -21,7 +21,7 @@
         <td><% if (r.voertuig_id) { %><a href="/voertuigen/<%= r.voertuig_id %>" onclick="event.stopPropagation()"><span class="plate"><%= r.kenteken || "besteld" %></span></a> <%= r.merk %> <%= r.model || "" %><% if (r.toewijzing_soort === "uitleen") { %> <span class="pill warn">leen</span><% } %><% } else { %><span class="muted">–</span><% } %></td>
         <td class="small"><%= r.telefoon || "" %></td>
         <td><% if (r.rijbewijs_geldig_tot) { %><span class="pill <%= d < 0 ? 'bad' : d < 90 ? 'warn' : 'grey' %>"><%= h.formatDate(r.rijbewijs_geldig_tot) %></span><% } else { %><span class="muted small">onbekend</span><% } %></td>
-        <td class="small"><%= r.role ? h.label("role", r.role) : "" %></td>
+        <td class="small nowrap"><% if (r.role) { %><span class="pill <%= r.role === 'bestuurder' ? 'ok' : 'blue-soft' %>"><%= h.label("role", r.role) %></span><div class="muted small"><%= r.last_login_at ? "ingelogd " + h.formatDate(r.last_login_at) : "account aangemaakt, nog niet ingelogd" %></div><% } else if (r.rol_verwacht) { %><span class="pill grey"><%= h.label("role", r.rol_verwacht) %></span><div class="muted small">nog niet ingelogd</div><% } else { %><span class="muted small">geen e-mail, kan niet inloggen</span><% } %></td>
       </tr>
     <% }) %>
     </tbody>

@@ -19,14 +19,24 @@ router.get("/", auth.requireRole("directie"), async (req, res) => {
   if (vId) { params.push(vId); where.push(`b.vestiging_id = $${params.length}`); }
   if (req.query.zonder === "1") where.push("v.id IS NULL");
   const rows = await db.all(`
-    SELECT b.*, ve.naam AS vestiging, v.id AS voertuig_id, v.kenteken, v.merk, v.model, t.soort AS toewijzing_soort, u.role
+    SELECT b.*, ve.naam AS vestiging, v.id AS voertuig_id, v.kenteken, v.merk, v.model, t.soort AS toewijzing_soort, u.role, u.last_login_at
     FROM bestuurders b LEFT JOIN vestigingen ve ON ve.id = b.vestiging_id
     LEFT JOIN toewijzingen t ON t.bestuurder_id = b.id AND t.status = 'actief'
     LEFT JOIN voertuigen v ON v.id = t.voertuig_id
     LEFT JOIN users u ON u.id = b.user_id
     WHERE ${where.join(" AND ")} ORDER BY ve.volgorde NULLS LAST, b.naam`, params);
+  const verwacht = await rolVerwacht();
+  rows.forEach((r) => { r.rol_verwacht = r.role || verwacht(r.email); });
   res.render("bestuurders/index", { title: "Bestuurders", rows, q, vId, zonder: req.query.zonder === "1", ...(await lookups()) });
 });
+
+// Welke rol krijgt iemand bij de eerste login: admin, beheerder of directie als het e-mailadres op die lijst staat, anders bestuurder.
+async function rolVerwacht() {
+  const rows = await db.all("SELECT sleutel, waarde FROM instellingen WHERE sleutel IN ('admin_emails','beheerder_emails','directie_emails')");
+  const lijst = (key) => String((rows.find((r) => r.sleutel === key) || {}).waarde || "").split(/[,;\s]+/).map((x) => x.trim().toLowerCase()).filter(Boolean);
+  const admin = lijst("admin_emails"), beheerder = lijst("beheerder_emails"), directie = lijst("directie_emails");
+  return (email) => { const e = String(email || "").toLowerCase(); if (!e) return null; if (admin.includes(e)) return "admin"; if (beheerder.includes(e)) return "beheerder"; if (directie.includes(e)) return "directie"; return "bestuurder"; };
+}
 
 router.get("/nieuw", auth.requireRole("beheerder"), async (req, res) => res.render("bestuurders/form", { title: "Nieuwe bestuurder", b: {}, ...(await lookups()) }));
 
@@ -43,6 +53,7 @@ router.post("/", auth.requireRole("beheerder"), async (req, res) => {
 
 router.get("/:id", auth.requireRole("directie"), async (req, res, next) => {
   const b = await db.one("SELECT b.*, ve.naam AS vestiging, u.role, u.last_login_at FROM bestuurders b LEFT JOIN vestigingen ve ON ve.id = b.vestiging_id LEFT JOIN users u ON u.id = b.user_id WHERE b.id = $1", [req.params.id]);
+  if (b) b.rol_verwacht = b.role || (await rolVerwacht())(b.email);
   if (!b) return next();
   const toewijzingen = await db.all("SELECT t.*, v.kenteken, v.merk, v.model, v.id AS voertuig_id FROM toewijzingen t JOIN voertuigen v ON v.id = t.voertuig_id WHERE t.bestuurder_id = $1 ORDER BY t.status = 'actief' DESC, t.van DESC NULLS LAST, t.id DESC", [b.id]);
   const boetes = await db.all("SELECT b.*, v.kenteken FROM boetes b JOIN voertuigen v ON v.id = b.voertuig_id WHERE b.bestuurder_id = $1 ORDER BY datum DESC", [b.id]);

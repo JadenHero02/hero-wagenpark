@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.29", datum: "2026-09-16", punten: [
+    { soort: "verbeterd", tekst: "kolom Rol op de pagina Bestuurders laat nu voor iedereen zien wat hij is of gaat krijgen: gekleurd met de datum van de laatste login als het account bestaat, grijs met \"nog niet ingelogd\" als iemand nog nooit heeft ingelogd, en een melding als er geen e-mailadres is. Zelfde op de bestuurderspagina", commit: "" },
+  ] },
   { versie: "0.2.28", datum: "2026-09-16", punten: [
     { soort: "verbeterd", tekst: "APK-pagina in twee stappen: eerst de garage voor dit merk met drie grote knoppen (bellen, website, route naar het adres), daarna de datum van de afspraak in de app zetten. Een bestaande afspraak staat bovenaan, met na de keuring de knop om het rapport te uploaden", commit: "" },
   ] },
