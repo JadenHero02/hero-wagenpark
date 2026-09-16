@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.32", datum: "2026-09-16", punten: [
+    { soort: "nieuw", tekst: "de app is op het beginscherm van je telefoon te zetten: met een Hero-icoon Wagenpark, en hij opent dan schermvullend zonder adresbalk. In Mijn auto legt een blauwe kaart in drie stappen uit hoe (iPhone en Android); met Later verdwijnt hij een week. Dit is ook de basis voor de iOS-app", commit: "" },
+  ] },
   { versie: "0.2.31", datum: "2026-09-16", punten: [
     { soort: "verbeterd", tekst: "feedback van Annemiek verwerkt. Verduurzaming staat niet meer op het dashboard maar op een eigen pagina in het menu, met de verdeling per vestiging", commit: "" },
     { soort: "verbeterd", tekst: "leenverzoeken keurt alleen nog de celdirecteur van de vestiging goed of af (uit Contacten), met de admin als reserve; de mail met het verzoek gaat naar de celdirecteur. Beheerders zien de verzoeken wel", commit: "" },

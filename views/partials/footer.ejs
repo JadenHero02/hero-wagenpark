@@ -4,6 +4,24 @@
 <div class="versie-nieuw" id="versie-nieuw" hidden><span class="msr">system_update</span>Er staat een nieuwe versie klaar.<button type="button" onclick="location.reload()">Vernieuwen</button></div>
 <script>
 (function () {
+  // Installeerbare versie: service worker voor het beginscherm, en in Mijn auto de hint (alleen telefoon, alleen in de browser, na "Later" een week stil)
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(function () {});
+  var kaart = document.getElementById("install-kaart");
+  if (!kaart) return;
+  var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  var telefoon = window.matchMedia("(max-width: 860px)").matches && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  var later = 0; try { later = Number(localStorage.getItem("wp_install_later") || 0); } catch (e) {}
+  if (standalone || !telefoon || Date.now() - later < 7 * 24 * 3600 * 1000) return;
+  var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  kaart.querySelectorAll("[data-platform]").forEach(function (el) { el.hidden = el.getAttribute("data-platform") !== (ios ? "ios" : "android"); });
+  kaart.hidden = false;
+  var prompt = null, knop = document.getElementById("install-knop");
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); prompt = e; knop.hidden = false; });
+  knop.addEventListener("click", function () { if (!prompt) return; prompt.prompt(); prompt.userChoice.then(function () { kaart.hidden = true; }); });
+  document.getElementById("install-later").addEventListener("click", function () { kaart.hidden = true; try { localStorage.setItem("wp_install_later", String(Date.now())); } catch (e) {} });
+  window.addEventListener("appinstalled", function () { kaart.hidden = true; });
+})();
+(function () {
   // Lijsten filteren terwijl je typt: het zoekveld met data-live-filter verbergt regels die de getypte letters niet bevatten.
   // Kentekens matchen ook zonder streepjes. Enter of de knop Zoeken doet nog steeds de volledige zoekopdracht op de server.
   var veld = document.querySelector("[data-live-filter]");

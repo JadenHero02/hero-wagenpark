@@ -1,0 +1,18 @@
+{
+  "name": "Hero Wagenpark",
+  "short_name": "Wagenpark",
+  "description": "Wagenparkbeheer van Hero Interim Professionals: Mijn auto voor bestuurders, beheer voor de vestigingen.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6f9",
+  "theme_color": "#073889",
+  "lang": "nl",
+  "icons": [
+    { "src": "/img/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

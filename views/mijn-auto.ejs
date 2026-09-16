@@ -4,6 +4,21 @@
   <div class="actions"><a href="/uitleen/aanvragen" class="btn"><span class="msr">key</span>Leenauto aanvragen</a><% if (autos.length) { %><a href="/incidenten/nieuw" class="btn primary"><span class="msr">car_crash</span>Incident melden</a><% } %></div>
 </div>
 <div style="max-width:560px">
+<% if (!meekijken) { %>
+<div class="install-kaart" id="install-kaart" hidden>
+  <div class="ik-kop"><span class="ik-icoon"><span class="msr">directions_car</span></span><div><strong>Zet Wagenpark op je beginscherm</strong><div class="ik-sub">Dan open je Mijn auto met één tik, zonder adresbalk.</div></div></div>
+  <ol data-platform="ios">
+    <li><span class="nr">1</span>Tik onderin Safari op <span class="msr">ios_share</span> Delen</li>
+    <li><span class="nr">2</span>Kies <strong>&nbsp;Zet op beginscherm</strong></li>
+    <li><span class="nr">3</span>Tik rechtsboven op <strong>&nbsp;Voeg toe</strong></li>
+  </ol>
+  <ol data-platform="android" hidden>
+    <li><span class="nr">1</span>Tik rechtsboven op <span class="msr">more_vert</span> menu</li>
+    <li><span class="nr">2</span>Kies <strong>&nbsp;App installeren</strong> of <strong>&nbsp;Toevoegen aan startscherm</strong></li>
+  </ol>
+  <div class="ik-voet"><span class="ik-sub" data-platform="ios">Op Android: menu en dan App installeren.</span><span class="ik-sub" data-platform="android" hidden>Op iPhone: Delen en dan Zet op beginscherm.</span><span style="display:flex;gap:8px"><button type="button" class="btn small primary" id="install-knop" hidden><span class="msr">download</span>Installeren</button><button type="button" class="btn small" id="install-later">Later</button></span></div>
+</div>
+<% } %>
 <% if (!autos.length) { %>
   <div class="card"><div class="empty">Er staat geen auto op jouw naam. Klopt dat niet? Bel wagenparkbeheer.<% if (vrij) { %><br><span class="small">Er staan <%= vrij %> auto's op voorraad die je kunt lenen.</span><% } %></div></div>
 <% } %>

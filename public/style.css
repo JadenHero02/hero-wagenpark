@@ -207,6 +207,24 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .apk-knoppen .btn { flex-direction: column; justify-content: center; gap: 2px; padding: 12px 8px; min-height: 64px; text-align: center; }
 .apk-knoppen .btn .msr { font-size: 24px; }
 .apk-knoppen .apk-sub { font-size: 11px; font-weight: 500; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+/* Geopend vanaf het beginscherm (standalone): de balk en het menupaneel houden rekening met de statusbalk van de telefoon */
+@media (display-mode: standalone) {
+  .topbar { padding-top: env(safe-area-inset-top, 0px); height: calc(58px + env(safe-area-inset-top, 0px)); }
+  .sidenav-kop { height: calc(58px + env(safe-area-inset-top, 0px)); padding-top: env(safe-area-inset-top, 0px); }
+  .zoek-lijst { top: calc(62px + env(safe-area-inset-top, 0px)); }
+}
+/* Hint in Mijn auto: zet de app op je beginscherm */
+.install-kaart { background: var(--hero-blauw); color: #ffffff; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 18px rgba(3,21,63,.18); margin-bottom: 16px; }
+.install-kaart .ik-kop { display: flex; align-items: center; gap: 12px; }
+.install-kaart .ik-icoon { width: 48px; height: 48px; border-radius: 12px; background: #ffffff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.install-kaart .ik-icoon .msr { font-size: 28px; color: var(--hero-blauw); }
+.install-kaart strong { font-size: 15px; } .install-kaart .ik-sub { font-size: 12.5px; color: rgba(255,255,255,.8); }
+.install-kaart ol { list-style: none; margin: 0; padding: 10px 12px; background: rgba(255,255,255,.1); border-radius: 10px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.install-kaart ol li { display: flex; align-items: center; gap: 8px; }
+.install-kaart ol li .nr { width: 20px; height: 20px; border-radius: 10px; background: var(--oranje); color: #ffffff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.install-kaart ol li .msr { font-size: 18px; }
+.install-kaart .ik-voet { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.install-kaart .ik-voet .btn { border-color: rgba(255,255,255,.35); color: #ffffff; background: rgba(255,255,255,.14); } .install-kaart .ik-voet .btn.primary { background: var(--oranje); border-color: var(--oranje); }
 .milieu-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 13.5px; }
 .kv dt { color: var(--grijs); } .kv dd { margin: 0; }
