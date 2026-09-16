@@ -15,7 +15,7 @@
       <% if (l.status !== "open") { %><dt>Besluit</dt><dd><%= h.label("leenverzoek", l.status) %> door <%= l.besloten_door_naam || "onbekend" %> op <%= h.formatDate(l.besloten_op, true) %><% if (l.antwoord) { %><br><span class="muted"><%= l.antwoord %></span><% } %></dd><% } %>
     </dl>
   </div>
-  <% if (l.status === "open" && can("beheerder")) { %>
+  <% if (l.status === "open" && magUitleen) { %>
   <div class="card">
     <div class="lbl"><span class="msr">gavel</span>Beslissen</div>
     <form method="POST" action="/uitleen/verzoeken/<%= l.id %>/goedkeuren" class="form" style="grid-template-columns:1fr;margin-top:10px">
@@ -36,7 +36,7 @@
     </form>
   </div>
   <% } else if (l.status === "open") { %>
-  <div class="card"><p class="muted">Een beheerder beoordeelt je verzoek. Je krijgt een mail met het besluit.</p></div>
+  <div class="card"><p class="muted">De celdirecteur van de vestiging beoordeelt dit verzoek. De aanvrager krijgt een mail met het besluit.</p></div>
   <% } %>
 </div>
 <%- include("../partials/footer") %>

@@ -4,6 +4,13 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.31", datum: "2026-09-16", punten: [
+    { soort: "verbeterd", tekst: "feedback van Annemiek verwerkt. Verduurzaming staat niet meer op het dashboard maar op een eigen pagina in het menu, met de verdeling per vestiging", commit: "" },
+    { soort: "verbeterd", tekst: "leenverzoeken keurt alleen nog de celdirecteur van de vestiging goed of af (uit Contacten), met de admin als reserve; de mail met het verzoek gaat naar de celdirecteur. Beheerders zien de verzoeken wel", commit: "" },
+    { soort: "verbeterd", tekst: "boetes zijn afgeschermd: alleen HR en de admin zien en voeren boetes in. De admin zet HR-medewerkers bij Instellingen. Een bestuurder ziet zijn eigen boetes nog in Mijn auto", commit: "" },
+    { soort: "nieuw", tekst: "bij een incident kun je vastleggen bij wie de schade is gemeld en wanneer het autobedrijf is ingeschakeld; beide staan als kolom in de lijst", commit: "" },
+    { soort: "nieuw", tekst: "de zeventien auto's uit het archieftabblad van de Excel staan in het archief, waar mogelijk met merk, model en bouwjaar van de RDW", commit: "" },
+  ] },
   { versie: "0.2.30", datum: "2026-09-16", punten: [
     { soort: "verbeterd", tekst: "elke rol heeft nu overal dezelfde kleur: admin oranje, directie donkerblauw, beheerder lichtblauw, bestuurder groen. Wie nog niet is ingelogd krijgt dezelfde kleur als rand in plaats van als vlak. Op Bestuurders, de bestuurderspagina en Rollen", commit: "" },
   ] },

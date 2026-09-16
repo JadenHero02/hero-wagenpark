@@ -23,9 +23,10 @@
     { href: "/uitleen", icon: "key", label: "Uitleen", min: "directie", badge: badges.uitleen },
     { href: "/taken", icon: "task_alt", label: "Taken", min: "directie", badge: badges.taken, hot: true },
     { href: "/incidenten", icon: "car_crash", label: "Incidenten", min: "directie", badge: badges.incidenten },
-    { href: "/boetes", icon: "receipt_long", label: "Boetes", min: "directie", badge: badges.boetes },
+    { href: "/boetes", icon: "receipt_long", label: "Boetes", min: "directie", als: magBoetes, badge: badges.boetes },
     { href: "/contacten", icon: "contacts", label: "Contacten", min: "directie" },
     { href: "/archief", icon: "inventory_2", label: "Archief", min: "directie" },
+    { href: "/verduurzaming", icon: "eco", label: "Verduurzaming", min: "directie" },
     { href: "/processen", icon: "checklist", label: "Processen", min: "directie" },
     { href: "/export", icon: "download", label: "Export", min: "directie" },
     { href: "/instellingen/rollen", icon: "manage_accounts", label: "Rollen", min: "admin" },
@@ -61,7 +62,7 @@
     <div class="menu-achter" id="menu-achter" hidden></div>
     <nav class="sidenav" id="sidenav">
       <div class="sidenav-kop"><span class="msr" style="color:var(--oranje)">directions_car</span><strong>Wagenpark</strong><button type="button" class="menu-sluit" id="menu-sluit" aria-label="Menu sluiten"><span class="msr">close</span></button></div>
-      <% menu.forEach((m) => { if (!can(m.min)) return; %>
+      <% menu.forEach((m) => { if (!can(m.min) || m.als === false) return; %>
         <a href="<%= m.href %>" class="side-link <%= isActive(m.href) %>">
           <span class="msr"><%= m.icon %></span><span class="label"><%= m.label %></span>
           <% if (m.badge) { %><span class="side-badge <%= m.hot ? 'hot' : '' %>"><%= m.badge %></span><% } %>

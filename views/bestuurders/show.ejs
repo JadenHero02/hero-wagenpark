@@ -27,7 +27,7 @@
     <div class="card">
       <div class="lbl"><span class="msr">receipt_long</span>Boetes</div>
       <div class="rows" style="margin-top:4px">
-        <% boetes.forEach(x => { %><div><span class="k"><%= h.formatDate(x.datum) %> · <%= x.kenteken %></span><span class="v"><%= h.euro(x.bedrag) %> <span class="pill <%= x.status === 'doorbelast' ? 'warn' : 'grey' %>"><%= x.status.replace("_", " ") %></span></span></div><% }) %>
+        <% (magBoetes ? boetes : []).forEach(x => { %><div><span class="k"><%= h.formatDate(x.datum) %> · <%= x.kenteken %></span><span class="v"><%= h.euro(x.bedrag) %> <span class="pill <%= x.status === 'doorbelast' ? 'warn' : 'grey' %>"><%= x.status.replace("_", " ") %></span></span></div><% }) %>
         <% if (!boetes.length) { %><div class="muted">Geen boetes.</div><% } %>
       </div>
     </div>

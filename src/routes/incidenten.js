@@ -69,7 +69,7 @@ router.post("/:id/status", auth.requireRole("beheerder"), async (req, res, next)
   const i = await db.one("SELECT * FROM incidenten WHERE id = $1", [req.params.id]);
   if (!i) return next();
   const status = LABELS.incident_status[req.body.status] ? req.body.status : i.status;
-  await db.run("UPDATE incidenten SET status = $2, kosten = COALESCE($3, kosten), tegenpartij = COALESCE($4, tegenpartij) WHERE id = $1", [i.id, status, cleanNumber(req.body.kosten), clean(req.body.tegenpartij)]);
+  await db.run("UPDATE incidenten SET status = $2, kosten = COALESCE($3, kosten), tegenpartij = COALESCE($4, tegenpartij), gemeld_bij = COALESCE($5, gemeld_bij), garage_ingeschakeld_op = COALESCE($6, garage_ingeschakeld_op) WHERE id = $1", [i.id, status, cleanNumber(req.body.kosten), clean(req.body.tegenpartij), clean(req.body.gemeld_bij), require("../helpers").cleanDate(req.body.garage_ingeschakeld_op)]);
   if (status === "afgerond" && i.taak_id) await db.run("UPDATE taken SET status = 'afgerond', afgerond_door = $2, afgerond_op = local_now() WHERE id = $1 AND status = 'open'", [i.taak_id, req.user.id]);
   await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1,$2,$3,'incident',$4)", [i.voertuig_id, i.bestuurder_id, req.user.id, `Incident van ${formatDate(i.datum)} op ${LABELS.incident_status[status].toLowerCase()} gezet door ${req.user.name}`]);
   res.flash("Opgeslagen.");

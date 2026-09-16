@@ -93,7 +93,7 @@
     <div class="card-head"><div class="lbl"><span class="msr">build</span>Onderhoud en incidenten</div></div>
     <div class="rows">
       <% incidenten.forEach(i => { %><div><span class="k"><%= i.soort %> · <%= h.formatDate(i.datum) %></span><span class="v"><span class="pill grey"><%= i.status %></span></span></div><% }) %>
-      <% boetes.forEach(b => { %><div><span class="k">Boete <%= h.euro(b.bedrag) %> · <%= h.formatDate(b.datum) %></span><span class="v"><span class="pill <%= b.status === 'doorbelast' ? 'warn' : 'grey' %>"><%= b.status.replace("_", " ") %></span></span></div><% }) %>
+      <% (magBoetes ? boetes : []).forEach(b => { %><div><span class="k">Boete <%= h.euro(b.bedrag) %> · <%= h.formatDate(b.datum) %></span><span class="v"><span class="pill <%= b.status === 'doorbelast' ? 'warn' : 'grey' %>"><%= b.status.replace("_", " ") %></span></span></div><% }) %>
       <% if (v.onderhoud_notitie) { %><div><span class="k">Uit de Excel</span><span class="v small"><%= v.onderhoud_notitie %></span></div><% } %>
       <% if (v.schade_notitie) { %><div><span class="k">Schade (Excel)</span><span class="v small"><%= v.schade_notitie %></span></div><% } %>
       <% if (!incidenten.length && !boetes.length && !v.onderhoud_notitie && !v.schade_notitie) { %><div class="muted">Niets geregistreerd.</div><% } %>

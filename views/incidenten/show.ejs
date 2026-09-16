@@ -11,6 +11,8 @@
         <dt>Wat</dt><dd><%= i.omschrijving || "–" %></dd>
         <dt>Tegenpartij</dt><dd><%= i.tegenpartij || "–" %></dd>
         <dt>Kosten</dt><dd><%= h.euro(i.kosten) || "onbekend" %></dd>
+        <dt>Gemeld bij</dt><dd><%= i.gemeld_bij || "nog niet gemeld" %></dd>
+        <dt>Autobedrijf</dt><dd><%= i.garage_ingeschakeld_op ? "ingeschakeld op " + h.formatDate(i.garage_ingeschakeld_op) : "nog niet ingeschakeld" %></dd>
         <dt>Gemeld</dt><dd><%= h.formatDate(i.created_at, true) %> door <%= i.gemeld_door_naam || "onbekend" %></dd>
         <dt>Auto</dt><dd><% if (can("directie")) { %><a href="/voertuigen/<%= i.voertuig_id %>"><%= i.kenteken %></a><% } else { %><%= i.kenteken %><% } %><%= i.vestiging ? " · " + i.vestiging : "" %></dd>
       </dl>
@@ -30,6 +32,8 @@
       <form method="POST" action="/incidenten/<%= i.id %>/status" class="form" style="grid-template-columns:1fr;margin-top:10px">
         <label>Status<select name="status"><% Object.entries(LABELS.incident_status).forEach(([k, l]) => { %><option value="<%= k %>" <%= i.status === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
         <label>Kosten (€)<input type="number" name="kosten" step="0.01" min="0" value="<%= i.kosten ?? "" %>"></label>
+        <label>Gemeld bij <span class="hint">verzekeraar, leasemaatschappij of garage</span><input name="gemeld_bij" value="<%= i.gemeld_bij || "" %>" placeholder="Bijvoorbeeld Hypotheekshop Hoorn"></label>
+        <label>Autobedrijf ingeschakeld op<input type="date" name="garage_ingeschakeld_op" value="<%= i.garage_ingeschakeld_op ? String(i.garage_ingeschakeld_op).slice(0, 10) : "" %>"></label>
         <label>Tegenpartij<input name="tegenpartij" value="<%= i.tegenpartij || "" %>"></label>
         <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">save</span>Opslaan</button></div>
       </form>

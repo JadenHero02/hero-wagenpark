@@ -147,8 +147,8 @@ router.post("/aanvragen", async (req, res) => {
   const id = await db.insert("INSERT INTO leenverzoeken (voertuig_id, aanvrager_bestuurder_id, aanvrager_user_id, extern_naam, vestiging_id, van, tot, reden) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)", [v ? v.id : null, aanvragerB, req.user.id, res.locals.can("beheerder") ? f.extern_naam : null, vestiging, f.van, f.tot, f.reden]);
   const wie = f.extern_naam && res.locals.can("beheerder") ? `${f.extern_naam} (extern)` : aanvragerB && aanvragerB !== (req.bestuurder || {}).id ? ((await db.one("SELECT naam FROM bestuurders WHERE id = $1", [aanvragerB])) || {}).naam : req.user.name;
   await log(v ? v.id : null, aanvragerB, req.user.id, "leenverzoek", `Leenverzoek van ${wie}: ${formatDate(f.van)} tot ${formatDate(f.tot)}, ${f.reden}`);
-  await mail.send({ to: await mail.beheerders(vestiging), subject: `Leenverzoek van ${wie}${v ? ": " + v.kenteken : ""}`, soort: "leenverzoek", ref: `leenverzoek:${id}`, html: mail.layout({ titel: "Nieuw leenverzoek", regels: [["Wie", wie], ["Auto", v ? autoNaam(v) : "geen voorkeur"], ["Van", formatDate(f.van)], ["Tot", formatDate(f.tot)], ["Reden", f.reden]], knop: { tekst: "Goedkeuren of afwijzen", url: `${mail.baseUrl()}/uitleen/verzoeken/${id}` } }) });
-  res.flash("Je verzoek is verstuurd. Een beheerder keurt het goed of wijst het af; je krijgt een mail.");
+  await mail.send({ to: await mail.goedkeurders(vestiging), subject: `Leenverzoek van ${wie}${v ? ": " + v.kenteken : ""}`, soort: "leenverzoek", ref: `leenverzoek:${id}`, html: mail.layout({ titel: "Nieuw leenverzoek", regels: [["Wie", wie], ["Auto", v ? autoNaam(v) : "geen voorkeur"], ["Van", formatDate(f.van)], ["Tot", formatDate(f.tot)], ["Reden", f.reden]], knop: { tekst: "Goedkeuren of afwijzen", url: `${mail.baseUrl()}/uitleen/verzoeken/${id}` } }) });
+  res.flash("Je verzoek is verstuurd. De celdirecteur keurt het goed of wijst het af; je krijgt een mail.");
   res.redirect(res.locals.can("directie") ? "/uitleen" : "/mijn-auto");
 });
 
@@ -162,7 +162,7 @@ router.post("/verlengen", async (req, res) => {
   if (!tot || (t.tot && tot <= t.tot)) { res.flash("Kies een datum na de huidige retourdatum.", "error"); return res.redirect(own ? "/mijn-auto" : `/voertuigen/${t.voertuig_id}`); }
   const id = await db.insert("INSERT INTO leenverzoeken (voertuig_id, aanvrager_bestuurder_id, aanvrager_user_id, vestiging_id, van, tot, reden, soort, toewijzing_id) VALUES ($1,$2,$3,$4,$5,$6,$7,'verlenging',$8)", [t.voertuig_id, t.bestuurder_id, req.user.id, t.v_vestiging, t.tot, tot, reden, t.id]);
   await log(t.voertuig_id, t.bestuurder_id, req.user.id, "leenverzoek", `Verlenging gevraagd tot ${formatDate(tot)}${reden ? ": " + reden : ""}`);
-  await mail.send({ to: await mail.beheerders(t.v_vestiging), subject: `Verlenging leenauto ${t.kenteken} tot ${formatDate(tot)}`, soort: "leenverzoek", ref: `leenverzoek:${id}`, html: mail.layout({ titel: "Verzoek om meer tijd", regels: [["Wie", req.user.name], ["Auto", autoNaam(t)], ["Nu tot", formatDate(t.tot)], ["Gevraagd tot", formatDate(tot)], ["Reden", reden || "–"]], knop: { tekst: "Goedkeuren of afwijzen", url: `${mail.baseUrl()}/uitleen/verzoeken/${id}` } }) });
+  await mail.send({ to: await mail.goedkeurders(t.v_vestiging), subject: `Verlenging leenauto ${t.kenteken} tot ${formatDate(tot)}`, soort: "leenverzoek", ref: `leenverzoek:${id}`, html: mail.layout({ titel: "Verzoek om meer tijd", regels: [["Wie", req.user.name], ["Auto", autoNaam(t)], ["Nu tot", formatDate(t.tot)], ["Gevraagd tot", formatDate(tot)], ["Reden", reden || "–"]], knop: { tekst: "Goedkeuren of afwijzen", url: `${mail.baseUrl()}/uitleen/verzoeken/${id}` } }) });
   res.flash("Verzoek om meer tijd verstuurd. Je krijgt een mail zodra een beheerder heeft besloten.");
   res.redirect(own && !res.locals.can("directie") ? "/mijn-auto" : `/voertuigen/${t.voertuig_id}`);
 });
@@ -181,7 +181,7 @@ router.get("/verzoeken/:id", async (req, res, next) => {
   const vrij = await db.all("SELECT v.*, ve.naam AS vestiging FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id WHERE v.status = 'op_voorraad' ORDER BY ve.volgorde NULLS LAST, v.merk");
   res.render("uitleen/verzoek", { title: "Leenverzoek", l, vrij });
 });
-router.post("/verzoeken/:id/goedkeuren", auth.requireRole("beheerder"), async (req, res, next) => {
+router.post("/verzoeken/:id/goedkeuren", auth.requireCeldirecteur, async (req, res, next) => {
   const l = await laadVerzoek(req.params.id);
   if (!l) return next();
   if (l.status !== "open") { res.flash("Dit verzoek is al beantwoord.", "error"); return res.redirect(`/uitleen/verzoeken/${l.id}`); }
@@ -213,7 +213,7 @@ router.post("/verzoeken/:id/goedkeuren", auth.requireRole("beheerder"), async (r
   res.flash(`Goedgekeurd: ${v.kenteken} is uitgeleend aan ${l.wie} tot ${formatDate(l.tot)}.`);
   res.redirect("/uitleen");
 });
-router.post("/verzoeken/:id/afwijzen", auth.requireRole("beheerder"), async (req, res, next) => {
+router.post("/verzoeken/:id/afwijzen", auth.requireCeldirecteur, async (req, res, next) => {
   const l = await laadVerzoek(req.params.id);
   if (!l) return next();
   if (l.status !== "open") { res.flash("Dit verzoek is al beantwoord.", "error"); return res.redirect(`/uitleen/verzoeken/${l.id}`); }

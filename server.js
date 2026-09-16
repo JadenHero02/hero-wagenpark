@@ -79,6 +79,7 @@ app.use("/", require("./src/routes/documenten").router);
 const voertuigen = require("./src/routes/voertuigen");
 app.use("/voertuigen", voertuigen.router);
 app.use("/archief", voertuigen.archief);
+app.use("/verduurzaming", require("./src/routes/verduurzaming").router);
 app.use("/bestuurders", require("./src/routes/bestuurders").router);
 app.use("/contacten", require("./src/routes/contacten").router);
 app.use("/uitleen", require("./src/routes/uitleen").router);

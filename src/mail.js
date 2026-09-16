@@ -110,10 +110,16 @@ async function celdirecteur(vestigingId) {
   if (!vestigingId) return [];
   return (await db.all("SELECT email FROM contacten WHERE soort = 'celdirecteur' AND vestiging_id = $1 AND email IS NOT NULL", [vestigingId])).map((c) => c.email);
 }
+// Wie een leenverzoek beoordeelt: de celdirecteur van de vestiging (uit Contacten) plus de admins; is er geen celdirecteur, dan de beheerders
+async function goedkeurders(vestigingId = null) {
+  const cel = await celdirecteur(vestigingId);
+  const admins = (await db.all("SELECT email FROM users WHERE is_active AND role = 'admin'")).map((u) => u.email);
+  return uniq([...admins, ...(cel.length ? cel : await beheerders(vestigingId))]);
+}
 async function hr() {
   const r = await db.one("SELECT waarde FROM instellingen WHERE sleutel = 'hr_email'");
   return list((r && r.waarde) || "");
 }
 const bestuurderEmail = (b) => (b && b.email ? [b.email] : []);
 
-module.exports = { send, sentBefore, layout, baseUrl, beheerders, celdirecteur, hr, bestuurderEmail, mode, from, esc };
+module.exports = { goedkeurders, send, sentBefore, layout, baseUrl, beheerders, celdirecteur, hr, bestuurderEmail, mode, from, esc };

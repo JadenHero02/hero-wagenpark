@@ -57,9 +57,23 @@ async function loadUser(req, res, next) {
     res.locals.currentUser = req.user;
     res.locals.currentBestuurder = req.bestuurder;
     res.locals.can = (role) => Boolean(req.user) && rank(req.user.role) >= rank(role);
+    // Buiten de rolhiërarchie om (feedback Annemiek 16-09): leenverzoeken keurt de celdirecteur (uit Contacten) of de admin;
+    // boetes zijn alleen voor HR (instelling hr_gebruikers) en de admin.
+    req.isCeldirecteur = false; req.isHr = false;
+    if (req.user) {
+      const e = String(req.user.email || "").toLowerCase();
+      const x = await db.one("SELECT EXISTS (SELECT 1 FROM contacten WHERE soort = 'celdirecteur' AND lower(email) = $1) AS celdirecteur, (SELECT waarde FROM instellingen WHERE sleutel = 'hr_gebruikers') AS hr", [e]);
+      req.isCeldirecteur = req.user.role === "admin" || Boolean(x && x.celdirecteur);
+      req.isHr = req.user.role === "admin" || String((x && x.hr) || "").toLowerCase().split(/[,;\s]+/).includes(e);
+    }
+    res.locals.magUitleen = req.isCeldirecteur;
+    res.locals.magBoetes = req.isHr;
     next();
   } catch (err) { next(err); }
 }
+
+const requireCeldirecteur = (req, res, next) => (req.isCeldirecteur ? next() : res.status(403).render("error", { title: "Geen toegang", message: "Alleen de celdirecteur van de vestiging of de admin kan leenverzoeken beoordelen." }));
+const requireHr = (req, res, next) => (req.isHr ? next() : res.status(403).render("error", { title: "Geen toegang", message: "Boetes zijn alleen voor HR en de admin. Vraag de admin om je e-mailadres bij de HR-medewerkers te zetten." }));
 
 function requireLogin(req, res, next) {
   if (req.user) return next();
@@ -103,4 +117,4 @@ async function roleFor(email, isAdmin) {
   return "bestuurder";
 }
 
-module.exports = { ROLES, rank, createSession, destroySession, getUserBySession, cleanupSessions, parseCookies, setSessionCookie, clearSessionCookie, loadUser, requireLogin, requireRole, upsertUser, SESSION_COOKIE };
+module.exports = { requireCeldirecteur, requireHr, ROLES, rank, createSession, destroySession, getUserBySession, cleanupSessions, parseCookies, setSessionCookie, clearSessionCookie, loadUser, requireLogin, requireRole, upsertUser, SESSION_COOKIE };

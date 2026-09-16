@@ -14,6 +14,7 @@ router.use(auth.requireRole("admin"));
 
 const VELDEN = [
   ["hr_email", "E-mailadres van HR", "Ontvangt toewijzingen, innames en doorbelaste boetes. Meerdere adressen met een komma."],
+  ["hr_gebruikers", "HR-medewerkers in de app", "E-mailadressen, met komma. Alleen zij en de admin zien boetes en voeren ze in."],
   ["apk_termijnen", "APK-herinneringen (dagen vooraf)", "Bijvoorbeeld 90,30,7"],
   ["contract_termijnen", "Contract-herinneringen (dagen vooraf)", ""],
   ["rijbewijs_termijnen", "Rijbewijs-herinneringen (dagen vooraf)", ""],

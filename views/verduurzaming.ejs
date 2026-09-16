@@ -1,0 +1,43 @@
+<%- include("partials/header") %>
+<%
+  const kleur = { elektrisch: "var(--groen)", hybride: "var(--blauw-soft)", benzine: "var(--oranje)", diesel: "var(--grijs)", onbekend: "var(--grijs-thin)" };
+  const naam = (m) => h.label("milieu", m) || "Onbekend";
+  const som = (rows) => rows.reduce((s, m) => s + Number(m.n), 0) || 1;
+  const totN = som(totaal), bestN = besteld.length ? som(besteld) : 0;
+  const pct = (n, t) => Math.round(Number(n) * 100 / (t || 1));
+  const elek = totaal.filter(m => m.milieu === "elektrisch" || m.milieu === "hybride").reduce((s, m) => s + Number(m.n), 0);
+%>
+<div class="page-head">
+  <div><div class="eyebrow">Wagenpark</div><h1>Verduurzaming</h1><div class="sub">Hoe het wagenpark rijdt, per vestiging en wat er besteld is.</div></div>
+  <div class="actions"><a href="/export" class="btn ghost"><span class="msr">download</span>Export naar Excel</a></div>
+</div>
+
+<div class="tiles" style="grid-template-columns:repeat(3, minmax(0,1fr))">
+  <div class="tile"><div class="lbl">Elektrisch of hybride</div><div class="row"><span class="big"><%= pct(elek, totN) %>%</span><span class="muted"><%= elek %> van <%= totN %></span></div><div class="muted small">rijdend en op voorraad</div></div>
+  <div class="tile"><div class="lbl">Besteld</div><div class="row"><span class="big"><%= bestN %></span><span class="muted">auto's</span></div><div class="muted small"><%= besteld.map(m => `${m.n} ${naam(m.milieu).toLowerCase()}`).join(" · ") || "niets besteld" %></div></div>
+  <div class="tile"><div class="lbl">CO₂ gemiddeld</div><div class="row"><span class="big"><%= counts.co2_gem !== null && counts.co2_gem !== undefined ? counts.co2_gem : "–" %></span><span class="muted">g/km</span></div><div class="muted small">volgens de RDW, <%= counts.rdw_ok %> van <%= counts.met_kenteken %> auto's</div></div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-head"><h2><span class="msr" style="color:var(--groen)">eco</span> Hele wagenpark</h2><span class="muted small"><%= totN %> auto's</span></div>
+    <div class="milieu-balk"><% totaal.forEach(m => { %><span style="width:<%= m.n * 100 / totN %>%;background:<%= kleur[m.milieu] || kleur.onbekend %>" title="<%= naam(m.milieu) %> <%= m.n %>"></span><% }) %></div>
+    <div class="rows">
+      <% totaal.forEach(m => { %><div><span class="k"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:<%= kleur[m.milieu] || kleur.onbekend %>;margin-right:8px;vertical-align:-1px"></i><%= naam(m.milieu) %></span><span class="v"><strong><%= pct(m.n, totN) %>%</strong> <span class="muted small">(<%= m.n %>)</span></span></div><% }) %>
+    </div>
+    <div class="muted small" style="margin-top:10px"><%= counts.doc_ok %> van <%= counts.met_kenteken %> auto's hebben een kentekenbewijs in de app.</div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2><span class="msr" style="color:var(--blauw)">location_on</span> Per vestiging</h2></div>
+    <table class="list">
+      <thead><tr><th>Vestiging</th><th class="num">Auto's</th><th class="num">Elektrisch</th><th class="num">Hybride</th><th class="num">Benzine</th><th class="num">Diesel</th><th class="num">Schoon</th></tr></thead>
+      <tbody>
+        <% perVestiging.forEach(p => { const schoon = Number(p.elektrisch) + Number(p.hybride); %>
+          <tr><td><strong><%= p.naam %></strong></td><td class="num"><%= p.n %></td><td class="num"><%= p.elektrisch %></td><td class="num"><%= p.hybride %></td><td class="num"><%= p.benzine %></td><td class="num"><%= p.diesel %></td><td class="num"><span class="pill <%= pct(schoon, p.n) >= 50 ? 'ok' : 'grey' %>"><%= Number(p.n) ? pct(schoon, p.n) + "%" : "–" %></span></td></tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <div class="muted small" style="margin-top:10px">Schoon = elektrisch of hybride, als deel van de auto's van die vestiging. Auto's zonder vestiging tellen hier niet mee.</div>
+  </div>
+</div>
+<%- include("partials/footer") %>

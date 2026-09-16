@@ -19,7 +19,7 @@
         <td><%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %></td>
         <td class="small"><%= l.reden || "" %></td>
         <td class="small muted"><%= h.relativeDate(l.created_at) %></td>
-        <td><% if (can("beheerder")) { %><a href="/uitleen/verzoeken/<%= l.id %>" class="btn small primary" onclick="event.stopPropagation()">Beoordelen</a><% } %></td>
+        <td><% if (magUitleen) { %><a href="/uitleen/verzoeken/<%= l.id %>" class="btn small primary" onclick="event.stopPropagation()">Beoordelen</a><% } %></td>
       </tr>
     <% }) %>
     <% if (!verzoeken.length) { %><tr><td colspan="6" class="empty">Geen open verzoeken.</td></tr><% } %>

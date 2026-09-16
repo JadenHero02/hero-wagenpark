@@ -1,5 +1,5 @@
 <%- include("../partials/header") %>
-<div class="muted small" style="margin-bottom:10px"><a href="<%= can("directie") ? "/boetes" : "/mijn-auto" %>"><%= can("directie") ? "Boetes" : "Mijn auto" %></a> › Boete</div>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= magBoetes ? "/boetes" : "/mijn-auto" %>"><%= magBoetes ? "Boetes" : "Mijn auto" %></a> › Boete</div>
 <div class="page-head">
   <div><div class="eyebrow">Boete</div><h1><%= h.euro(b.bedrag) || "Bedrag onbekend" %> · <span class="plate big"><%= b.kenteken || "besteld" %></span></h1><div class="sub"><%= b.merk %> <%= b.model || "" %> · overtreding op <%= h.formatDate(b.datum) %><% if (b.omschrijving) { %> · <%= b.omschrijving %><% } %></div></div>
   <span class="pill <%= b.status === 'doorbelast' ? 'ok' : b.status === 'nieuw' ? 'warn' : b.status === 'uitzondering_gevraagd' ? 'soft' : 'grey' %>" style="font-size:13px"><%= h.label("boete", b.status) %></span>
@@ -8,8 +8,8 @@
   <div>
     <div class="card">
       <dl class="kv">
-        <dt>Bestuurder</dt><dd><% if (b.bestuurder) { %><% if (can("directie")) { %><a href="/bestuurders/<%= b.bestuurder_id %>"><%= b.bestuurder %></a><% } else { %><%= b.bestuurder %><% } %><% } else { %><span class="pill soft">onbekend</span><% } %></dd>
-        <dt>Auto</dt><dd><% if (can("directie")) { %><a href="/voertuigen/<%= b.voertuig_id %>"><%= b.kenteken %></a><% } else { %><%= b.kenteken %><% } %> · <%= b.merk %> <%= b.model || "" %><%= b.vestiging ? " · " + b.vestiging : "" %></dd>
+        <dt>Bestuurder</dt><dd><% if (b.bestuurder) { %><% if (magBoetes) { %><a href="/bestuurders/<%= b.bestuurder_id %>"><%= b.bestuurder %></a><% } else { %><%= b.bestuurder %><% } %><% } else { %><span class="pill soft">onbekend</span><% } %></dd>
+        <dt>Auto</dt><dd><% if (magBoetes) { %><a href="/voertuigen/<%= b.voertuig_id %>"><%= b.kenteken %></a><% } else { %><%= b.kenteken %><% } %> · <%= b.merk %> <%= b.model || "" %><%= b.vestiging ? " · " + b.vestiging : "" %></dd>
         <dt>Datum</dt><dd><%= h.formatDate(b.datum) %></dd>
         <dt>Bedrag</dt><dd><%= h.euro(b.bedrag) || "onbekend" %></dd>
         <dt>Omschrijving</dt><dd><%= b.omschrijving || "–" %></dd>
@@ -25,7 +25,7 @@
     <% } %>
   </div>
   <div>
-    <% if (can("beheerder") && b.status === "nieuw") { %>
+    <% if (magBoetes && b.status === "nieuw") { %>
     <div class="card">
       <div class="lbl"><span class="msr">edit</span>Controleren</div>
       <form method="POST" action="/boetes/<%= b.id %>/bestuurder" class="form" style="grid-template-columns:1fr;margin-top:10px">
@@ -46,7 +46,7 @@
         </form>
       </details>
     </div>
-    <% } else if (can("beheerder") && b.status === "uitzondering_gevraagd") { %>
+    <% } else if (magBoetes && b.status === "uitzondering_gevraagd") { %>
     <div class="card">
       <div class="lbl"><span class="msr">gavel</span>Uitzondering beoordelen</div>
       <p style="margin-top:8px"><strong><%= b.gevraagd_door_naam || "Een beheerder" %></strong> vraagt om deze boete niet door te belasten: <em><%= b.uitzondering_reden %></em></p>
@@ -61,7 +61,7 @@
     <div class="card"><div class="lbl"><span class="msr">check_circle</span>Afgehandeld</div><p style="margin-top:8px">Deze boete is doorbelast. HR verwerkt de inhouding in het salaris.</p></div>
     <% } else if (b.status === "niet_doorbelast") { %>
     <div class="card"><div class="lbl"><span class="msr">info</span>Uitzondering</div><p style="margin-top:8px">Deze boete wordt bij uitzondering niet doorbelast. Het besluit staat in het logboek.</p></div>
-    <% } else if (!can("beheerder")) { %>
+    <% } else if (!magBoetes) { %>
     <div class="card"><p class="muted">Een beheerder handelt deze boete af. Volgens het personeelsbeleid worden boetes doorbelast.</p></div>
     <% } %>
   </div>

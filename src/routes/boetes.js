@@ -20,7 +20,7 @@ async function laad(id) {
     WHERE b.id = $1`, [id]);
 }
 
-router.get("/", auth.requireRole("directie"), async (req, res) => {
+router.get("/", auth.requireHr, async (req, res) => {
   const status = LABELS.boete[req.query.status] ? req.query.status : null;
   const rows = await db.all(`SELECT b.*, v.kenteken, v.merk, v.model, ve.naam AS vestiging, bs.naam AS bestuurder, u.name AS bevestigd_door_naam
     FROM boetes b JOIN voertuigen v ON v.id = b.voertuig_id LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id LEFT JOIN bestuurders bs ON bs.id = b.bestuurder_id LEFT JOIN users u ON u.id = b.bevestigd_door
@@ -29,11 +29,11 @@ router.get("/", auth.requireRole("directie"), async (req, res) => {
   res.render("boetes/index", { title: "Boetes", rows, status, counts, LABELS });
 });
 
-router.get("/nieuw", auth.requireRole("beheerder"), async (req, res) => {
+router.get("/nieuw", auth.requireHr, async (req, res) => {
   const voertuigen = await db.all("SELECT v.id, v.kenteken, v.merk, v.model, b.naam AS bestuurder FROM voertuigen v LEFT JOIN toewijzingen t ON t.voertuig_id = v.id AND t.status = 'actief' LEFT JOIN bestuurders b ON b.id = t.bestuurder_id WHERE v.status <> 'besteld' ORDER BY v.kenteken NULLS LAST");
   res.render("boetes/form", { title: "Nieuwe boete", form: { voertuig_id: Number(req.query.voertuig) || null, datum: taken.nlNow().date }, voertuigen });
 });
-router.post("/", auth.requireRole("beheerder"), async (req, res) => {
+router.post("/", auth.requireHr, async (req, res) => {
   const f = { voertuig_id: Number(req.body.voertuig_id) || null, datum: cleanDate(req.body.datum), bedrag: cleanNumber(req.body.bedrag), omschrijving: clean(req.body.omschrijving) };
   const v = f.voertuig_id ? await db.one("SELECT * FROM voertuigen WHERE id = $1", [f.voertuig_id]) : null;
   if (!v || !f.datum) { res.flash("Kies een auto en vul de datum van de overtreding in.", "error"); return res.redirect("/boetes/nieuw"); }
@@ -50,13 +50,13 @@ router.get("/:id", async (req, res, next) => {
   const b = await laad(req.params.id);
   if (!b) return next();
   const own = req.bestuurder && b.bestuurder_id === req.bestuurder.id;
-  if (!own && !res.locals.can("directie")) return res.status(403).render("error", { title: "Geen toegang", message: "Deze boete is niet van jou." });
-  const bestuurders = res.locals.can("beheerder") ? await db.all("SELECT id, naam FROM bestuurders WHERE actief ORDER BY naam") : [];
+  if (!own && !req.isHr) return res.status(403).render("error", { title: "Geen toegang", message: "Deze boete is niet van jou." });
+  const bestuurders = req.isHr ? await db.all("SELECT id, naam FROM bestuurders WHERE actief ORDER BY naam") : [];
   const logboek = await db.all("SELECT l.*, u.name AS door FROM logboek l LEFT JOIN users u ON u.id = l.user_id WHERE l.soort = 'boete' AND l.voertuig_id = $1 AND l.created_at >= $2::date ORDER BY l.created_at DESC LIMIT 10", [b.voertuig_id, b.created_at.slice(0, 10)]);
   res.render("boetes/show", { title: `Boete · ${b.kenteken}`, b, bestuurders, logboek, LABELS });
 });
 
-router.post("/:id/bestuurder", auth.requireRole("beheerder"), async (req, res, next) => {
+router.post("/:id/bestuurder", auth.requireHr, async (req, res, next) => {
   const b = await laad(req.params.id);
   if (!b) return next();
   if (b.status !== "nieuw") { res.flash("De bestuurder kan alleen worden gewijzigd zolang de boete nog niet bevestigd is.", "error"); return res.redirect(`/boetes/${b.id}`); }
@@ -77,7 +77,7 @@ async function doorbelasten(b, user, tekst) {
   return hr;
 }
 
-router.post("/:id/bevestigen", auth.requireRole("beheerder"), async (req, res, next) => {
+router.post("/:id/bevestigen", auth.requireHr, async (req, res, next) => {
   const b = await laad(req.params.id);
   if (!b) return next();
   if (b.status !== "nieuw") { res.flash("Deze boete is al afgehandeld.", "error"); return res.redirect(`/boetes/${b.id}`); }
@@ -87,7 +87,7 @@ router.post("/:id/bevestigen", auth.requireRole("beheerder"), async (req, res, n
   res.redirect(`/boetes/${b.id}`);
 });
 
-router.post("/:id/uitzondering", auth.requireRole("beheerder"), async (req, res, next) => {
+router.post("/:id/uitzondering", auth.requireHr, async (req, res, next) => {
   const b = await laad(req.params.id);
   if (!b) return next();
   const reden = clean(req.body.reden);
@@ -101,7 +101,7 @@ router.post("/:id/uitzondering", auth.requireRole("beheerder"), async (req, res,
   res.redirect(`/boetes/${b.id}`);
 });
 
-router.post("/:id/uitzondering/:besluit", auth.requireRole("beheerder"), async (req, res, next) => {
+router.post("/:id/uitzondering/:besluit", auth.requireHr, async (req, res, next) => {
   const b = await laad(req.params.id);
   if (!b || !["goedkeuren", "afwijzen"].includes(req.params.besluit)) return next();
   if (b.status !== "uitzondering_gevraagd") { res.flash("Er ligt geen verzoek om een uitzondering.", "error"); return res.redirect(`/boetes/${b.id}`); }
