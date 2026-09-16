@@ -36,10 +36,10 @@
       </form>
     </div>
     <div class="card">
-      <div class="lbl"><span class="msr">gavel</span>Doorbelasten</div>
-      <p style="margin-top:8px">Conform het personeelsbeleid wordt de boete doorbelast aan <strong><%= b.bestuurder || "de bestuurder" %></strong>. Na je bevestiging krijgt HR een mail en verwerkt de inhouding; bestuurder en celdirecteur krijgen een kopie.</p>
-      <form method="POST" action="/boetes/<%= b.id %>/bevestigen" onsubmit="return confirm('Doorbelasten bevestigen? HR krijgt direct een mail.')"><button type="submit" class="btn primary" <%= b.bestuurder_id ? "" : "disabled" %>><span class="msr">check</span>Bevestigen: doorbelasten</button></form>
-      <details style="margin-top:14px"><summary class="small" style="cursor:pointer;color:var(--blauw)">Eén keer niet doorbelasten? Vraag een uitzondering</summary>
+      <div class="lbl"><span class="msr">gavel</span>In AFAS zetten</div>
+      <p style="margin-top:8px">De boete staat op naam van <strong><%= b.bestuurder || "de bestuurder" %></strong>. Zet hem in AFAS zodat hij via de loonstrook wordt ingehouden, en bevestig dat hier. De bestuurder krijgt dan een mail, de celdirecteur in kopie.</p>
+      <form method="POST" action="/boetes/<%= b.id %>/bevestigen" onsubmit="return confirm('Bevestigen dat deze boete in AFAS staat? De bestuurder krijgt een mail.')"><button type="submit" class="btn primary" <%= b.bestuurder_id ? "" : "disabled" %>><span class="msr">check</span>Staat in AFAS</button></form>
+      <details style="margin-top:14px"><summary class="small" style="cursor:pointer;color:var(--blauw)">Eén keer niet inhouden? Vraag een uitzondering</summary>
         <form method="POST" action="/boetes/<%= b.id %>/uitzondering" class="form" style="grid-template-columns:1fr;margin-top:8px">
           <label>Reden<textarea name="reden" required placeholder="Waarom deze keer niet? Een andere beheerder of de admin beslist, het besluit wordt gelogd."></textarea></label>
           <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn ghost small">Uitzondering vragen</button></div>
@@ -53,16 +53,16 @@
       <% if (b.uitzondering_gevraagd_door === currentUser.id && !can("admin")) { %><p class="muted small">Je kunt je eigen verzoek niet beoordelen. Een andere beheerder of de admin beslist.</p><% } else { %>
       <form method="POST" action="/boetes/<%= b.id %>/uitzondering/goedkeuren" class="form" style="grid-template-columns:1fr">
         <label>Toelichting <span class="hint">optioneel, komt in het logboek</span><input name="toelichting"></label>
-        <div class="actions"><button type="submit" class="btn primary"><span class="msr">check</span>Goedkeuren: niet doorbelasten</button><button type="submit" class="btn ghost" formaction="/boetes/<%= b.id %>/uitzondering/afwijzen"><span class="msr">close</span>Afwijzen: toch doorbelasten</button></div>
+        <div class="actions"><button type="submit" class="btn primary"><span class="msr">check</span>Goedkeuren: niet inhouden</button><button type="submit" class="btn ghost" formaction="/boetes/<%= b.id %>/uitzondering/afwijzen"><span class="msr">close</span>Afwijzen: toch doorbelasten</button></div>
       </form>
       <% } %>
     </div>
     <% } else if (b.status === "doorbelast") { %>
-    <div class="card"><div class="lbl"><span class="msr">check_circle</span>Afgehandeld</div><p style="margin-top:8px">Deze boete is doorbelast. HR verwerkt de inhouding in het salaris.</p></div>
+    <div class="card"><div class="lbl"><span class="msr">check_circle</span>Afgehandeld</div><p style="margin-top:8px">Deze boete staat in AFAS en wordt ingehouden via de loonstrook van de bestuurder.</p></div>
     <% } else if (b.status === "niet_doorbelast") { %>
     <div class="card"><div class="lbl"><span class="msr">info</span>Uitzondering</div><p style="margin-top:8px">Deze boete wordt bij uitzondering niet doorbelast. Het besluit staat in het logboek.</p></div>
     <% } else if (!magBoetes) { %>
-    <div class="card"><p class="muted">Een beheerder handelt deze boete af. Volgens het personeelsbeleid worden boetes doorbelast.</p></div>
+    <div class="card"><p class="muted">HR handelt deze boete af in AFAS. Volgens het personeelsbeleid worden boetes ingehouden via de loonstrook.</p></div>
     <% } %>
   </div>
 </div>

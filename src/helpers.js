@@ -105,7 +105,7 @@ const LABELS = {
   contact: { garage: "Garage", verzekeraar: "Verzekeraar", tankpas: "Tankpas", bestickering: "Bestickering", wasstraat: "Wasstraat", celdirecteur: "Celdirecteur", wagenparkbeheer: "Wagenparkbeheer", overig: "Overig" },
   taak: { apk: "APK", apk_rapport: "APK-rapport", banden: "Bandenwissel", contract: "Contract", rijbewijs: "Rijbewijs", uitleen: "Leenauto", leenverzoek: "Leenverzoek", incident: "Incident", instroom: "Instroom", handmatig: "Taak" },
   document: { apk_rapport: "APK-rapport", kentekenbewijs: "Kentekenbewijs", verzekering: "Verzekering", fotos: "Foto's", vrijwaring: "Vrijwaringsbewijs", boete: "Boete", overig: "Overig" },
-  boete: { nieuw: "Te bevestigen", doorbelast: "Doorbelast", uitzondering_gevraagd: "Uitzondering gevraagd", niet_doorbelast: "Niet doorbelast" },
+  boete: { nieuw: "Nog niet in AFAS", doorbelast: "In AFAS, via de loonstrook", uitzondering_gevraagd: "Uitzondering gevraagd", niet_doorbelast: "Niet ingehouden, uitzondering" },
   incident_soort: { schade: "Schade", ongeval: "Ongeval", diefstal: "Diefstal of inbraak", pech: "Pech", overig: "Overig" },
   incident_status: { gemeld: "Gemeld", in_behandeling: "In behandeling", afgerond: "Afgerond" },
   leenverzoek: { open: "Wacht op beheerder", goedgekeurd: "Goedgekeurd", afgewezen: "Afgewezen" },

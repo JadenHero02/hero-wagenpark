@@ -1,6 +1,6 @@
 <%- include("../partials/header") %>
 <div class="page-head">
-  <div><div class="eyebrow">Boetes</div><h1>Boetes en eigen risico</h1><div class="sub"><%= counts.nieuw %> te bevestigen · <%= counts.uitzondering %> uitzondering gevraagd · <%= h.euro(counts.doorbelast_jaar) %> doorbelast dit jaar</div></div>
+  <div><div class="eyebrow">Boetes</div><h1>Boetes en eigen risico</h1><div class="sub"><%= counts.nieuw %> nog niet in AFAS · <%= counts.uitzondering %> uitzondering gevraagd · <%= h.euro(counts.doorbelast_jaar) %> via de loonstrook dit jaar</div></div>
   <% if (magBoetes) { %><div class="actions"><a href="/boetes/nieuw" class="btn primary"><span class="msr">add</span>Boete invoeren</a></div><% } %>
 </div>
 <div class="filters">
@@ -27,5 +27,5 @@
     </tbody>
   </table>
 </div>
-<p class="muted small" style="margin-top:12px">Personeelsbeleid: boetes en eigen risico worden altijd doorbelast. De beheerder bevestigt, HR verwerkt de inhouding. Eén keer niet doorbelasten kan alleen na goedkeuring, met reden, gelogd.</p>
+<p class="muted small" style="margin-top:12px">Personeelsbeleid: boetes en eigen risico worden altijd ingehouden via de loonstrook. HR voert de boete hier in, de app zoekt op wie er reed, HR zet hem in AFAS en bevestigt dat hier. Eén keer niet inhouden kan alleen na goedkeuring, met reden, gelogd.</p>
 <%- include("../partials/footer") %>

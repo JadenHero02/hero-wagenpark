@@ -1,5 +1,6 @@
 // src/routes/boetes.js
-// Boetes: invoeren (de bestuurder van dat moment komt er automatisch bij), doorbelasten als standaard.
+// Boetes: het register van de app. HR voert de boete in, de app zoekt de bestuurder van dat moment op, HR zet hem in AFAS
+// (loonstrook) en bevestigt dat hier. De app stuurt geen mail naar HR; wel naar de bestuurder.
 // De beheerder bevestigt; HR krijgt een mail en verwerkt de inhouding; bestuurder en celdirecteur in kopie.
 // Eén keer niet doorbelasten kan alleen na een verzoek met reden, goedgekeurd door een andere beheerder of de admin. Alles gelogd.
 
@@ -42,7 +43,7 @@ router.post("/", auth.requireHr, async (req, res) => {
     ORDER BY t.soort = 'uitleen' DESC, t.van DESC NULLS LAST LIMIT 1`, [v.id, f.datum]);
   const id = await db.insert("INSERT INTO boetes (voertuig_id, bestuurder_id, datum, bedrag, omschrijving) VALUES ($1,$2,$3,$4,$5)", [v.id, wie ? wie.id : null, f.datum, f.bedrag, f.omschrijving]);
   await log({ voertuig_id: v.id, bestuurder_id: wie ? wie.id : null }, req.user.id, `Boete ingevoerd door ${req.user.name}: ${euro(f.bedrag) || "bedrag onbekend"} op ${formatDate(f.datum)}${wie ? ", bestuurder " + wie.naam : ", geen bestuurder bekend"}`);
-  res.flash(wie ? `Boete ingevoerd. Bestuurder op ${formatDate(f.datum)}: ${wie.naam}. Bevestig het doorbelasten.` : "Boete ingevoerd, maar er reed niemand bekend op die datum. Kies zelf de bestuurder.");
+  res.flash(wie ? `Boete ingevoerd. Bestuurder op ${formatDate(f.datum)}: ${wie.naam}. Zet hem in AFAS en bevestig dat hier.` : "Boete ingevoerd, maar er reed niemand bekend op die datum. Kies zelf de bestuurder.");
   res.redirect(`/boetes/${id}`);
 });
 
@@ -71,10 +72,11 @@ router.post("/:id/bestuurder", auth.requireHr, async (req, res, next) => {
 async function doorbelasten(b, user, tekst) {
   await db.run("UPDATE boetes SET status = 'doorbelast', bevestigd_door = $2, bevestigd_op = local_now(), hr_gemaild_op = local_now() WHERE id = $1", [b.id, user.id]);
   await log(b, user.id, tekst);
-  const hr = await mail.hr();
-  const cc = [...mail.bestuurderEmail({ email: b.bestuurder_email }), ...(await mail.celdirecteur(b.vestiging_id))];
-  await mail.send({ to: hr, cc, subject: `Boete doorbelasten: ${b.bestuurder || "bestuurder onbekend"}, ${euro(b.bedrag)}`, soort: "boete", ref: `boete_doorbelast:${b.id}`, html: mail.layout({ titel: "Boete doorbelasten aan de medewerker", intro: "Conform het personeelsbeleid worden boetes en eigen risico doorbelast. De beheerder heeft dit bevestigd; HR verwerkt de inhouding in het salaris.", regels: [["Bestuurder", b.bestuurder || "onbekend"], ["Auto", taken.autoNaam(b)], ["Datum overtreding", formatDate(b.datum)], ["Bedrag", euro(b.bedrag) || "onbekend"], ["Omschrijving", b.omschrijving || "–"], ["Bevestigd door", user.name]], slot: hr.length ? undefined : "Let op: er is nog geen HR-adres ingesteld in de app." }) });
-  return hr;
+  // HR zet de boete zelf in AFAS; de app mailt alleen de bestuurder, met de celdirecteur in kopie
+  const to = mail.bestuurderEmail({ email: b.bestuurder_email });
+  const cc = await mail.celdirecteur(b.vestiging_id);
+  await mail.send({ to, cc, subject: `Boete op je naam: ${euro(b.bedrag) || "bedrag onbekend"}, ${formatDate(b.datum)}`, soort: "boete", ref: `boete_doorbelast:${b.id}`, html: mail.layout({ titel: "Boete via je loonstrook", intro: "Er is een boete op jouw naam geregistreerd. Volgens het personeelsbeleid wordt die via AFAS ingehouden op je loonstrook. Vragen? Neem contact op met HR of je celdirecteur.", regels: [["Auto", taken.autoNaam(b)], ["Datum overtreding", formatDate(b.datum)], ["Bedrag", euro(b.bedrag) || "onbekend"], ["Omschrijving", b.omschrijving || "–"], ["Geregistreerd door", user.name]] }) });
+  return to;
 }
 
 router.post("/:id/bevestigen", auth.requireHr, async (req, res, next) => {
@@ -82,8 +84,8 @@ router.post("/:id/bevestigen", auth.requireHr, async (req, res, next) => {
   if (!b) return next();
   if (b.status !== "nieuw") { res.flash("Deze boete is al afgehandeld.", "error"); return res.redirect(`/boetes/${b.id}`); }
   if (!b.bestuurder_id) { res.flash("Kies eerst de bestuurder.", "error"); return res.redirect(`/boetes/${b.id}`); }
-  const hr = await doorbelasten(b, req.user, `Doorbelasten bevestigd door ${req.user.name}: ${euro(b.bedrag)} aan ${b.bestuurder}`);
-  res.flash(hr.length ? `Bevestigd. HR (${hr.join(", ")}) is gemaild; bestuurder en celdirecteur in kopie.` : "Bevestigd. Er is nog geen HR-adres ingesteld: zet dat bij Instellingen, de mail staat in het maillog.");
+  const to = await doorbelasten(b, req.user, `In AFAS gezet door ${req.user.name}: ${euro(b.bedrag)} op naam van ${b.bestuurder}`);
+  res.flash(to.length ? "Geregistreerd als in AFAS. De bestuurder is gemaild, celdirecteur in kopie." : "Geregistreerd als in AFAS. De bestuurder heeft geen e-mailadres, dus geen mail.");
   res.redirect(`/boetes/${b.id}`);
 });
 
@@ -110,11 +112,11 @@ router.post("/:id/uitzondering/:besluit", auth.requireHr, async (req, res, next)
   if (req.params.besluit === "goedkeuren") {
     await db.run("UPDATE boetes SET status = 'niet_doorbelast', bevestigd_door = $2, bevestigd_op = local_now(), hr_gemaild_op = local_now() WHERE id = $1", [b.id, req.user.id]);
     await log(b, req.user.id, `Uitzondering goedgekeurd door ${req.user.name}: boete van ${euro(b.bedrag)} wordt niet doorbelast${toelichting ? " (" + toelichting + ")" : ""}`);
-    await mail.send({ to: await mail.hr(), cc: [...mail.bestuurderEmail({ email: b.bestuurder_email }), b.gevraagd_door_naam ? null : null].filter(Boolean), subject: `Boete niet doorbelasten: ${b.bestuurder || "onbekend"}, ${euro(b.bedrag)}`, soort: "boete", ref: `boete_besluit:${b.id}`, html: mail.layout({ titel: "Boete wordt niet doorbelast", intro: "Bij uitzondering, goedgekeurd en gelogd.", regels: [["Bestuurder", b.bestuurder || "onbekend"], ["Auto", taken.autoNaam(b)], ["Datum", formatDate(b.datum)], ["Bedrag", euro(b.bedrag) || "onbekend"], ["Reden", b.uitzondering_reden || "–"], ["Goedgekeurd door", req.user.name]] }) });
-    res.flash("Uitzondering goedgekeurd: de boete wordt niet doorbelast. HR en de bestuurder zijn geïnformeerd.");
+    await mail.send({ to: mail.bestuurderEmail({ email: b.bestuurder_email }), subject: `Boete niet ingehouden: ${b.bestuurder || "onbekend"}, ${euro(b.bedrag)}`, soort: "boete", ref: `boete_besluit:${b.id}`, html: mail.layout({ titel: "Boete wordt niet doorbelast", intro: "Bij uitzondering, goedgekeurd en gelogd.", regels: [["Bestuurder", b.bestuurder || "onbekend"], ["Auto", taken.autoNaam(b)], ["Datum", formatDate(b.datum)], ["Bedrag", euro(b.bedrag) || "onbekend"], ["Reden", b.uitzondering_reden || "–"], ["Goedgekeurd door", req.user.name]] }) });
+    res.flash("Uitzondering goedgekeurd: de boete wordt niet ingehouden. De bestuurder is geïnformeerd; zet hem niet in AFAS.");
   } else {
     await doorbelasten(b, req.user, `Uitzondering afgewezen door ${req.user.name}${toelichting ? " (" + toelichting + ")" : ""}; boete wordt doorbelast`);
-    res.flash("Uitzondering afgewezen: de boete wordt doorbelast. HR is gemaild.");
+    res.flash("Uitzondering afgewezen: de boete gaat via AFAS. De bestuurder is gemaild.");
   }
   res.redirect(`/boetes/${b.id}`);
 });

@@ -97,7 +97,7 @@
       <% boetes.forEach(b => { %><div><span><a href="/boetes/<%= b.id %>">Boete <%= h.euro(b.bedrag) || "" %></a> · <%= h.formatDate(b.datum) %><% if (b.omschrijving) { %> · <span class="muted small"><%= b.omschrijving %></span><% } %></span><span class="v"><span class="pill <%= b.status === 'doorbelast' ? 'warn' : b.status === 'niet_doorbelast' ? 'grey' : '' %>"><%= b.status === 'doorbelast' ? "doorbelast" : b.status === 'niet_doorbelast' ? "niet doorbelast" : "in behandeling" %></span></span></div><% }) %>
       <% incidenten.forEach(i => { %><div><span><a href="/incidenten/<%= i.id %>"><%= h.label("incident_soort", i.soort) %></a> · <%= h.formatDate(i.datum) %></span><span class="v"><span class="pill"><%= h.label("incident_status", i.status) %></span></span></div><% }) %>
     </div>
-    <p class="muted small" style="margin:8px 0 0">Boetes en eigen risico worden volgens het personeelsbeleid doorbelast via het salaris.</p>
+    <p class="muted small" style="margin:8px 0 0">Boetes en eigen risico worden volgens het personeelsbeleid via AFAS ingehouden op je loonstrook.</p>
   </div>
 <% } %>
 

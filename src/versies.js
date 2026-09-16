@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.33", datum: "2026-09-16", punten: [
+    { soort: "verbeterd", tekst: "boetes lopen via AFAS: HR voert de boete in de app in, de app zoekt op wie er reed, HR zet hem in AFAS en bevestigt dat met \"Staat in AFAS\". De app mailt HR niet meer, wel de bestuurder met de celdirecteur in kopie. Statussen heten nu \"Nog niet in AFAS\" en \"In AFAS, via de loonstrook\"", commit: "" },
+  ] },
   { versie: "0.2.32", datum: "2026-09-16", punten: [
     { soort: "nieuw", tekst: "de app is op het beginscherm van je telefoon te zetten: met een Hero-icoon Wagenpark, en hij opent dan schermvullend zonder adresbalk. In Mijn auto legt een blauwe kaart in drie stappen uit hoe (iPhone en Android); met Later verdwijnt hij een week. Dit is ook de basis voor de iOS-app", commit: "" },
   ] },
