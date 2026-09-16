@@ -27,7 +27,7 @@
 <details class="card" style="margin-bottom:16px;padding:0" <%= totaal <= 3 ? "open" : "" %>>
   <summary style="list-style:none;cursor:pointer;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px"><h2><span class="msr" style="color:var(--oranje)">shield_person</span> Wat mag welke rol</h2><span class="muted small">klik om te <span class="matrix-open">openen</span><span class="matrix-dicht">sluiten</span> · rechten worden op de server afgedwongen</span></summary>
   <table class="list matrix">
-    <thead><tr><th></th><th><span class="pill bad">Admin</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">Annemiek</div></th><th><span class="pill">Directie</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0"><%= groepen[1].rijen.length %> personen</div></th><th><span class="pill warn">Beheerder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">celdirecteuren</div></th><th><span class="pill grey">Bestuurder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">iedereen met een auto</div></th></tr></thead>
+    <thead><tr><th></th><th><span class="pill rol-admin">Admin</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">Annemiek</div></th><th><span class="pill rol-directie">Directie</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0"><%= groepen[1].rijen.length %> personen</div></th><th><span class="pill rol-beheerder">Beheerder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">celdirecteuren</div></th><th><span class="pill rol-bestuurder">Bestuurder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">iedereen met een auto</div></th></tr></thead>
     <tbody>
     <% MATRIX.forEach(r => { if (r[1] === null) { %><tr class="groep"><td colspan="5"><%= r[0] %></td></tr><% } else { %><tr><td><%= r[0] %></td><td><%- r[1] %></td><td><%- r[2] %></td><td><%- r[3] %></td><td><%- r[4] %></td></tr><% } }) %>
     </tbody>
@@ -49,7 +49,7 @@
 <% const beschrijving = { admin: "Alles, plus instellingen, rollen, maillog en de Excel-import.", directie: "Ziet alles, exporteert, wijzigt niets.", beheerder: "Auto's, toewijzen en innemen, checklists, taken, leenverzoeken en rapporten goedkeuren, boetes bevestigen, documenten.", bestuurder: "Alleen de eigen auto in Mijn auto." }; %>
 <% groepen.forEach(g => { %>
 <div class="card" style="padding:0;margin-bottom:16px">
-  <div style="padding:14px 18px 6px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h2><span class="pill <%= g.rol === 'admin' ? 'bad' : g.rol === 'directie' ? '' : g.rol === 'beheerder' ? 'warn' : 'grey' %>" style="font-size:12px;margin-right:8px"><%= g.label %></span><%= g.rijen.length %></h2><span class="muted small"><%= beschrijving[g.rol] %></span></div>
+  <div style="padding:14px 18px 6px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h2><span class="pill rol-<%= g.rol %>" style="font-size:12px;margin-right:8px"><%= g.label %></span><%= g.rijen.length %></h2><span class="muted small"><%= beschrijving[g.rol] %></span></div>
   <table class="list">
     <thead><tr><th>Naam</th><th>Functie</th><th>Vestiging</th><th>Auto</th><th>Ingelogd</th><th></th></tr></thead>
     <tbody>

@@ -91,6 +91,12 @@ p { margin: 0 0 10px; }
 .versie-punt { display: flex; gap: 12px; align-items: flex-start; padding: 7px 0; font-size: 14px; line-height: 1.5; }
 .versie-punt .pill { flex-shrink: 0; min-width: 84px; text-align: center; margin-top: 1px; }
 .pill.blue-soft { background: var(--blauw-hair); color: var(--blauw-bold); }
+/* Rollen: admin oranje, directie donkerblauw, beheerder lichtblauw, bestuurder groen; "wacht" = nog niet ingelogd (licht, met rand) */
+.pill.rol-admin { background: var(--oranje); color: #ffffff; } .pill.rol-admin.wacht { background: transparent; color: var(--oranje-bold); border: 1px solid var(--oranje); }
+.pill.rol-directie { background: var(--hero-blauw); color: #ffffff; } .pill.rol-directie.wacht { background: transparent; color: var(--blauw); border: 1px solid var(--blauw); }
+.pill.rol-beheerder { background: var(--blauw-hair); color: var(--blauw-bold); } .pill.rol-beheerder.wacht { background: transparent; color: var(--blauw-bold); border: 1px solid var(--blauw-soft); }
+.pill.rol-bestuurder { background: var(--groen-soft); color: var(--groen-text); } .pill.rol-bestuurder.wacht { background: transparent; color: var(--groen-text); border: 1px solid var(--groen); }
+.pill.wacht { padding: 2px 8px; }
 .main { flex: 1; padding: 22px 32px 40px; min-width: 0; }
 
 /* Koppen en knoppen */

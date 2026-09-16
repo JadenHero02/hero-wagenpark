@@ -20,7 +20,7 @@
       <div class="lbl"><span class="msr">badge</span>Gegevens</div>
       <dl class="kv" style="margin-top:8px">
         <dt>Rijbewijs geldig tot</dt><dd><%= b.rijbewijs_geldig_tot ? h.formatDate(b.rijbewijs_geldig_tot) : "onbekend" %></dd>
-        <dt>Rol</dt><dd><%= b.role ? h.label("role", b.role) + (b.last_login_at ? ", laatst ingelogd " + h.formatDate(b.last_login_at) : ", account aangemaakt maar nog niet ingelogd") : (b.rol_verwacht ? h.label("role", b.rol_verwacht) + " zodra hij inlogt, nog niet ingelogd" : "geen e-mailadres, kan niet inloggen") %></dd>
+        <dt>Rol</dt><dd><% if (b.role) { %><span class="pill rol-<%= b.role %>"><%= h.label("role", b.role) %></span> <span class="muted small"><%= b.last_login_at ? "laatst ingelogd " + h.formatDate(b.last_login_at) : "account aangemaakt, nog niet ingelogd" %></span><% } else if (b.rol_verwacht) { %><span class="pill rol-<%= b.rol_verwacht %> wacht"><%= h.label("role", b.rol_verwacht) %></span> <span class="muted small">nog niet ingelogd</span><% } else { %><span class="muted small">geen e-mailadres, kan niet inloggen</span><% } %></dd>
         <% if (b.opmerking) { %><dt>Opmerking</dt><dd><%= b.opmerking %></dd><% } %>
       </dl>
     </div>

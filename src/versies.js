@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.30", datum: "2026-09-16", punten: [
+    { soort: "verbeterd", tekst: "elke rol heeft nu overal dezelfde kleur: admin oranje, directie donkerblauw, beheerder lichtblauw, bestuurder groen. Wie nog niet is ingelogd krijgt dezelfde kleur als rand in plaats van als vlak. Op Bestuurders, de bestuurderspagina en Rollen", commit: "" },
+  ] },
   { versie: "0.2.29", datum: "2026-09-16", punten: [
     { soort: "verbeterd", tekst: "kolom Rol op de pagina Bestuurders laat nu voor iedereen zien wat hij is of gaat krijgen: gekleurd met de datum van de laatste login als het account bestaat, grijs met \"nog niet ingelogd\" als iemand nog nooit heeft ingelogd, en een melding als er geen e-mailadres is. Zelfde op de bestuurderspagina", commit: "" },
   ] },
