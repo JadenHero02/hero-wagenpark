@@ -196,6 +196,11 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .rdw-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 28px; }
 .rdw-kop { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--grijs); padding-bottom: 6px; margin-bottom: 8px; border-bottom: 1px solid var(--grijs-thin); }
 .kv.rdw-kv { grid-template-columns: 130px 1fr; gap: 5px 12px; font-size: 13.5px; } .kv.rdw-kv dd { font-weight: 600; color: var(--blauw-black); }
+/* APK-pagina: drie grote knoppen naar de garage (bellen, website, route), met een regeltje eronder */
+.apk-knoppen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.apk-knoppen .btn { flex-direction: column; justify-content: center; gap: 2px; padding: 12px 8px; min-height: 64px; text-align: center; }
+.apk-knoppen .btn .msr { font-size: 24px; }
+.apk-knoppen .apk-sub { font-size: 11px; font-weight: 500; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .milieu-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 13.5px; }
 .kv dt { color: var(--grijs); } .kv dd { margin: 0; }

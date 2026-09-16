@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.28", datum: "2026-09-16", punten: [
+    { soort: "verbeterd", tekst: "APK-pagina in twee stappen: eerst de garage voor dit merk met drie grote knoppen (bellen, website, route naar het adres), daarna de datum van de afspraak in de app zetten. Een bestaande afspraak staat bovenaan, met na de keuring de knop om het rapport te uploaden", commit: "" },
+  ] },
   { versie: "0.2.27", datum: "2026-09-15", punten: [
     { soort: "verbeterd", tekst: "zoeken in Wagenpark en Bestuurders filtert nu terwijl je typt: na een paar letters zie je alleen de regels die erbij horen, met een teller. Kentekens vind je ook zonder streepjes. Enter of Zoeken doet nog steeds de volledige zoekopdracht, bijvoorbeeld op tankpasnummer", commit: "" },
   ] },
