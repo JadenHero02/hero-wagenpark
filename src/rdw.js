@@ -13,7 +13,24 @@ const { formatDate } = require("./helpers");
 
 const BASIS = "https://opendata.rdw.nl/resource";
 const strip = (k) => String(k || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-const titel = (s) => String(s || "").toLowerCase().replace(/(^|[\s-])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\bBmw\b/, "BMW").replace(/\bVw\b/, "VW").replace(/\bMg\b/, "MG");
+const titel = (s) => String(s || "").toLowerCase().replace(/(^|[\s-])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\bBmw\b/, "BMW").replace(/\bVw\b/, "VW").replace(/\bMg\b/, "MG").replace(/\bByd\b/, "BYD");
+
+// De RDW schrijft de handelsbenaming in hoofdletters ("I5 EDRIVE40", "Q4 45 E-TRON"). Dit maakt er de schrijfwijze van de fabrikant van.
+const VAST = { "e-tron": "e-tron", etron: "e-tron", "e-tech": "E-Tech", ehybrid: "eHybrid", phev: "PHEV", dsg: "DSG", tdi: "TDI", tsi: "TSI", tfsi: "TFSI", awd: "AWD", rwd: "RWD", suv: "SUV", gti: "GTI", gte: "GTE", amg: "AMG", av: "Avant", sb: "Sportback", "v-klasse": "V-Klasse", "e-klasse": "E-Klasse", "c-klasse": "C-Klasse", "a-klasse": "A-Klasse", "b-klasse": "B-Klasse" };
+function modelNaam(s, merk = "") {
+  const woorden = String(s || "").toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const m = String(merk || "").toLowerCase();
+  if (woorden.length > 1 && woorden[0] === m && woorden.slice(1).some((w) => /[a-z]/.test(w))) woorden.shift(); // "BYD SEALION 7" -> "Sealion 7", maar "POLESTAR 2" blijft "Polestar 2"
+  return woorden.map((w) => {
+    if (VAST[w]) return VAST[w];
+    let r = w.match(/^([ex])drive(\d*)([a-z]?)$/); if (r) return `${r[1]}Drive${r[2]}${r[3]}`;                 // eDrive40, xDrive45e
+    if (/^ix?\d+[a-z]*$/.test(w)) return w.replace(/^i(x)?/, (a, x) => "i" + (x ? "X" : ""));                  // i4, i5, iX3
+    if (/^\d+[a-z]{1,2}$/.test(w)) return w;                                                                    // 530e, 218i, 40
+    if (/^[a-z]{1,3}\d+[a-z+]*$/.test(w)) return w.toUpperCase().replace(/([A-Z]+)(\d+)([A-Z]*)$/, (a, b, c, d) => b + c + d.toLowerCase()); // XC40, EQA, M50, GLC, X5
+    if (/^[a-z]{1,3}$/.test(w) && !["one", "van", "de"].includes(w)) return w.toUpperCase();                    // EQA, GLC, RS
+    return w.replace(/(^|-)([a-z])/g, (a, b, c) => b + c.toUpperCase());                                         // Clio, Range Rover, Model 3
+  }).join(" ");
+}
 const datum = (s) => (s && /^\d{8}$/.test(s) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}` : null);
 
 async function get(dataset, params) {
@@ -99,7 +116,7 @@ async function opvragen(kenteken) {
   if (!v) return null;
   const toelating = datum(v.datum_eerste_toelating);
   return {
-    kenteken: k, merk: titel(v.merk), model: titel(v.handelsbenaming), voertuigsoort: v.voertuigsoort || null,
+    kenteken: k, merk: titel(v.merk), model: modelNaam(v.handelsbenaming, v.merk), voertuigsoort: v.voertuigsoort || null,
     bouwjaar: toelating ? toelating.slice(0, 7) : null, eerste_toelating: toelating,
     apk_vervaldatum: datum(v.vervaldatum_apk), milieu: milieuVan(brandstof), brandstof: brandstof.map((b) => b.brandstof_omschrijving).filter(Boolean).join(" + ") || null,
     kleur: v.eerste_kleur && v.eerste_kleur !== "Niet geregistreerd" ? titel(v.eerste_kleur) : null,
@@ -160,4 +177,4 @@ async function alles(userId = null) {
   return uitkomst;
 }
 
-module.exports = { opvragen, bijwerken, alles, strip, terugroepacties, apkKeuringen };
+module.exports = { opvragen, bijwerken, alles, strip, terugroepacties, apkKeuringen, modelNaam };
