@@ -5,6 +5,8 @@
   const som = (rows) => rows.reduce((s, m) => s + Number(m.n), 0) || 1;
   const totN = som(totaal), bestN = besteld.length ? som(besteld) : 0;
   const pct = (n, t) => Math.round(Number(n) * 100 / (t || 1));
+  // Percentages van de verdeling tellen samen op tot 100: naar beneden afronden en de grootste resten een punt erbij geven
+  const verdeling = (() => { const rij = totaal.map(m => { const x = Number(m.n) * 100 / (totN || 1); return { key: m.milieu, vloer: Math.floor(x), rest: x - Math.floor(x) }; }); let over = 100 - rij.reduce((s, r) => s + r.vloer, 0); [...rij].sort((a, b) => b.rest - a.rest).forEach(r => { if (over > 0 && totN) { r.vloer++; over--; } }); return Object.fromEntries(rij.map(r => [r.key, r.vloer])); })();
   const elek = totaal.filter(m => m.milieu === "elektrisch" || m.milieu === "hybride").reduce((s, m) => s + Number(m.n), 0);
 %>
 <div class="page-head">
@@ -23,7 +25,7 @@
     <div class="card-head"><h2><span class="msr" style="color:var(--groen)">eco</span> Hele wagenpark</h2><span class="muted small"><%= totN %> auto's</span></div>
     <div class="milieu-balk"><% totaal.forEach(m => { %><span style="width:<%= m.n * 100 / totN %>%;background:<%= kleur[m.milieu] || kleur.onbekend %>" title="<%= naam(m.milieu) %> <%= m.n %>"></span><% }) %></div>
     <div class="rows">
-      <% totaal.forEach(m => { %><div><span class="k"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:<%= kleur[m.milieu] || kleur.onbekend %>;margin-right:8px;vertical-align:-1px"></i><%= naam(m.milieu) %></span><span class="v"><strong><%= pct(m.n, totN) %>%</strong> <span class="muted small">(<%= m.n %>)</span></span></div><% }) %>
+      <% totaal.forEach(m => { %><div><span class="k"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:<%= kleur[m.milieu] || kleur.onbekend %>;margin-right:8px;vertical-align:-1px"></i><%= naam(m.milieu) %></span><span class="v"><strong><%= verdeling[m.milieu] %>%</strong> <span class="muted small">(<%= m.n %>)</span></span></div><% }) %>
     </div>
   </div>
   <div class="card">
