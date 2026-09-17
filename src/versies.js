@@ -4,6 +4,10 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.36", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "de bandenwisseltaak heeft de wisseldatum zelf als deadline (1 oktober en 1 april) in plaats van dertig dagen later, zodat er één datum bij de taak staat en hij rood wordt zodra de datum voorbij is", commit: "" },
+    { soort: "opgelost", tekst: "taaktitels tonen de auto zoals hij nu heet: bestaande open taken zijn bijgewerkt na het gelijktrekken van de modelnamen", commit: "" },
+  ] },
   { versie: "0.2.35", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "modelnamen zoals de fabrikant ze schrijft: de RDW levert alles in hoofdletters (\"530E XDRIVE\"), de app maakt er nu \"530e xDrive\", \"i5 eDrive40\", \"Q4 45 e-tron\" en \"V-Klasse\" van. Twaalf bestaande auto's zijn gelijkgetrokken, met een regel in het logboek", commit: "" },
     { soort: "opgelost", tekst: "de garage voor Mercedes-Benz werd niet gevonden zodra het merk met een streepje geschreven stond; de app zoekt nu op het eerste woord vóór een spatie of streepje", commit: "" },

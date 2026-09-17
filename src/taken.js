@@ -123,7 +123,7 @@ async function rondeRijbewijs(today) {
   }
 }
 
-// ---- Bandenwissel: vanaf twee weken voor de wisseldatum tot zes weken erna ----
+// ---- Bandenwissel: vanaf twee weken voor de wisseldatum tot zes weken erna; de wisseldatum is de deadline van de taak ----
 async function rondeBanden(today) {
   const jaar = today.slice(0, 4);
   for (const [seizoen, key, fallback, tekst] of [["winter", "bandenwissel_winter", "10-01", "winterbanden"], ["zomer", "bandenwissel_zomer", "04-01", "zomerbanden"]]) {
@@ -139,7 +139,7 @@ async function rondeBanden(today) {
       if (done && done.gewisseld) continue;
       const b = await bestuurderVan(v.id);
       const garage = await garageVoor(v.merk);
-      await maak({ voertuig_id: v.id, bestuurder_id: b ? b.id : null, soort: "banden", titel: `${tekst[0].toUpperCase() + tekst.slice(1)} laten monteren · ${autoNaam(v)}`, omschrijving: `Wisseldatum ${formatDate(datum)}. Vink af zodra het gebeurd is.`, deadline: addDays(datum, 30), voor: b ? "bestuurder" : "beheerder", sleutel: `banden:${v.id}:${sz}` });
+      await maak({ voertuig_id: v.id, bestuurder_id: b ? b.id : null, soort: "banden", titel: `${tekst[0].toUpperCase() + tekst.slice(1)} laten monteren · ${autoNaam(v)}`, omschrijving: `Maak een afspraak bij de garage en vink af zodra de ${tekst} erop zitten.`, deadline: datum, voor: b ? "bestuurder" : "beheerder", sleutel: `banden:${v.id}:${sz}` });
       const ref = `banden:${v.id}:${sz}`;
       if (b && !await mail.sentBefore("banden", ref)) await mail.send({ to: mail.bestuurderEmail(b), subject: `Tijd voor ${tekst}: ${v.kenteken}`, soort: "banden", ref, html: mail.layout({ titel: `Laat de ${tekst} monteren`, intro: `Het seizoen wisselt rond ${formatDate(datum)}. Maak een afspraak bij de garage en meld in de app dat de banden gewisseld zijn.`, regels: [["Auto", autoNaam(v)], ...(garage ? [["Garage", `${garage.naam}${garage.telefoon ? " · " + garage.telefoon : ""}`]] : [])], knop: { tekst: "Naar Mijn auto", url: `${base()}/mijn-auto` } }) });
     }
