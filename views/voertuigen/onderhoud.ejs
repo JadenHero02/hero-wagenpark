@@ -1,0 +1,108 @@
+<%- include("../partials/header") %>
+<div class="muted small" style="margin-bottom:10px"><a href="<%= mijn ? "/mijn-auto" : "/voertuigen/" + v.id %>"><%= mijn ? "Mijn auto" : (v.kenteken || v.merk) %></a> › Onderhoud</div>
+<%
+  // Zelfde opzet als de APK-pagina: eerst de garage bereiken, dan de datum in de app. Daarna "beurt gedaan" met de kilometerstand.
+  const tel = garage && garage.telefoon ? garage.telefoon.replace(/\s/g, "") : null;
+  const site = garage && garage.website ? (garage.website.startsWith("http") ? garage.website : "https://" + garage.website) : null;
+  const route = garage && garage.adres ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(garage.naam + ", " + garage.adres) : null;
+  const geweest = v.onderhoud_afspraak && h.daysUntil(v.onderhoud_afspraak) < 0;
+  const soortNu = v.onderhoud_afspraak_soort || (beurt ? beurt.soort : "klein");
+  const vandaag = new Date().toISOString().slice(0, 10);
+%>
+<div style="max-width:560px">
+  <div class="page-head" style="margin-bottom:14px">
+    <div><div class="eyebrow">Onderhoud</div><h1><span class="plate big"><%= v.kenteken || "besteld" %></span> <%= v.merk %> <%= v.model || "" %></h1>
+      <div class="sub"><% if (beurt) { %><span class="pill <%= beurt.dagen < 0 ? 'bad' : beurt.dagen <= 30 ? 'warn' : 'ok' %>"><%= beurt.naam %> rond <%= h.formatDate(beurt.datum) %></span> <span class="muted"><%= h.relativeDate(beurt.datum) %><%= beurt.via === "km" ? " · op kilometers" : "" %></span><% } else { %>nog geen schema mogelijk: bouwjaar onbekend<% } %></div>
+    </div>
+  </div>
+
+  <% if (beurt) { %><p class="muted small" style="margin:0 0 14px"><%= beurt.uitleg %><% if (beurt.combineerApk && !v.onderhoud_afspraak) { %> <strong style="color:var(--oranje-bold)">De APK vervalt op <%= h.formatDate(beurt.combineerApk) %>: combineer beide in één garagebezoek.</strong><% } %></p><% } %>
+
+  <% if (v.onderhoud_afspraak) { %>
+  <div class="card" style="border-left:5px solid var(--<%= geweest ? 'oranje' : 'groen' %>)">
+    <div class="lbl"><span class="msr"><%= geweest ? "build" : "event_available" %></span><%= h.label("beurt", v.onderhoud_afspraak_soort) %> staat op <%= h.formatDate(v.onderhoud_afspraak) %></div>
+    <% if (geweest) { %><p style="margin:8px 0 0">De afspraak is geweest. Meld hieronder dat de beurt is gedaan, met de kilometerstand van de garagebon.</p>
+    <% } else { %><p class="muted small" style="margin:6px 0 0">Na die dag vraagt de app of de beurt is gedaan. Andere datum? Zet hem hieronder opnieuw.</p><% } %>
+  </div>
+  <% } %>
+
+  <% if (geweest) { %>
+  <div class="card" style="<%= geweest ? 'border-left:5px solid var(--oranje)' : '' %>">
+    <div class="lbl"><span class="msr">task_alt</span><%= geweest ? "Beurt gedaan? Rond hem af" : "Beurt al gedaan? Leg hem vast" %></div>
+    <form method="POST" action="/voertuigen/<%= v.id %>/onderhoud/klaar" class="form" style="margin-top:8px">
+      <label>Soort<select name="soort"><option value="klein" <%= soortNu === "klein" ? "selected" : "" %>>Kleine beurt</option><option value="groot" <%= soortNu === "groot" ? "selected" : "" %>>Grote beurt</option></select></label>
+      <label>Datum<input type="date" name="datum" value="<%= v.onderhoud_afspraak && geweest ? v.onderhoud_afspraak : vandaag %>" max="<%= vandaag %>" required></label>
+      <label>Kilometerstand <span class="hint">van de garagebon; daarmee rekent de app ook met kilometers</span><input type="number" name="km" min="0" inputmode="numeric" placeholder="<%= beurt && beurt.km ? "laatst " + h.num(beurt.km.stand) : "bijv. 48250" %>"></label>
+      <label>Garage<input name="garage" value="<%= garage ? garage.naam : "" %>"></label>
+      <label class="full">Opmerking <span class="hint">wat er is gedaan of vervangen</span><input name="notitie"></label>
+      <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">check</span>Beurt gedaan</button></div>
+    </form>
+  </div>
+  <% } %>
+
+  <div class="card">
+    <div class="lbl"><span class="msr">garage</span>Stap 1 · Maak de afspraak bij de garage</div>
+    <% if (garage) { %>
+      <h3 style="margin-top:8px"><%= garage.naam %></h3>
+      <% if (garage.adres) { %><p class="muted" style="margin:2px 0 0"><%= garage.adres %></p><% } %>
+      <div class="apk-knoppen">
+        <% if (tel) { %><a href="tel:<%= tel %>" class="btn primary"><span class="msr">call</span>Bellen<span class="apk-sub"><%= garage.telefoon %></span></a><% } %>
+        <% if (site) { %><a href="<%= site %>" target="_blank" rel="noopener" class="btn"><span class="msr">language</span>Website<span class="apk-sub">afspraak online</span></a><% } %>
+        <% if (route) { %><a href="<%= route %>" target="_blank" rel="noopener" class="btn"><span class="msr">navigation</span>Route<span class="apk-sub">navigatie openen</span></a><% } %>
+      </div>
+      <% if (!tel && !site && !route) { %><p class="muted small" style="margin-top:8px">Geen telefoonnummer, website of adres bekend. Bel wagenparkbeheer.</p><% } %>
+      <% if (garage.opmerking) { %><p class="muted small" style="margin:10px 0 0"><%= garage.opmerking %></p><% } %>
+    <% } else { %><p class="muted" style="margin-top:8px">Geen garage voor <%= v.merk %> in de contacten. Bel wagenparkbeheer, die weet waar deze auto onderhouden wordt.</p><% } %>
+  </div>
+
+  <div class="card">
+    <div class="lbl"><span class="msr">event</span>Stap 2 · Zet de datum in de app</div>
+    <form method="POST" action="/voertuigen/<%= v.id %>/onderhoud" class="form" style="margin-top:8px">
+      <label>Soort<select name="soort"><option value="klein" <%= soortNu === "klein" ? "selected" : "" %>>Kleine beurt</option><option value="groot" <%= soortNu === "groot" ? "selected" : "" %>>Grote beurt</option></select></label>
+      <label>Datum van de afspraak<input type="date" name="afspraak" value="<%= v.onderhoud_afspraak || "" %>" required></label>
+      <div class="buttons full" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">event_available</span>Vastleggen</button><% if (v.onderhoud_afspraak && can("beheerder")) { %><button type="submit" name="wissen" value="1" class="btn ghost">Afspraak wissen</button><% } %></div>
+    </form>
+    <p class="muted small" style="margin:10px 0 0">Na die dag vraagt de app of de beurt is gedaan, met de kilometerstand. Daarmee loopt het schema vanzelf door.</p>
+  </div>
+
+  <% if (!geweest) { %>
+  <div class="card" style="<%= geweest ? 'border-left:5px solid var(--oranje)' : '' %>">
+    <div class="lbl"><span class="msr">task_alt</span><%= geweest ? "Beurt gedaan? Rond hem af" : "Beurt al gedaan? Leg hem vast" %></div>
+    <form method="POST" action="/voertuigen/<%= v.id %>/onderhoud/klaar" class="form" style="margin-top:8px">
+      <label>Soort<select name="soort"><option value="klein" <%= soortNu === "klein" ? "selected" : "" %>>Kleine beurt</option><option value="groot" <%= soortNu === "groot" ? "selected" : "" %>>Grote beurt</option></select></label>
+      <label>Datum<input type="date" name="datum" value="<%= v.onderhoud_afspraak && geweest ? v.onderhoud_afspraak : vandaag %>" max="<%= vandaag %>" required></label>
+      <label>Kilometerstand <span class="hint">van de garagebon; daarmee rekent de app ook met kilometers</span><input type="number" name="km" min="0" inputmode="numeric" placeholder="<%= beurt && beurt.km ? "laatst " + h.num(beurt.km.stand) : "bijv. 48250" %>"></label>
+      <label>Garage<input name="garage" value="<%= garage ? garage.naam : "" %>"></label>
+      <label class="full">Opmerking <span class="hint">wat er is gedaan of vervangen</span><input name="notitie"></label>
+      <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">check</span>Beurt gedaan</button></div>
+    </form>
+  </div>
+  <% } %>
+
+  <% if (can("beheerder") && beurt) { %>
+  <div class="card">
+    <div class="lbl"><span class="msr">tune</span>Schema van deze auto</div>
+    <p class="muted small" style="margin:6px 0 10px">Nu: <%= beurt.schema.bron %>. Leeg laten betekent de standaard; bij lease komt het uit het contract.</p>
+    <form method="POST" action="/voertuigen/<%= v.id %>/onderhoud/schema" class="form">
+      <label>Kleine beurt elke … maanden<input type="number" name="klein_maanden" min="1" max="60" value="<%= v.onderhoud_klein_maanden || "" %>" placeholder="<%= beurt.schema.klein_maanden %>"></label>
+      <label>… of elke … km<input type="number" name="klein_km" min="1000" step="500" value="<%= v.onderhoud_klein_km || "" %>" placeholder="<%= beurt.schema.klein_km %>"></label>
+      <label>Grote beurt elke … maanden<input type="number" name="groot_maanden" min="1" max="120" value="<%= v.onderhoud_groot_maanden || "" %>" placeholder="<%= beurt.schema.groot_maanden %>"></label>
+      <label>… of elke … km<input type="number" name="groot_km" min="1000" step="500" value="<%= v.onderhoud_groot_km || "" %>" placeholder="<%= beurt.schema.groot_km %>"></label>
+      <div class="buttons full" style="justify-content:flex-start"><button type="submit" class="btn"><span class="msr">save</span>Schema opslaan</button></div>
+    </form>
+  </div>
+  <% } %>
+
+  <% if (beurt && beurt.beurten.length) { %>
+  <div class="card" style="padding:0">
+    <div class="card-head" style="padding:14px 18px 6px"><div class="lbl"><span class="msr">history</span>Beurten</div></div>
+    <table class="list">
+      <thead><tr><th>Datum</th><th>Soort</th><th class="num">Km</th><th>Garage</th><th>Opmerking</th></tr></thead>
+      <tbody>
+      <% beurt.beurten.forEach(b => { %><tr><td><%= h.formatDate(b.datum) %></td><td><%= h.label("beurt", b.soort) %></td><td class="num"><%= b.km ? h.num(b.km) : "–" %></td><td class="small"><%= b.garage || "" %></td><td class="small muted"><%= b.notitie || "" %><% if (b.door) { %> <span class="muted">· <%= b.door %></span><% } %></td></tr><% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</div>
+<%- include("../partials/footer") %>

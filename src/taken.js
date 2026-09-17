@@ -1,7 +1,7 @@
 // src/taken.js
 // De takenmotor. Maakt automatisch taken aan en stuurt de bijbehorende mails, op basis van de termijnen in instellingen:
 //   APK (90/30/7 dagen vooraf en verstreken), APK-rapport na de afspraak, bandenwissel rond 1 oktober en 1 april,
-//   contracteinde, rijbewijs, leenauto morgen inleveren en leenauto te laat, open terugroepactie van de RDW. En elke werkdag de dagmail voor de beheerders.
+//   contracteinde, rijbewijs, leenauto morgen inleveren en leenauto te laat, open terugroepactie van de RDW, kleine en grote beurt. En elke werkdag de dagmail voor de beheerders.
 // Draait bij het opstarten en daarna elk half uur (zie server.js). Elke taak heeft een sleutel zodat hij maar één keer ontstaat;
 // elke herinnering heeft een ref in mail_log zodat hij maar één keer wordt verstuurd.
 //
@@ -12,6 +12,7 @@
 const db = require("./db");
 const mail = require("./mail");
 const rdw = require("./rdw");
+const onderhoud = require("./onderhoud");
 const { formatDate, relativeDate, num } = require("./helpers");
 
 // Datum en uur in Nederland, ook als de server in UTC draait (Railway)
@@ -188,6 +189,34 @@ async function rondeTerugroep(today) {
   }
 }
 
+// ---- Onderhoud: een maand vóór de kleine of grote beurt een taak (en mail) voor de bestuurder; na de afspraak "beurt gedaan?" ----
+async function rondeOnderhoud(today) {
+  for (const { v, r } of await onderhoud.alles()) {
+    const b = await bestuurderVan(v.id);
+    const beheer = await mail.beheerders(v.vestiging_id);
+    if (v.onderhoud_afspraak) {
+      if (v.onderhoud_afspraak > today) continue;
+      const sleutel = `onderhoud_klaar:${v.id}:${v.onderhoud_afspraak}`;
+      const id = await maak({ voertuig_id: v.id, bestuurder_id: b ? b.id : null, soort: "onderhoud_klaar", titel: `Beurt gedaan? · ${autoNaam(v)}`, omschrijving: `De ${(onderhoud.SOORT[v.onderhoud_afspraak_soort] || "beurt").toLowerCase()} stond gepland op ${formatDate(v.onderhoud_afspraak)}. Meld in de app dat hij is gedaan, met de kilometerstand van de garagebon.`, deadline: addDays(v.onderhoud_afspraak, 7), voor: b ? "bestuurder" : "beheerder", sleutel });
+      if (id) await mail.send({ to: b ? mail.bestuurderEmail(b) : beheer, subject: `Beurt gedaan? ${v.kenteken}`, soort: "onderhoud", ref: sleutel, html: mail.layout({ titel: "Is de beurt gedaan?", intro: "De afspraak bij de garage is geweest. Meld in de app dat de beurt is gedaan en geef de kilometerstand van de bon door, dan weet de app wanneer de volgende is.", regels: [["Auto", autoNaam(v)], ["Afspraak", formatDate(v.onderhoud_afspraak)]], knop: { tekst: "Beurt gedaan", url: `${base()}/voertuigen/${v.id}/onderhoud` } }) });
+      continue;
+    }
+    if (r.dagen > 30) continue;
+    const sleutel = `onderhoud:${v.id}:${r.soort}:${r.basisDatum}`;
+    const garage = await garageVoor(v.merk);
+    const omschrijving = `${r.uitleg} ${r.naam} rond ${formatDate(r.datum)}${r.via === "km" ? " op basis van de kilometerstand" : ""}.${r.combineerApk ? " De APK vervalt op " + formatDate(r.combineerApk) + ": combineer beide in één garagebezoek." : ""} Plan de beurt bij de garage en leg de datum vast.`;
+    const id = await maak({ voertuig_id: v.id, bestuurder_id: b ? b.id : null, soort: "onderhoud", titel: `${r.naam} inplannen · ${autoNaam(v)}`, omschrijving, deadline: r.datum, voor: b ? "bestuurder" : "beheerder", sleutel });
+    if (!id || await mail.sentBefore("onderhoud", sleutel)) continue;
+    await mail.send({
+      to: b ? mail.bestuurderEmail(b) : beheer, cc: b ? beheer : [], subject: `${r.naam} plannen: ${v.kenteken}`, soort: "onderhoud", ref: sleutel,
+      html: mail.layout({ titel: `${r.naam} ${h_rel(r.datum)}`, intro: `${r.uitleg} Plan de beurt bij de garage en leg de datum vast in de app.${r.combineerApk ? " De APK vervalt op " + formatDate(r.combineerApk) + ": combineer beide in één bezoek." : ""}`,
+        regels: [["Auto", autoNaam(v)], ["Rond", formatDate(r.datum)], ["Bestuurder", b ? b.naam : "niemand (op voorraad)"], ...(garage ? [["Garage", `${garage.naam}${garage.telefoon ? " · " + garage.telefoon : ""}`]] : [])],
+        knop: { tekst: "Afspraak vastleggen", url: `${base()}/voertuigen/${v.id}/onderhoud` } }),
+    });
+  }
+}
+const h_rel = (d) => relativeDate(d);
+
 // ---- Dagmail: elke werkdag om dagmail_uur, per beheerder ----
 async function dagmail(now) {
   if (now.weekday === 0 || now.weekday === 6) return;
@@ -222,7 +251,7 @@ async function run() {
   running = true;
   const now = nlNow();
   try { await rondeRdw(now.date); } catch (err) { console.error("RDW-ronde mislukt:", err.message); }
-  for (const [naam, fn] of [["apk", rondeApk], ["contract", rondeContract], ["rijbewijs", rondeRijbewijs], ["banden", rondeBanden], ["uitleen", rondeUitleen], ["terugroep", rondeTerugroep]]) {
+  for (const [naam, fn] of [["apk", rondeApk], ["contract", rondeContract], ["rijbewijs", rondeRijbewijs], ["banden", rondeBanden], ["uitleen", rondeUitleen], ["terugroep", rondeTerugroep], ["onderhoud", rondeOnderhoud]]) {
     try { await fn(now.date); } catch (err) { console.error(`Takenronde ${naam} mislukt:`, err.message); }
   }
   try { await dagmail(now); } catch (err) { console.error("Dagmail mislukt:", err.message); }

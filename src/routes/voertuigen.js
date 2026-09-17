@@ -9,6 +9,7 @@ const processen = require("../processen");
 const taken = require("../taken");
 const msauth = require("./msauth");
 const rdw = require("../rdw");
+const onderhoud = require("../onderhoud");
 const { clean, cleanNumber, cleanDate, yes, kenteken: fmtKenteken, formatDate, bouwjaarNorm, LABELS } = require("../helpers");
 
 const router = express.Router();
@@ -132,9 +133,10 @@ router.get("/:id", auth.requireRole("bestuurder"), async (req, res, next) => {
   // De eerstvolgende bandenwissel: winter van augustus tot en met januari, anders zomer; datum uit Instellingen
   const nu = new Date(), maand = nu.getMonth() + 1, winter = maand >= 8 || maand <= 1;
   const bandenDeadline = { label: winter ? "Winterbanden" : "Zomerbanden", datum: `${winter && maand <= 1 ? nu.getFullYear() - 1 : nu.getFullYear()}-${await taken.setting(winter ? "bandenwissel_winter" : "bandenwissel_zomer", winter ? "10-01" : "04-01")}` };
+  const beurt = await onderhoud.voor(v);
   const lopend = await db.all("SELECT p.*, (SELECT COUNT(*) FROM processtappen s WHERE s.proces_id = p.id) AS totaal, (SELECT COUNT(*) FROM processtappen s WHERE s.proces_id = p.id AND s.afgevinkt_op IS NOT NULL) AS klaar FROM processen p WHERE p.voertuig_id = $1 AND p.afgerond_op IS NULL ORDER BY p.gestart_op DESC", [v.id]);
   const verzoeken = await db.all("SELECT l.*, COALESCE(b.naam, l.extern_naam, u.name) AS wie FROM leenverzoeken l LEFT JOIN bestuurders b ON b.id = l.aanvrager_bestuurder_id LEFT JOIN users u ON u.id = l.aanvrager_user_id WHERE l.voertuig_id = $1 AND l.status = 'open' ORDER BY l.created_at", [v.id]);
-  res.render("voertuigen/show", { title: `${v.kenteken || "Besteld"} · ${v.merk} ${v.model || ""}`.trim(), v, toewijzingen, actief, km, incidenten, boetes, documenten, taken: openTaken, logboek, bandenwissels, bandenDeadline, garage, lopend, verzoeken, isOwn: Boolean(isOwn), NAMEN: processen.NAMEN, ...(await lookups()) });
+  res.render("voertuigen/show", { title: `${v.kenteken || "Besteld"} · ${v.merk} ${v.model || ""}`.trim(), v, toewijzingen, actief, km, incidenten, boetes, documenten, taken: openTaken, logboek, bandenwissels, bandenDeadline, beurt, garage, lopend, verzoeken, isOwn: Boolean(isOwn), NAMEN: processen.NAMEN, ...(await lookups()) });
 });
 
 // APK: afspraak vastleggen (beheerder of de bestuurder van deze auto). Daarna vraagt de app om het rapport.
@@ -193,6 +195,63 @@ router.post("/:id", auth.requireRole("beheerder"), async (req, res, next) => {
 });
 
 // Kilometerstand doorgeven (beheerder, of de bestuurder van deze auto)
+// Onderhoud: kleine en grote beurt. Zelfde twee stappen als de APK, plus "beurt gedaan" met de kilometerstand en het schema per auto.
+router.get("/:id/onderhoud", async (req, res, next) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return next();
+  if (!await magApk(req, res, v)) return res.status(403).render("error", { title: "Geen toegang", message: "Alleen de bestuurder van deze auto of een beheerder kan het onderhoud vastleggen." });
+  const garage = await taken.garageVoor(v.merk);
+  const beurt = await onderhoud.voor(v);
+  res.render("voertuigen/onderhoud", { title: `Onderhoud · ${v.kenteken || v.merk}`, v, garage, beurt, mijn: !res.locals.can("directie") });
+});
+router.post("/:id/onderhoud", async (req, res, next) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return next();
+  if (!await magApk(req, res, v)) return res.status(403).send("Geen toegang.");
+  const back = res.locals.can("directie") ? `/voertuigen/${v.id}` : "/mijn-auto";
+  if (yes(req.body.wissen) && res.locals.can("beheerder")) {
+    await db.run("UPDATE voertuigen SET onderhoud_afspraak = NULL, onderhoud_afspraak_soort = NULL, updated_at = local_now() WHERE id = $1", [v.id]);
+    await db.run("INSERT INTO logboek (voertuig_id, user_id, soort, omschrijving) VALUES ($1,$2,'onderhoud',$3)", [v.id, req.user.id, `Onderhoudsafspraak gewist door ${req.user.name}`]);
+    res.flash("Onderhoudsafspraak gewist.");
+    return res.redirect(back);
+  }
+  const datum = cleanDate(req.body.afspraak);
+  const soort = req.body.soort === "groot" ? "groot" : "klein";
+  if (!datum) { res.flash("Vul de datum van de afspraak in.", "error"); return res.redirect(`/voertuigen/${v.id}/onderhoud`); }
+  await db.run("UPDATE voertuigen SET onderhoud_afspraak = $2, onderhoud_afspraak_soort = $3, updated_at = local_now() WHERE id = $1", [v.id, datum, soort]);
+  await db.run("UPDATE taken SET status = 'afgerond', afgerond_door = $2, afgerond_op = local_now() WHERE status = 'open' AND voertuig_id = $1 AND soort = 'onderhoud'", [v.id, req.user.id]);
+  await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1,$2,$3,'onderhoud',$4)", [v.id, req.bestuurder ? req.bestuurder.id : null, req.user.id, `${onderhoud.SOORT[soort]} afgesproken op ${formatDate(datum)} door ${req.user.name}`]);
+  res.flash(`${onderhoud.SOORT[soort]} op ${formatDate(datum)} vastgelegd. Na die dag vraagt de app of hij is gedaan.`);
+  res.redirect(back);
+});
+router.post("/:id/onderhoud/klaar", async (req, res, next) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return next();
+  if (!await magApk(req, res, v)) return res.status(403).send("Geen toegang.");
+  const back = res.locals.can("directie") ? `/voertuigen/${v.id}` : "/mijn-auto";
+  const datum = cleanDate(req.body.datum), soort = req.body.soort === "groot" ? "groot" : "klein", km = cleanNumber(req.body.km);
+  if (!datum) { res.flash("Vul de datum van de beurt in.", "error"); return res.redirect(`/voertuigen/${v.id}/onderhoud`); }
+  await db.insert("INSERT INTO beurten (voertuig_id, soort, datum, km, garage, notitie, user_id) VALUES ($1,$2,$3,$4,$5,$6,$7)", [v.id, soort, datum, km !== null && km >= 0 ? Math.round(km) : null, clean(req.body.garage), clean(req.body.notitie), req.user.id]);
+  if (km !== null && km >= 0) {
+    const last = await db.one("SELECT stand FROM kilometerstanden WHERE voertuig_id = $1 ORDER BY datum DESC, id DESC LIMIT 1", [v.id]);
+    if (!last || km >= last.stand) await db.run("INSERT INTO kilometerstanden (voertuig_id, stand, datum, bron, user_id) VALUES ($1,$2,$3,'beurt',$4)", [v.id, Math.round(km), datum, req.user.id]);
+  }
+  await db.run("UPDATE voertuigen SET onderhoud_afspraak = NULL, onderhoud_afspraak_soort = NULL, updated_at = local_now() WHERE id = $1", [v.id]);
+  await db.run("UPDATE taken SET status = 'afgerond', afgerond_door = $2, afgerond_op = local_now() WHERE status = 'open' AND voertuig_id = $1 AND soort IN ('onderhoud','onderhoud_klaar')", [v.id, req.user.id]);
+  await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1,$2,$3,'onderhoud',$4)", [v.id, req.bestuurder ? req.bestuurder.id : null, req.user.id, `${onderhoud.SOORT[soort]} gedaan op ${formatDate(datum)}${km !== null ? " bij " + Math.round(km).toLocaleString("nl-NL") + " km" : ""}, gemeld door ${req.user.name}`]);
+  const r = await onderhoud.voor(v);
+  res.flash(`${onderhoud.SOORT[soort]} vastgelegd.${r ? " Volgende: " + r.naam.toLowerCase() + " rond " + formatDate(r.datum) + "." : ""}`);
+  res.redirect(back);
+});
+router.post("/:id/onderhoud/schema", auth.requireRole("beheerder"), async (req, res, next) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return next();
+  const n = (k) => { const x = cleanNumber(req.body[k]); return x && x > 0 ? Math.round(x) : null; };
+  await db.run("UPDATE voertuigen SET onderhoud_klein_maanden = $2, onderhoud_klein_km = $3, onderhoud_groot_maanden = $4, onderhoud_groot_km = $5, updated_at = local_now() WHERE id = $1", [v.id, n("klein_maanden"), n("klein_km"), n("groot_maanden"), n("groot_km")]);
+  await db.run("INSERT INTO logboek (voertuig_id, user_id, soort, omschrijving) VALUES ($1,$2,'onderhoud',$3)", [v.id, req.user.id, `Onderhoudsschema aangepast door ${req.user.name}`]);
+  res.flash("Schema opgeslagen.");
+  res.redirect(`/voertuigen/${v.id}/onderhoud`);
+});
 router.post("/:id/kilometerstand", async (req, res, next) => {
   const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
   if (!v) return next();

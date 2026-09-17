@@ -30,7 +30,7 @@
   </div>
 <% }) %>
 
-<% autos.forEach(v => { const dagen = h.daysUntil(v.apk_vervaldatum); const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[\s-]/)[0])) || garages.find(g => (g.merk || "").toLowerCase() === "alle"); const mijnTaken = taken.filter(t => (t.voertuig_id === v.id || !t.voertuig_id) && !["apk", "apk_rapport"].includes(t.soort)); %>
+<% autos.forEach(v => { const dagen = h.daysUntil(v.apk_vervaldatum); const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[\s-]/)[0])) || garages.find(g => (g.merk || "").toLowerCase() === "alle"); const mijnTaken = taken.filter(t => (t.voertuig_id === v.id || !t.voertuig_id) && !["apk", "apk_rapport", "onderhoud", "onderhoud_klaar"].includes(t.soort)); const beurt = v.beurt; %>
   <div class="card">
     <div class="vehicle-head">
       <span class="plate big"><%= v.kenteken || "besteld" %></span>
@@ -49,6 +49,21 @@
         <div class="lbl"><span class="msr">event</span>APK-afspraak <%= h.formatDate(v.apk_afspraak) %></div>
         <% if (h.daysUntil(v.apk_afspraak) < 0) { %><p style="margin-top:6px">De keuring is geweest. Upload het rapport, dan zet de beheerder de nieuwe APK-datum.</p><a href="/voertuigen/<%= v.id %>/documenten?soort=apk_rapport" class="btn primary small"><span class="msr">upload_file</span>Rapport uploaden</a>
         <% } else { %><p class="muted small" style="margin-top:6px">Na de keuring vraagt de app om het rapport. <a href="/voertuigen/<%= v.id %>/apk">Datum wijzigen</a></p><% } %>
+      </div>
+    <% } %>
+
+    <% if (v.onderhoud_afspraak) { const geweest = h.daysUntil(v.onderhoud_afspraak) < 0; %>
+      <div class="card" style="border-left:5px solid var(--<%= geweest ? 'oranje' : 'blauw' %>);margin-top:14px">
+        <div class="lbl"><span class="msr"><%= geweest ? "build" : "event" %></span><%= h.label("beurt", v.onderhoud_afspraak_soort) %> <%= h.formatDate(v.onderhoud_afspraak) %></div>
+        <% if (geweest) { %><p style="margin-top:6px">De afspraak is geweest. Is de beurt gedaan? Geef de kilometerstand van de bon door, dan weet de app wanneer de volgende is.</p><a href="/voertuigen/<%= v.id %>/onderhoud" class="btn primary small"><span class="msr">check</span>Beurt gedaan</a>
+        <% } else { %><p class="muted small" style="margin-top:6px">Na die dag vraagt de app of de beurt is gedaan. <a href="/voertuigen/<%= v.id %>/onderhoud">Datum wijzigen</a></p><% } %>
+      </div>
+    <% } else if (beurt && beurt.dagen <= 30) { %>
+      <div class="card" style="border-left:5px solid <%= beurt.dagen < 0 ? 'var(--rood)' : 'var(--oranje)' %>;margin-top:14px">
+        <div class="lbl" style="color:<%= beurt.dagen < 0 ? 'var(--rood)' : 'var(--oranje)' %>"><span class="msr">build</span><%= beurt.naam %> <%= beurt.dagen < 0 ? "is over tijd" : h.relativeDate(beurt.datum) %></div>
+        <p><strong><%= beurt.naam %> rond <%= h.formatDate(beurt.datum) %>.</strong> Plan hem bij de garage en leg de datum vast.<% if (beurt.combineerApk) { %> De APK vervalt <%= h.formatDate(beurt.combineerApk) %>: combineer beide in één bezoek.<% } %></p>
+        <p class="muted small"><%= beurt.uitleg %><% if (garage) { %><br><%= garage.naam %><%= garage.telefoon ? " · " + garage.telefoon : "" %><% } %></p>
+        <div class="actions"><a href="/voertuigen/<%= v.id %>/onderhoud" class="btn primary small"><span class="msr">event_available</span>Afspraak vastleggen</a><% if (garage && garage.telefoon) { %><a href="tel:<%= garage.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span>Bel de garage</a><% } %><a href="/voertuigen/<%= v.id %>/onderhoud" class="btn small ghost">Al gedaan</a></div>
       </div>
     <% } %>
 

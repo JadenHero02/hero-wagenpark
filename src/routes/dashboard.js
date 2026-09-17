@@ -7,6 +7,7 @@ const express = require("express");
 const db = require("../db");
 const auth = require("../auth");
 const taken = require("../taken");
+const onderhoud = require("../onderhoud");
 const h = require("../helpers");
 
 const router = express.Router();
@@ -76,8 +77,16 @@ router.get("/", async (req, res) => {
   }
   if (banden) vandaag.push({ icoon: "ac_unit", kleur: "blauw", plaat: null, tekst: `${banden.seizoen === "winter" ? "Winterbanden" : "Zomerbanden"} laten monteren · ${banden.klaar} van ${banden.totaal} auto's gedaan`, pill: { tekst: `vóór ${h.formatDate(banden.datum)}`, klasse: h.daysUntil(banden.datum) < 0 ? "bad" : "warn" }, knop: { url: `/taken?soort=banden`, tekst: "Wie nog" } });
 
+  for (const { v, r } of await onderhoud.alles(vId)) {
+    if (v.onderhoud_afspraak || r.dagen >= 0) continue;
+    vandaag.push({ icoon: "build", kleur: "oranje", plaat: v.kenteken, tekst: `${r.naam} over tijd · ${auto(v)}`, pill: { tekst: h.relativeDate(r.datum).replace("geleden", "te laat"), klasse: "warn" }, knop: { url: `/voertuigen/${v.id}/onderhoud`, tekst: "Plannen" } });
+  }
   // ---- Komende weken ----
   const komend = [];
+  for (const { v, r } of await onderhoud.alles(vId)) {
+    if (r.dagen < 0 || r.dagen > 30) continue;
+    komend.push({ icoon: "build", plaat: v.kenteken, tekst: `${r.naam} · ${auto(v)}${v.onderhoud_afspraak ? " · afspraak " + h.formatDate(v.onderhoud_afspraak) : r.geschat ? " · geschat" : ""}`, wanneer: h.relativeDate(r.datum), url: `/voertuigen/${v.id}/onderhoud`, sort: r.datum });
+  }
   for (const a of apk) {
     if (a.dagen <= 7 || a.dagen < 0) continue;
     komend.push({ icoon: "event", plaat: a.kenteken, tekst: `APK vervalt ${h.formatDate(a.apk_vervaldatum)} · ${auto(a)}${rijd(a)}${a.apk_afspraak ? " · afspraak " + h.formatDate(a.apk_afspraak) : ""}`, wanneer: h.relativeDate(a.apk_vervaldatum), url: `/voertuigen/${a.id}/apk`, sort: a.apk_vervaldatum });
@@ -112,6 +121,7 @@ router.get("/mijn-auto", async (req, res) => {
     FROM toewijzingen t JOIN voertuigen v ON v.id = t.voertuig_id LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id
     WHERE t.bestuurder_id = $1 AND t.status = 'actief' ORDER BY t.soort, t.van DESC`, [b.id]) : [];
   const garages = await db.all("SELECT * FROM contacten WHERE soort = 'garage' ORDER BY naam");
+  for (const v of autos) v.beurt = await onderhoud.voor(v);
   const ids = autos.map((v) => v.id);
   const taken = b ? await db.all("SELECT t.*, v.kenteken FROM taken t LEFT JOIN voertuigen v ON v.id = t.voertuig_id WHERE t.status = 'open' AND t.voor = 'bestuurder' AND (t.bestuurder_id = $1 OR t.voertuig_id = ANY($2::int[])) ORDER BY t.deadline NULLS LAST", [b.id, ids]) : [];
   const boetes = b ? await db.all("SELECT b.*, v.kenteken FROM boetes b JOIN voertuigen v ON v.id = b.voertuig_id WHERE b.bestuurder_id = $1 ORDER BY b.datum DESC LIMIT 10", [b.id]) : [];
