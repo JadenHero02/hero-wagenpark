@@ -51,7 +51,7 @@ async function bestuurderVan(voertuigId) {
 }
 async function garageVoor(merk) {
   if (!merk) return null;
-  return db.one("SELECT * FROM contacten WHERE soort = 'garage' AND merk IS NOT NULL AND lower(merk) LIKE '%' || lower($1) || '%' ORDER BY id LIMIT 1", [merk.split(/[s-]/)[0]]);
+  return db.one("SELECT * FROM contacten WHERE soort = 'garage' AND merk IS NOT NULL AND lower(merk) LIKE '%' || lower($1) || '%' ORDER BY id LIMIT 1", [merk.split(/[\s-]/)[0]]);
 }
 
 // ---- APK ----

@@ -4,10 +4,10 @@
   <div class="actions"><% if (can("beheerder")) { %><a href="/bestuurders/nieuw" class="btn primary"><span class="msr">person_add</span>Nieuwe bestuurder</a><% } %></div>
 </div>
 <form method="GET" class="filters">
-  <input type="search" name="q" value="<%= q || "" %>" placeholder="Naam, e-mail of kenteken" style="min-width:240px" data-live-filter="table.list tbody tr.click" autocomplete="off">
+  <input type="search" name="q" value="<%= q || "" %>" placeholder="Naam, e-mail of kenteken" style="min-width:240px" data-live-filter="table.list tbody tr.click" autocomplete="off"><button type="submit" class="btn small" title="Zoek in alle bestuurders, ook op e-mail en kenteken"><span class="msr">search</span>Zoeken</button>
   <select name="vestiging" onchange="this.form.submit()"><option value="">Alle vestigingen</option><% vestigingen.forEach(ve => { %><option value="<%= ve.id %>" <%= vId === ve.id ? "selected" : "" %>><%= ve.naam %></option><% }) %></select>
+  <span class="muted small" data-live-count></span>
   <div class="chips"><a class="chip <%= zonder ? "on" : "" %>" href="?<%= zonder ? "" : "zonder=1" %>">Zonder auto</a></div>
-  <button type="submit" class="btn ghost small">Zoeken</button><span class="muted small" data-live-count></span>
 </form>
 <div class="card" style="padding:0">
   <table class="list">
@@ -15,12 +15,12 @@
     <tbody>
     <% if (!rows.length) { %><tr><td colspan="6" class="empty">Geen bestuurders gevonden.</td></tr><% } %>
     <% rows.forEach(r => { const d = h.daysUntil(r.rijbewijs_geldig_tot); %>
-      <tr class="click" onclick="location.href='/bestuurders/<%= r.id %>'">
+      <tr class="click" data-href="/bestuurders/<%= r.id %>">
         <td><strong><%= r.naam %></strong><% if (r.is_extern) { %> <span class="pill grey">extern</span><% } %><% if (r.email) { %><div class="muted small"><%= r.email %></div><% } %></td>
         <td><%= r.vestiging || "" %></td>
-        <td><% if (r.voertuig_id) { %><a href="/voertuigen/<%= r.voertuig_id %>" onclick="event.stopPropagation()"><span class="plate"><%= r.kenteken || "besteld" %></span></a> <%= r.merk %> <%= r.model || "" %><% if (r.toewijzing_soort === "uitleen") { %> <span class="pill warn">leen</span><% } %><% } else { %><span class="muted">–</span><% } %></td>
+        <td><% if (r.voertuig_id) { %><a href="/voertuigen/<%= r.voertuig_id %>"><span class="plate"><%= r.kenteken || "besteld" %></span></a> <%= r.merk %> <%= r.model || "" %><% if (r.toewijzing_soort === "uitleen") { %> <span class="pill warn">leen</span><% } %><% } else { %><span class="muted">–</span><% } %></td>
         <td class="small"><%= r.telefoon || "" %></td>
-        <td><% if (r.rijbewijs_geldig_tot) { %><span class="pill <%= d < 0 ? 'bad' : d < 90 ? 'warn' : 'grey' %>"><%= h.formatDate(r.rijbewijs_geldig_tot) %></span><% } else { %><span class="muted small">onbekend</span><% } %></td>
+        <td><% if (r.rijbewijs_geldig_tot) { %><span class="pill <%= d < 0 ? 'bad' : d < 90 ? 'warn' : 'grey' %>"><%= h.formatDate(r.rijbewijs_geldig_tot) %></span><% } else { %><span class="muted">–</span><% } %></td>
         <td class="small nowrap"><% if (r.role) { %><span class="pill rol-<%= r.role %>"><%= h.label("role", r.role) %></span><div class="muted small"><%= r.last_login_at ? "ingelogd " + h.formatDate(r.last_login_at) : "account aangemaakt, nog niet ingelogd" %></div><% } else if (r.rol_verwacht) { %><span class="pill rol-<%= r.rol_verwacht %> wacht"><%= h.label("role", r.rol_verwacht) %></span><div class="muted small">nog niet ingelogd</div><% } else { %><span class="muted small">geen e-mail, kan niet inloggen</span><% } %></td>
       </tr>
     <% }) %>

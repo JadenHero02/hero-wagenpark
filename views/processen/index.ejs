@@ -10,8 +10,7 @@
   const perSoort = {}; lopend.forEach(p => { perSoort[p.soort] = (perSoort[p.soort] || 0) + 1; });
 %>
 <div class="page-head">
-  <div><div class="eyebrow">Processen</div><h1>Checklists</h1><div class="sub">Vier vaste lijsten met vinkjes, naam en datum. De grijze stappen doet de app zelf.</div></div>
-  <% if (can("beheerder")) { %><div class="actions"><a href="/processen/start" class="btn primary"><span class="msr">checklist</span>Proces starten</a></div><% } %>
+  <div><div class="eyebrow">Checklists</div><h1>Processen</h1><div class="sub">Vier vaste checklists met vinkjes, naam en datum. De grijze stappen doet de app zelf.</div></div>
 </div>
 
 <div class="proces-grid">
@@ -34,8 +33,7 @@
         </ol>
       </details>
       <div class="pk-voet">
-        <span class="muted small"><%= k.start %></span>
-        <% if (can("beheerder")) { %><a href="/processen/start?soort=<%= soort %>" class="btn small ghost"><span class="msr">play_arrow</span>Starten</a><% } %>
+        <% if (can("beheerder") && !k.start.startsWith("Start vanzelf")) { %><span class="muted small"><%= k.start %></span><a href="/processen/start?soort=<%= soort %>" class="btn small primary"><span class="msr">play_arrow</span>Starten</a><% } else { %><span class="muted small"><span class="msr" style="font-size:15px;vertical-align:-3px">smart_toy</span> <%= k.start %><%= k.start.startsWith("Start vanzelf") ? ", je hoeft niets te doen" : "" %></span><% } %>
       </div>
     </div>
   <% }) %>

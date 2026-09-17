@@ -4,6 +4,17 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.37", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "de paginatitel is overal gelijk aan de naam in het menu: Wagenpark, Processen, Uitleen, Rollen, Taken, Wachtlijst, Incidenten en Boetes. De oude omschrijving staat er klein boven", commit: "" },
+    { soort: "verbeterd", tekst: "Taken is korter: de tientallen bandenwisseltaken staan als één regel met voortgang en de knop Wie nog; lange omschrijvingen zoals een terugroepactie klap je uit met \"meer\". De knoppen heten nu Afronden en Vervallen, met uitleg", commit: "" },
+    { soort: "verbeterd", tekst: "bandenwissel heeft overal dezelfde datum, de wisseldatum uit Instellingen: op het dashboard, als deadline van de taak en op de voertuigpagina", commit: "" },
+    { soort: "verbeterd", tekst: "rollen: de rol wijzigen vraagt eerst om bevestiging (met extra waarschuwing bij Admin), de herhaalde tekst per persoon is weg, en Rollen is de enige plek; de e-maillijsten in Instellingen zijn verdwenen", commit: "" },
+    { soort: "verbeterd", tekst: "knoppen met alleen een icoon hebben nu tekst of een tooltip: Bewerken, Vervallen, Uitzetten. Lijsten zijn met het toetsenbord te doorlopen (Tab en Enter) en een regel opent met Ctrl-klik in een nieuw tabblad", commit: "" },
+    { soort: "verbeterd", tekst: "minder ruis: geen rood \"onbekend\" meer bij rijbewijs en km-stand maar een streepje, geen \"sinds onbekend\" of \"0 eerdere toewijzingen\", eigendomsvorm alleen als hij bekend is, de zoekknop staat naast het zoekveld en de tegel Leenverzoeken toont wat er open staat", commit: "" },
+    { soort: "verbeterd", tekst: "processen: de knop Starten staat alleen bij instroom en uitstroom; uitgifte en inname start de app zelf bij toewijzen en innemen. Wachtlijst telt alleen personenauto's als op voorraad en toont de bestelde auto's eronder", commit: "" },
+    { soort: "opgelost", tekst: "de garage per merk werd sinds vanochtend verkeerd gezocht (Tesla als \"Te\"), waardoor bij sommige auto's een verkeerde of geen garage stond", commit: "" },
+    { soort: "opgelost", tekst: "in Mijn auto is de kop even breed als de kaarten, zodat de knoppen niet meer rechts loshangen", commit: "" },
+  ] },
   { versie: "0.2.36", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "de bandenwisseltaak heeft de wisseldatum zelf als deadline (1 oktober en 1 april) in plaats van dertig dagen later, zodat er één datum bij de taak staat en hij rood wordt zodra de datum voorbij is", commit: "" },
     { soort: "opgelost", tekst: "taaktitels tonen de auto zoals hij nu heet: bestaande open taken zijn bijgewerkt na het gelijktrekken van de modelnamen", commit: "" },

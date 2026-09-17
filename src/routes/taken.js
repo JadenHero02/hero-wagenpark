@@ -24,8 +24,14 @@ router.get("/", auth.requireRole("directie"), async (req, res) => {
     FROM taken t LEFT JOIN voertuigen v ON v.id = t.voertuig_id LEFT JOIN bestuurders b ON b.id = t.bestuurder_id LEFT JOIN vestigingen ve ON ve.id = COALESCE(v.vestiging_id, b.vestiging_id) LEFT JOIN users u ON u.id = t.afgerond_door
     ${where.length ? "WHERE " + where.join(" AND ") : ""}
     ORDER BY CASE WHEN t.status = 'open' THEN 0 ELSE 1 END, t.deadline NULLS LAST, t.id DESC LIMIT 200`, params);
+  // Bandenwissel: tientallen gelijke taken, in het overzicht één regel met voortgang (de losse taken staan onder Soort > Bandenwissel)
+  const bandenGroepen = f.status === "open" && !f.soort ? await db.all(`SELECT split_part(t.sleutel, ':', 3) AS sz, COUNT(*) FILTER (WHERE t.status = 'open') AS open, COUNT(*) FILTER (WHERE t.status = 'afgerond') AS klaar, MIN(t.deadline) AS deadline, (MIN(t.deadline) - current_date) AS dagen
+    FROM taken t LEFT JOIN voertuigen v ON v.id = t.voertuig_id LEFT JOIN bestuurders b ON b.id = t.bestuurder_id
+    WHERE t.soort = 'banden' AND t.sleutel LIKE 'banden:%' AND t.status IN ('open','afgerond') ${f.vestiging ? "AND COALESCE(v.vestiging_id, b.vestiging_id) = $1" : ""}
+    GROUP BY 1 HAVING COUNT(*) FILTER (WHERE t.status = 'open') > 0 ORDER BY 1`, f.vestiging ? [f.vestiging] : []) : [];
+  const lijst = bandenGroepen.length ? rows.filter((t) => t.soort !== "banden") : rows;
   const counts = await db.one("SELECT COUNT(*) FILTER (WHERE status = 'open') AS open, COUNT(*) FILTER (WHERE status = 'open' AND deadline < current_date) AS te_laat, COUNT(*) FILTER (WHERE status = 'open' AND voor = 'bestuurder') AS bestuurder, COUNT(*) FILTER (WHERE status = 'open' AND voor = 'beheerder') AS beheerder FROM taken");
-  res.render("taken/index", { title: "Taken", rows, f, counts, vestigingen: await db.all("SELECT * FROM vestigingen ORDER BY volgorde"), LABELS });
+  res.render("taken/index", { title: "Taken", rows: lijst, bandenGroepen, f, counts, vestigingen: await db.all("SELECT * FROM vestigingen ORDER BY volgorde"), LABELS });
 });
 
 router.get("/nieuw", auth.requireRole("beheerder"), async (req, res) => {

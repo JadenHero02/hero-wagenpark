@@ -12,11 +12,11 @@
           <td><span class="pill grey"><%= h.label("document", d.soort) %></span></td>
           <td class="small muted"><%= h.formatDate(d.created_at) %><br><%= d.geupload_door_naam || "" %> · <%= Math.round((d.grootte || 0) / 1024) %> kB</td>
           <td class="nowrap">
-            <a href="/documenten/<%= d.id %>?download=1" class="btn small ghost" title="Downloaden"><span class="msr">download</span></a>
+            <a href="/documenten/<%= d.id %>?download=1" class="btn small ghost" title="Downloaden" aria-label="Downloaden"><span class="msr">download</span></a>
             <% if (can("beheerder") && d.soort === "apk_rapport" && !d.goedgekeurd_op) { %>
               <form method="POST" action="/documenten/<%= d.id %>/goedkeuren" class="inline" style="display:inline-flex;gap:6px;align-items:center"><input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten"><input type="date" name="apk_vervaldatum" required title="Nieuwe APK-vervaldatum" style="padding:5px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><button class="btn small primary" type="submit" title="Rapport goedkeuren en nieuwe APK-datum zetten"><span class="msr">verified</span>Goedkeuren</button></form>
             <% } %>
-            <% if (can("beheerder")) { %><form method="POST" action="/documenten/<%= d.id %>/verwijderen" class="inline" onsubmit="return confirm('Dit document verwijderen?')"><input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten"><button class="btn small ghost" type="submit" title="Verwijderen"><span class="msr">delete</span></button></form><% } %>
+            <% if (can("beheerder")) { %><form method="POST" action="/documenten/<%= d.id %>/verwijderen" class="inline" onsubmit="return confirm('Dit document verwijderen?')"><input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten"><button class="btn small ghost" type="submit" title="Verwijderen" aria-label="Verwijderen"><span class="msr">delete</span></button></form><% } %>
           </td>
         </tr>
       <% }) %>

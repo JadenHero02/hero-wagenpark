@@ -34,8 +34,8 @@
   </a>
   <a class="tile" href="/uitleen">
     <div class="lbl">Leenverzoeken</div>
-    <div class="row"><span class="big"><%= leensnelheid.n ? leensnelheid.dagen : "–" %></span><span class="muted"><%= leensnelheid.n ? "dagen" : "" %></span></div>
-    <div class="muted small"><%= leensnelheid.n ? "gemiddeld tot besluit, laatste 90 dagen" : "nog geen verzoeken beantwoord" %></div>
+    <div class="row"><span class="big <%= openVerzoeken ? 'warn' : '' %>"><%= openVerzoeken %></span><span class="muted"><%= openVerzoeken === 1 ? "wacht op besluit" : "wachten op besluit" %></span></div>
+    <div class="muted small"><%= leensnelheid.n ? "besluit duurt gemiddeld " + leensnelheid.dagen + " dagen" : "nog geen verzoeken beoordeeld" %></div>
   </a>
 </div>
 

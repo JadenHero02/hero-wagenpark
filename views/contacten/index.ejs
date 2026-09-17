@@ -16,7 +16,7 @@
         <td class="nowrap"><%= c.telefoon || "" %></td>
         <td class="small"><%= c.adres || "" %></td>
         <td class="small muted"><%= c.opmerking || "" %></td>
-        <td class="nowrap"><% if (can("beheerder")) { %><a href="/contacten/<%= c.id %>/bewerken" class="btn ghost small"><span class="msr">edit</span></a><% } %></td>
+        <td class="nowrap"><% if (can("beheerder")) { %><a href="/contacten/<%= c.id %>/bewerken" class="btn ghost small"><span class="msr">edit</span>Bewerken</a><% } %></td>
       </tr>
     <% }) %>
     </tbody>

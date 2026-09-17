@@ -1,7 +1,7 @@
 <%- include("../partials/header") %>
 <div class="muted small" style="margin-bottom:10px"><a href="/instellingen">Instellingen</a> › Rollen</div>
 <div class="page-head">
-  <div><div class="eyebrow">Admin</div><h1>Wie heeft welke rol</h1><div class="sub"><%= totaal %> mensen · <%= groepen.map(g => g.rijen.length + " " + g.label.toLowerCase()).join(" · ") %></div></div>
+  <div><div class="eyebrow">Admin</div><h1>Rollen</h1><div class="sub">Wie heeft welke rol · <%= totaal %> mensen · <%= groepen.map(g => g.rijen.length + " " + g.label.toLowerCase()).join(" · ") %></div></div>
 </div>
 
 <% const OK = '<span class="msr" style="color:var(--groen);font-size:20px">check</span>', NEE = '<span class="muted">–</span>', EIGEN = (t) => `<span class="small" style="color:var(--blauw-bold)">${t}</span>`;
@@ -61,13 +61,13 @@
         <td class="small"><% if (r.functie.length) { %><%= r.functie.map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(", ") %><% } %><% if (r.jobTitle) { %><div class="muted"><%= r.jobTitle %></div><% } %></td>
         <td><%= r.vestiging || "" %></td>
         <td><% if (r.auto) { %><span class="plate"><%= r.auto.replace(" (leen)", "") %></span><%= r.auto.includes("(leen)") ? ' <span class="muted small">leen</span>' : "" %><% } %></td>
-        <td class="small"><% if (r.ingelogd) { %><span class="pill ok">ja</span> <span class="muted"><%= h.formatDate(r.ingelogd) %></span><% } else if (r.bron === "lijst") { %><span class="pill warn">nog niet</span> <span class="muted">krijgt <%= LABELS.role[r.rol].toLowerCase() %> bij eerste login</span><% } else { %><span class="muted">nog niet</span><% } %><% if (!r.actief) { %> <span class="pill soft">uitgezet</span><% } %></td>
+        <td class="small"><% if (r.ingelogd) { %><span class="pill ok">ja</span> <span class="muted"><%= h.formatDate(r.ingelogd) %></span><% } else { %><span class="muted">nog niet</span><% } %><% if (!r.actief) { %> <span class="pill soft">uitgezet</span><% } %></td>
         <td class="nowrap">
           <form method="POST" action="/instellingen/rollen" class="inline">
             <input type="hidden" name="email" value="<%= r.email %>">
-            <select name="rol" onchange="this.form.submit()" title="Rol wijzigen" style="padding:5px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><% ["admin","directie","beheerder","bestuurder"].forEach(x => { %><option value="<%= x %>" <%= r.rol === x ? "selected" : "" %>><%= LABELS.role[x] %></option><% }) %></select>
+            <select name="rol" data-naam="<%= r.naam %>" data-was="<%= r.rol %>" onchange="rolWijzigen(this)" title="Rol wijzigen" style="padding:5px;border:1px solid var(--grijs-thin);border-radius:8px;font:inherit;font-size:12px"><% ["admin","directie","beheerder","bestuurder"].forEach(x => { %><option value="<%= x %>" <%= r.rol === x ? "selected" : "" %>><%= LABELS.role[x] %></option><% }) %></select>
           </form>
-          <% if (r.user_id && r.user_id !== currentUser.id) { %><form method="POST" action="/instellingen/rollen/uitzetten" class="inline"><input type="hidden" name="user_id" value="<%= r.user_id %>"><input type="hidden" name="aan" value="<%= r.actief ? "0" : "1" %>"><button class="btn small ghost" type="submit" title="<%= r.actief ? "Toegang uitzetten" : "Weer aanzetten" %>"><span class="msr"><%= r.actief ? "block" : "check" %></span></button></form><% } %>
+          <% if (r.user_id && r.user_id !== currentUser.id) { %><form method="POST" action="/instellingen/rollen/uitzetten" class="inline"><input type="hidden" name="user_id" value="<%= r.user_id %>"><input type="hidden" name="aan" value="<%= r.actief ? "0" : "1" %>"><button class="btn small ghost" type="submit" title="<%= r.actief ? "Toegang tot de app uitzetten; de persoon blijft in de lijst" : "Toegang weer aanzetten" %>"><span class="msr"><%= r.actief ? "block" : "check" %></span><%= r.actief ? "Uitzetten" : "Aanzetten" %></button></form><% } %>
         </td>
       </tr>
     <% }) %>
@@ -76,5 +76,13 @@
   </table>
 </div>
 <% }) %>
-<p class="muted small">Functie komt uit Contacten (celdirecteur, wagenparkbeheer) en de medewerkerslijst. Rol is wat iemand in de app mag. Wie in geen enkele lijst staat wordt bestuurder bij de eerste login.</p>
+<p class="muted small">Functie komt uit Contacten (celdirecteur, wagenparkbeheer) en de medewerkerslijst. Rol is wat iemand in de app mag. Wie nog niet is ingelogd krijgt de rol hier bij de eerste login; wie nergens staat wordt bestuurder. Dit is de enige plek waar rollen staan.</p>
+<script>
+  // Rol wijzigen: eerst bevestigen, anders terug naar wat het was
+  function rolWijzigen(s) {
+    var naar = s.options[s.selectedIndex].text;
+    var tekst = "Rol van " + s.dataset.naam + " wijzigen naar " + naar + "?" + (s.value === "admin" ? "\n\nAdmin mag alles, ook rollen toekennen en instellingen wijzigen." : "");
+    if (confirm(tekst)) s.form.submit(); else s.value = s.dataset.was;
+  }
+</script>
 <%- include("../partials/footer") %>

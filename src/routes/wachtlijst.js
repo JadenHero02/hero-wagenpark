@@ -13,8 +13,10 @@ router.get("/", auth.requireRole("directie"), async (req, res) => {
   const rows = await db.all(`SELECT w.*, ve.naam AS vestiging, b.id AS b_id, b.email, v.kenteken, (current_date - w.datum_aanvraag) AS dagen
     FROM wachtlijst w LEFT JOIN vestigingen ve ON ve.id = w.vestiging_id LEFT JOIN bestuurders b ON b.id = w.bestuurder_id LEFT JOIN voertuigen v ON v.id = w.voertuig_id
     ORDER BY CASE w.status WHEN 'open' THEN 0 ELSE 1 END, w.datum_aanvraag NULLS LAST, w.id`);
-  const vrij = await db.one("SELECT COUNT(*) AS n FROM voertuigen WHERE status = 'op_voorraad'");
-  res.render("wachtlijst/index", { title: "Wachtlijst", rows, vrij: vrij.n });
+  // Op voorraad telt alleen wat iemand als vaste auto kan krijgen: geen leenauto's en geen bestelbussen
+  const vrij = await db.one("SELECT COUNT(*) AS n FROM voertuigen WHERE status = 'op_voorraad' AND NOT is_leenauto AND COALESCE(rdw_voertuigsoort, '') <> 'Bedrijfsauto'");
+  const besteld = await db.all("SELECT v.id, v.merk, v.model, v.verwachte_levering, v.opmerkingen, ve.naam AS vestiging FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id WHERE v.status = 'besteld' ORDER BY v.verwachte_levering NULLS LAST, v.id");
+  res.render("wachtlijst/index", { title: "Wachtlijst", rows, vrij: vrij.n, besteld });
 });
 router.get("/nieuw", auth.requireRole("beheerder"), async (req, res) => {
   res.render("wachtlijst/form", { title: "Op de wachtlijst", vestigingen: await db.all("SELECT * FROM vestigingen ORDER BY volgorde"), bestuurders: await db.all("SELECT id, naam FROM bestuurders WHERE actief ORDER BY naam"), vandaag: new Date().toISOString().slice(0, 10) });

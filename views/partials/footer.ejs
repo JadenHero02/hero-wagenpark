@@ -38,6 +38,18 @@
   veld.addEventListener("input", filter);
 })();
 (function () {
+  // Klikbare rijen (tr.click met data-href): klik opent, Enter opent, Ctrl/Cmd-klik of middelste muisknop opent in een nieuw tabblad.
+  // Knoppen en links in de rij doen gewoon hun eigen ding.
+  document.querySelectorAll("tr.click[data-href]").forEach(function (tr) {
+    var url = tr.getAttribute("data-href"), nieuw = tr.getAttribute("data-target") === "_blank";
+    tr.setAttribute("tabindex", "0"); tr.setAttribute("role", "link");
+    function ga(e) { if (e.target.closest("a, button, form, input, select, label")) return; if (nieuw || e.ctrlKey || e.metaKey || e.button === 1) window.open(url, "_blank"); else location.href = url; }
+    tr.addEventListener("click", ga);
+    tr.addEventListener("auxclick", function (e) { if (e.button === 1) { e.preventDefault(); ga(e); } });
+    tr.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target === tr) ga(e); });
+  });
+})();
+(function () {
   // Menu op de telefoon: knop in de balk opent het volledige menu als paneel; sluit via kruisje, achtergrond, Escape of een keuze
   var nav = document.getElementById("sidenav"), knop = document.getElementById("menu-knop"), achter = document.getElementById("menu-achter"), sluit = document.getElementById("menu-sluit");
   if (!nav || !knop) return;

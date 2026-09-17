@@ -1,6 +1,6 @@
 <%- include("../partials/header") %>
 <div class="page-head">
-  <div><div class="eyebrow">Incidenten</div><h1>Schade, ongevallen, pech</h1><div class="sub">Gemeld door bestuurders op de telefoon of ingevoerd door de beheerder. Elk incident is ook een taak.</div></div>
+  <div><div class="eyebrow">Schade, ongevallen, pech</div><h1>Incidenten</h1><div class="sub">Gemeld door bestuurders op de telefoon of ingevoerd door de beheerder. Elk incident is ook een taak.</div></div>
   <div class="actions"><a href="/incidenten/nieuw" class="btn primary"><span class="msr">car_crash</span>Incident invoeren</a></div>
 </div>
 <div class="filters"><div class="chips"><a class="chip <%= !status ? "on" : "" %>" href="/incidenten">Alles</a><% Object.entries(LABELS.incident_status).forEach(([k, l]) => { %><a class="chip <%= status === k ? "on" : "" %>" href="/incidenten?status=<%= k %>"><%= l %></a><% }) %></div></div>
@@ -9,7 +9,7 @@
     <thead><tr><th>Datum</th><th>Kenteken</th><th>Soort</th><th>Wat</th><th>Bestuurder</th><th>Gemeld bij</th><th>Autobedrijf</th><th class="num">Kosten</th><th>Status</th></tr></thead>
     <tbody>
     <% rows.forEach(i => { %>
-      <tr class="click" onclick="location.href='/incidenten/<%= i.id %>'">
+      <tr class="click" data-href="/incidenten/<%= i.id %>">
         <td><%= h.formatDate(i.datum) %></td>
         <td><span class="plate"><%= i.kenteken || "besteld" %></span><div class="muted small"><%= i.merk %> <%= i.model || "" %><%= i.vestiging ? " · " + i.vestiging : "" %></div></td>
         <td><%= h.label("incident_soort", i.soort) %></td>

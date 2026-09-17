@@ -74,7 +74,7 @@ router.get("/", async (req, res) => {
     const r = await db.one(`SELECT COUNT(*) AS totaal, COUNT(*) FILTER (WHERE bw.gewisseld) AS klaar FROM voertuigen v LEFT JOIN bandenwissels bw ON bw.voertuig_id = v.id AND bw.seizoen = $${params.length + 1} WHERE v.status IN ('actief','uitgeleend') AND v.banden = 'winter_zomer' ${where}`, [...params, sz]);
     banden = { seizoen, datum, totaal: r.totaal, klaar: r.klaar };
   }
-  if (banden) vandaag.push({ icoon: "ac_unit", kleur: "blauw", plaat: null, tekst: `${banden.seizoen === "winter" ? "Winterbanden" : "Zomerbanden"} laten monteren · ${banden.klaar} van ${banden.totaal} auto's gedaan`, pill: { tekst: `rond ${h.formatDate(banden.datum)}`, klasse: "" }, knop: { url: `/taken?soort=banden`, tekst: "Wie nog" } });
+  if (banden) vandaag.push({ icoon: "ac_unit", kleur: "blauw", plaat: null, tekst: `${banden.seizoen === "winter" ? "Winterbanden" : "Zomerbanden"} laten monteren · ${banden.klaar} van ${banden.totaal} auto's gedaan`, pill: { tekst: `vóór ${h.formatDate(banden.datum)}`, klasse: h.daysUntil(banden.datum) < 0 ? "bad" : "warn" }, knop: { url: `/taken?soort=banden`, tekst: "Wie nog" } });
 
   // ---- Komende weken ----
   const komend = [];
@@ -97,7 +97,7 @@ router.get("/", async (req, res) => {
 
   const milieu = await db.all(`SELECT COALESCE(v.milieu, 'onbekend') AS milieu, COUNT(*) AS n FROM voertuigen v WHERE v.status IN ('actief','uitgeleend','op_voorraad') ${where} GROUP BY 1 ORDER BY n DESC`, params);
   const vestigingNaam = vId ? (vestigingen.find((v) => v.id === vId) || {}).naam : null;
-  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, vestigingNaam, counts, perVestiging, openTaken, leensnelheid, vandaag, komend, besteld });
+  res.render("dashboard/index", { title: "Dashboard", vestigingen, vId, vestigingNaam, counts, perVestiging, openTaken, leensnelheid, openVerzoeken: verzoeken.length, vandaag, komend, besteld });
 });
 
 // Mijn auto: de bestuurder op de telefoon. Voorlopig de kern; de rest volgt donderdag.
@@ -135,7 +135,7 @@ router.get("/mijn-auto/auto/:id", async (req, res, next) => {
   const eigen = b ? await db.one("SELECT 1 FROM toewijzingen WHERE voertuig_id = $1 AND bestuurder_id = $2 AND status = 'actief'", [v.id, b.id]) : null;
   if (!eigen && !res.locals.can("directie")) return res.status(403).render("error", { title: "Geen toegang", message: "Je kunt alleen je eigen auto bekijken." });
   const garages = await db.all("SELECT * FROM contacten WHERE soort = 'garage' ORDER BY naam");
-  const garage = garages.find((g) => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[s-]/)[0])) || garages.find((g) => (g.merk || "").toLowerCase() === "alle") || null;
+  const garage = garages.find((g) => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[\s-]/)[0])) || garages.find((g) => (g.merk || "").toLowerCase() === "alle") || null;
   res.render("mijn-auto-info", { title: `Over ${v.kenteken || v.merk}`, v, garage, meekijken: als });
 });
 

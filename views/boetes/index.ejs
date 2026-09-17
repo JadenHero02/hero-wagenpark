@@ -1,6 +1,6 @@
 <%- include("../partials/header") %>
 <div class="page-head">
-  <div><div class="eyebrow">Boetes</div><h1>Boetes en eigen risico</h1><div class="sub"><%= counts.nieuw %> nog niet in AFAS · <%= counts.uitzondering %> uitzondering gevraagd · <%= h.euro(counts.doorbelast_jaar) %> via de loonstrook dit jaar</div></div>
+  <div><div class="eyebrow">Boetes en eigen risico</div><h1>Boetes</h1><div class="sub"><%= counts.nieuw %> nog niet in AFAS · <%= counts.uitzondering %> uitzondering gevraagd · <%= h.euro(counts.doorbelast_jaar) %> via de loonstrook dit jaar</div></div>
   <% if (magBoetes) { %><div class="actions"><a href="/boetes/nieuw" class="btn primary"><span class="msr">add</span>Boete invoeren</a></div><% } %>
 </div>
 <div class="filters">
@@ -14,7 +14,7 @@
     <thead><tr><th>Datum</th><th>Kenteken</th><th>Bestuurder</th><th class="num">Bedrag</th><th>Omschrijving</th><th>Status</th></tr></thead>
     <tbody>
     <% rows.forEach(b => { %>
-      <tr class="click" onclick="location.href='/boetes/<%= b.id %>'">
+      <tr class="click" data-href="/boetes/<%= b.id %>">
         <td><%= h.formatDate(b.datum) %></td>
         <td><span class="plate"><%= b.kenteken || "besteld" %></span><div class="muted small"><%= b.merk %> <%= b.model || "" %><%= b.vestiging ? " · " + b.vestiging : "" %></div></td>
         <td><%= b.bestuurder || "" %><% if (!b.bestuurder) { %><span class="pill soft">onbekend</span><% } %></td>

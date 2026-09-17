@@ -128,10 +128,13 @@ router.get("/:id", auth.requireRole("bestuurder"), async (req, res, next) => {
   const openTaken = await db.all("SELECT * FROM taken WHERE voertuig_id = $1 AND status = 'open' ORDER BY deadline NULLS LAST", [v.id]);
   const logboek = await db.all("SELECT l.*, u.name AS door FROM logboek l LEFT JOIN users u ON u.id = l.user_id WHERE l.voertuig_id = $1 ORDER BY l.created_at DESC, l.id DESC LIMIT 10", [v.id]);
   const bandenwissels = await db.all("SELECT * FROM bandenwissels WHERE voertuig_id = $1 ORDER BY seizoen DESC", [v.id]);
-  const garage = v.merk ? await db.one("SELECT * FROM contacten WHERE soort = 'garage' AND merk IS NOT NULL AND (lower(merk) LIKE '%' || lower($1) || '%') ORDER BY id LIMIT 1", [v.merk.split(/[s-]/)[0]]) : null;
+  const garage = v.merk ? await db.one("SELECT * FROM contacten WHERE soort = 'garage' AND merk IS NOT NULL AND (lower(merk) LIKE '%' || lower($1) || '%') ORDER BY id LIMIT 1", [v.merk.split(/[\s-]/)[0]]) : null;
+  // De eerstvolgende bandenwissel: winter van augustus tot en met januari, anders zomer; datum uit Instellingen
+  const nu = new Date(), maand = nu.getMonth() + 1, winter = maand >= 8 || maand <= 1;
+  const bandenDeadline = { label: winter ? "Winterbanden" : "Zomerbanden", datum: `${winter && maand <= 1 ? nu.getFullYear() - 1 : nu.getFullYear()}-${await taken.setting(winter ? "bandenwissel_winter" : "bandenwissel_zomer", winter ? "10-01" : "04-01")}` };
   const lopend = await db.all("SELECT p.*, (SELECT COUNT(*) FROM processtappen s WHERE s.proces_id = p.id) AS totaal, (SELECT COUNT(*) FROM processtappen s WHERE s.proces_id = p.id AND s.afgevinkt_op IS NOT NULL) AS klaar FROM processen p WHERE p.voertuig_id = $1 AND p.afgerond_op IS NULL ORDER BY p.gestart_op DESC", [v.id]);
   const verzoeken = await db.all("SELECT l.*, COALESCE(b.naam, l.extern_naam, u.name) AS wie FROM leenverzoeken l LEFT JOIN bestuurders b ON b.id = l.aanvrager_bestuurder_id LEFT JOIN users u ON u.id = l.aanvrager_user_id WHERE l.voertuig_id = $1 AND l.status = 'open' ORDER BY l.created_at", [v.id]);
-  res.render("voertuigen/show", { title: `${v.kenteken || "Besteld"} · ${v.merk} ${v.model || ""}`.trim(), v, toewijzingen, actief, km, incidenten, boetes, documenten, taken: openTaken, logboek, bandenwissels, garage, lopend, verzoeken, isOwn: Boolean(isOwn), NAMEN: processen.NAMEN, ...(await lookups()) });
+  res.render("voertuigen/show", { title: `${v.kenteken || "Besteld"} · ${v.merk} ${v.model || ""}`.trim(), v, toewijzingen, actief, km, incidenten, boetes, documenten, taken: openTaken, logboek, bandenwissels, bandenDeadline, garage, lopend, verzoeken, isOwn: Boolean(isOwn), NAMEN: processen.NAMEN, ...(await lookups()) });
 });
 
 // APK: afspraak vastleggen (beheerder of de bestuurder van deze auto). Daarna vraagt de app om het rapport.

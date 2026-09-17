@@ -1,6 +1,6 @@
 <%- include("../partials/header") %>
 <div class="page-head">
-  <div><div class="eyebrow">Wachtlijst</div><h1>Wie wacht op een auto</h1><div class="sub"><%= rows.filter(r => r.status === "open").length %> wachtend · <%= vrij %> op voorraad</div></div>
+  <div><div class="eyebrow">Wie wacht op een auto</div><h1>Wachtlijst</h1><div class="sub"><%= rows.filter(r => r.status === "open").length %> wachtend · <%= vrij %> personenauto's op voorraad · <%= besteld.length %> besteld</div></div>
   <% if (can("beheerder")) { %><div class="actions"><a href="/wachtlijst/nieuw" class="btn primary"><span class="msr">add</span>Op de wachtlijst</a></div><% } %>
 </div>
 <div class="card" style="padding:0">
@@ -18,7 +18,7 @@
         <td class="nowrap">
           <% if (can("beheerder") && w.status === "open") { %>
             <a href="/uitleen/toewijzen?bestuurder=<%= w.b_id || "" %>" class="btn small"><span class="msr">person_add</span>Koppelen</a>
-            <form method="POST" action="/wachtlijst/<%= w.id %>/status" class="inline"><input type="hidden" name="status" value="vervallen"><button class="btn small ghost" type="submit" title="Vervallen"><span class="msr">close</span></button></form>
+            <form method="POST" action="/wachtlijst/<%= w.id %>/status" class="inline"><input type="hidden" name="status" value="vervallen"><button class="btn small ghost" type="submit" title="Van de wachtlijst halen zonder auto: de aanvraag vervalt"><span class="msr">close</span>Vervallen</button></form>
           <% } else if (can("beheerder") && w.status === "vervallen") { %>
             <form method="POST" action="/wachtlijst/<%= w.id %>/status" class="inline"><input type="hidden" name="status" value="open"><button class="btn small ghost" type="submit">Weer open</button></form>
           <% } %>
@@ -26,6 +26,25 @@
       </tr>
     <% }) %>
     <% if (!rows.length) { %><tr><td colspan="7" class="empty">Niemand op de wachtlijst.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="margin-top:16px;padding:0">
+  <div class="card-head" style="padding:14px 18px 6px"><h2><span class="msr" style="color:var(--oranje)">local_shipping</span> Besteld, nog te leveren</h2><span class="muted small"><%= besteld.length %> auto's · koppel een wachtende zodra de auto er is</span></div>
+  <table class="list">
+    <thead><tr><th>Auto</th><th>Vestiging</th><th>Verwachte levering</th><th>Opmerking</th><th></th></tr></thead>
+    <tbody>
+    <% besteld.forEach(b => { %>
+      <tr class="click" data-href="/voertuigen/<%= b.id %>">
+        <td><strong><%= b.merk %> <%= b.model || "" %></strong></td>
+        <td><%= b.vestiging || "" %></td>
+        <td><% if (b.verwachte_levering) { %><span class="pill <%= h.daysUntil(b.verwachte_levering) < 0 ? 'warn' : 'grey' %>"><%= h.formatDate(b.verwachte_levering) %></span><% } else { %><span class="muted">onbekend</span><% } %></td>
+        <td class="small"><%= b.opmerkingen || "" %></td>
+        <td class="nowrap"><a href="/voertuigen/<%= b.id %>" class="btn small ghost">Naar de auto</a></td>
+      </tr>
+    <% }) %>
+    <% if (!besteld.length) { %><tr><td colspan="5" class="empty">Niets besteld.</td></tr><% } %>
     </tbody>
   </table>
 </div>

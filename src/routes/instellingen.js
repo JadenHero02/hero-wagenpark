@@ -23,9 +23,6 @@ const VELDEN = [
   ["uitleen_herinnering_dagen", "Herinnering leenauto (dagen voor retour)", ""],
   ["dagmail_uur", "Dagmail voor beheerders om (uur)", "Elke werkdag, bijvoorbeeld 7"],
   ["pincode_bevestiging_minuten", "Pincode: bevestiging geldig (minuten)", "Hoe lang een nieuwe login telt als extra bevestiging"],
-  ["admin_emails", "Admin bij eerste login", "E-mailadressen, met komma. Geldt voor nieuwe accounts; bestaande wijzig je hieronder."],
-  ["beheerder_emails", "Beheerder bij eerste login", ""],
-  ["directie_emails", "Directie bij eerste login", ""],
 ];
 
 router.get("/", async (req, res) => {

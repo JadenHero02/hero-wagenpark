@@ -1,9 +1,9 @@
 <%- include("partials/header") %>
 <% if (meekijken) { %><div class="flash" style="background:var(--oranje-thin);color:var(--oranje-bold)"><span class="msr">visibility</span>Je kijkt mee als <%= meekijken.naam %>. Dit is wat deze bestuurder ziet in Mijn auto. <a href="/bestuurders/<%= meekijken.id %>" style="margin-left:auto;color:inherit;font-weight:600">Terug naar de bestuurder</a></div><% } %>
+<div style="max-width:560px">
 <div class="page-head"><div><div class="eyebrow">Mijn auto</div><h1><%= meekijken ? meekijken.naam : currentUser.name %></h1></div>
   <div class="actions"><a href="/uitleen/aanvragen" class="btn"><span class="msr">key</span>Leenauto aanvragen</a><% if (autos.length) { %><a href="/incidenten/nieuw" class="btn primary"><span class="msr">car_crash</span>Incident melden</a><% } %></div>
 </div>
-<div style="max-width:560px">
 <% if (!meekijken) { %>
 <div class="install-kaart" id="install-kaart" hidden>
   <div class="ik-kop"><span class="ik-icoon"><span class="msr">directions_car</span></span><div><strong>Zet Wagenpark op je beginscherm</strong><div class="ik-sub">Dan open je Mijn auto met één tik, zonder adresbalk.</div></div></div>
@@ -30,7 +30,7 @@
   </div>
 <% }) %>
 
-<% autos.forEach(v => { const dagen = h.daysUntil(v.apk_vervaldatum); const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[s-]/)[0])) || garages.find(g => (g.merk || "").toLowerCase() === "alle"); const mijnTaken = taken.filter(t => (t.voertuig_id === v.id || !t.voertuig_id) && !["apk", "apk_rapport"].includes(t.soort)); %>
+<% autos.forEach(v => { const dagen = h.daysUntil(v.apk_vervaldatum); const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[\s-]/)[0])) || garages.find(g => (g.merk || "").toLowerCase() === "alle"); const mijnTaken = taken.filter(t => (t.voertuig_id === v.id || !t.voertuig_id) && !["apk", "apk_rapport"].includes(t.soort)); %>
   <div class="card">
     <div class="vehicle-head">
       <span class="plate big"><%= v.kenteken || "besteld" %></span>
@@ -105,7 +105,7 @@
 <div class="card">
   <div class="lbl"><span class="msr">call</span>Wie bel je waarvoor</div>
   <div class="rows" style="margin-top:4px">
-    <% autos.forEach(v => { const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[s-]/)[0])); if (!garage) return; %>
+    <% autos.forEach(v => { const garage = garages.find(g => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[\s-]/)[0])); if (!garage) return; %>
       <div><span><strong><%= garage.naam %></strong><div class="muted small">Garage, onderhoud en APK voor <%= v.merk %></div></span><span class="v"><% if (garage.telefoon) { %><a href="tel:<%= garage.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span><%= garage.telefoon %></a><% } %></span></div>
     <% }) %>
     <% const leveranciers = autos.map(v => h.tankpasLeverancier(v.tankpas_nummer)).filter(Boolean);

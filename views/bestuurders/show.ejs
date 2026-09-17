@@ -10,7 +10,7 @@
     <table class="list">
       <thead><tr><th>Kenteken</th><th>Auto</th><th>Soort</th><th>Van</th><th>Tot</th><th></th></tr></thead>
       <tbody>
-      <% toewijzingen.forEach(t => { %><tr class="click" onclick="location.href='/voertuigen/<%= t.voertuig_id %>'"><td><span class="plate"><%= t.kenteken || "besteld" %></span></td><td><%= t.merk %> <%= t.model || "" %></td><td><%= t.soort === "uitleen" ? "Uitleen" : "Vast" %></td><td><%= h.formatDate(t.van) %></td><td><%= h.formatDate(t.tot) %></td><td><% if (t.status === "actief") { %><span class="pill ok">actief</span><% } %></td></tr><% }) %>
+      <% toewijzingen.forEach(t => { %><tr class="click" data-href="/voertuigen/<%= t.voertuig_id %>"><td><span class="plate"><%= t.kenteken || "besteld" %></span></td><td><%= t.merk %> <%= t.model || "" %></td><td><%= t.soort === "uitleen" ? "Uitleen" : "Vast" %></td><td><%= h.formatDate(t.van) %></td><td><%= h.formatDate(t.tot) %></td><td><% if (t.status === "actief") { %><span class="pill ok">actief</span><% } %></td></tr><% }) %>
       <% if (!toewijzingen.length) { %><tr><td colspan="6" class="empty">Geen auto toegewezen.</td></tr><% } %>
       </tbody>
     </table>

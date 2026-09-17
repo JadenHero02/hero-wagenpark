@@ -6,7 +6,7 @@
     <thead><tr><th>Wanneer</th><th>Naar</th><th>Onderwerp</th><th>Soort</th><th>Status</th></tr></thead>
     <tbody>
     <% rows.forEach(m => { %>
-      <tr class="click" onclick="window.open('/instellingen/mail/<%= m.id %>', '_blank')">
+      <tr class="click" data-href="/instellingen/mail/<%= m.id %>" data-target="_blank">
         <td class="small nowrap"><%= h.formatDate(m.verstuurd_op, true) %></td>
         <td class="small"><%= m.naar %><% if (m.cc) { %><div class="muted">cc <%= m.cc %></div><% } %></td>
         <td><%= m.onderwerp %></td>

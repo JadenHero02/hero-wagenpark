@@ -1,6 +1,6 @@
 <%- include("../partials/header") %>
 <div class="page-head">
-  <div><div class="eyebrow">Admin</div><h1>Instellingen</h1><div class="sub">Termijnen, HR-adres, rollen. Alleen voor de admin.</div></div>
+  <div><div class="eyebrow">Admin</div><h1>Instellingen</h1><div class="sub">Termijnen en adressen. Rollen staan op een eigen pagina. Alleen voor de admin.</div></div>
   <div class="actions"><a href="/instellingen/mail" class="btn"><span class="msr">mail</span>Maillog (<%= mails.n %><%= mails.fout ? ", " + mails.fout + " mislukt" : "" %>)</a></div>
 </div>
 <div class="grid-2">
@@ -24,7 +24,7 @@
     </div>
     <div class="card">
       <div class="card-head"><h2>Gebruikers en rollen</h2><a href="/instellingen/rollen" class="btn small"><span class="msr">manage_accounts</span>Naar Rollen</a></div>
-      <p class="muted">Wie admin, directie, beheerder of bestuurder is, wie al is ingelogd en wie welke rol krijgt bij de eerste login: één tabel onder Rollen.</p>
+      <p class="muted">Wie admin, directie, beheerder of bestuurder is, wie al is ingelogd en wie welke rol krijgt bij de eerste login: dat staat alleen onder Rollen.</p>
     </div>
   </div>
 </div>

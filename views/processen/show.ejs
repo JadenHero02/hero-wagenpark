@@ -14,7 +14,7 @@
       <div style="width:34px;flex-shrink:0;text-align:center">
         <% if (done) { %><span class="msr" style="color:var(--groen);font-size:26px">check_circle</span>
         <% } else if (s.automatisch) { %><span class="msr" style="color:var(--grijs);font-size:24px">smart_toy</span>
-        <% } else if (kan) { %><form method="POST" action="/processen/<%= p.id %>/stappen/<%= s.id %>"><button type="submit" class="btn small" style="padding:4px 6px" title="Afvinken"><span class="msr">check_box_outline_blank</span></button></form>
+        <% } else if (kan) { %><form method="POST" action="/processen/<%= p.id %>/stappen/<%= s.id %>"><button type="submit" class="btn small" style="padding:4px 6px" title="Afvinken" aria-label="Afvinken"><span class="msr">check_box_outline_blank</span></button></form>
         <% } else { %><span class="msr" style="color:var(--grijs-light);font-size:24px">radio_button_unchecked</span><% } %>
       </div>
       <div style="flex:1">
@@ -29,7 +29,7 @@
           </div>
         <% } %>
       </div>
-      <% if (done && !s.automatisch && !p.afgerond_op && can("beheerder")) { %><form method="POST" action="/processen/<%= p.id %>/stappen/<%= s.id %>"><input type="hidden" name="ongedaan" value="1"><button type="submit" class="btn small ghost" title="Vinkje weghalen"><span class="msr">undo</span></button></form><% } %>
+      <% if (done && !s.automatisch && !p.afgerond_op && can("beheerder")) { %><form method="POST" action="/processen/<%= p.id %>/stappen/<%= s.id %>"><input type="hidden" name="ongedaan" value="1"><button type="submit" class="btn small ghost" title="Vinkje weghalen" aria-label="Vinkje weghalen"><span class="msr">undo</span></button></form><% } %>
     </div>
   <% }) %>
 </div>
