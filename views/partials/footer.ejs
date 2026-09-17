@@ -61,6 +61,15 @@
   nav.addEventListener("click", function (e) { if (e.target.closest("a")) zet(false); });
 })();
 (function () {
+  // Beheer in het menu: één klik klapt de beheerpagina's open of dicht; de browser onthoudt de stand
+  var knop = document.getElementById("side-beheer-knop"), sub = document.getElementById("side-beheer");
+  if (!knop || !sub) return;
+  knop.addEventListener("click", function () {
+    var open = sub.hidden; sub.hidden = !open; knop.setAttribute("aria-expanded", open ? "true" : "false");
+    try { localStorage.setItem("wp_menu_beheer", open ? "open" : "dicht"); } catch (e) {}
+  });
+})();
+(function () {
   // Weergave: licht, donker of systeem. Keuze in localStorage; bij "systeem" volgt de app de instelling van het apparaat
   var knoppen = document.querySelectorAll("[data-thema-knop]");
   function pas(keuze) {

@@ -21,25 +21,30 @@
 <%
   const p = currentPath || "";
   const user = currentUser || null;
+  // Drie groepen: het dagelijkse werk (met de tellers), registreren, en Beheer dat ingeklapt staat tot je het opent.
+  // Export staat niet in het menu: de exportknop staat op Wagenpark (de volledige export blijft bereikbaar op /export).
   const menu = [
-    { href: "/", icon: "grid_view", label: "Dashboard", min: "directie" },
-    { href: "/voertuigen", icon: "directions_car", label: "Wagenpark", min: "directie", badge: badges.voertuigen },
-    { href: "/bestuurders", icon: "group", label: "Bestuurders", min: "directie" },
-    { href: "/wachtlijst", icon: "hourglass_top", label: "Wachtlijst", min: "directie", badge: badges.wachtlijst },
-    { href: "/uitleen", icon: "key", label: "Uitleen", min: "directie", badge: badges.uitleen },
-    { href: "/taken", icon: "task_alt", label: "Taken", min: "directie", badge: badges.taken, hot: true },
-    { href: "/incidenten", icon: "car_crash", label: "Incidenten", min: "directie", badge: badges.incidenten },
-    { href: "/boetes", icon: "receipt_long", label: "Boetes", min: "directie", als: magBoetes, badge: badges.boetes },
-    { href: "/contacten", icon: "contacts", label: "Contacten", min: "directie" },
-    { href: "/archief", icon: "inventory_2", label: "Archief", min: "directie" },
-    { href: "/verduurzaming", icon: "eco", label: "Verduurzaming", min: "directie" },
-    { href: "/processen", icon: "checklist", label: "Processen", min: "directie" },
-    { href: "/export", icon: "download", label: "Export", min: "directie" },
-    { href: "/instellingen/rollen", icon: "manage_accounts", label: "Rollen", min: "admin" },
-    { href: "/instellingen", icon: "settings", label: "Instellingen", min: "admin" },
+    { href: "/", icon: "grid_view", label: "Dashboard", min: "directie", groep: "dag" },
+    { href: "/voertuigen", icon: "directions_car", label: "Wagenpark", min: "directie", badge: badges.voertuigen, groep: "dag" },
+    { href: "/bestuurders", icon: "group", label: "Bestuurders", min: "directie", groep: "dag" },
+    { href: "/taken", icon: "task_alt", label: "Taken", min: "directie", badge: badges.taken, hot: true, groep: "dag" },
+    { href: "/uitleen", icon: "key", label: "Uitleen", min: "directie", badge: badges.uitleen, groep: "dag" },
+    { href: "/wachtlijst", icon: "hourglass_top", label: "Wachtlijst", min: "directie", badge: badges.wachtlijst, groep: "dag" },
+    { href: "/incidenten", icon: "car_crash", label: "Incidenten", min: "directie", badge: badges.incidenten, groep: "reg" },
+    { href: "/boetes", icon: "receipt_long", label: "Boetes", min: "directie", als: magBoetes, badge: badges.boetes, groep: "reg" },
+    { href: "/contacten", icon: "contacts", label: "Contacten", min: "directie", groep: "reg" },
+    { href: "/archief", icon: "inventory_2", label: "Archief", min: "directie", groep: "beheer" },
+    { href: "/verduurzaming", icon: "eco", label: "Verduurzaming", min: "directie", groep: "beheer" },
+    { href: "/processen", icon: "checklist", label: "Processen", min: "directie", groep: "beheer" },
+    { href: "/instellingen/rollen", icon: "manage_accounts", label: "Rollen", min: "admin", groep: "beheer" },
+    { href: "/instellingen", icon: "settings", label: "Instellingen", min: "admin", groep: "beheer" },
   ];
   // Actief: exact of een subpagina, tenzij een andere menuregel specifieker is (/instellingen/rollen onder /instellingen)
   const isActive = (prefix) => (prefix === "/" ? p === "/" : (p === prefix || p.startsWith(prefix + "/")) && !menu.some((m) => m.href !== prefix && m.href.startsWith(prefix + "/") && p.startsWith(m.href))) ? "on" : "";
+  const zichtbaar = menu.filter((m) => can(m.min) && m.als !== false);
+  const groep = (g) => zichtbaar.filter((m) => m.groep === g);
+  // Beheer staat open als je op een beheerpagina zit; anders bepaalt de browser (localStorage) de stand, standaard dicht
+  const beheerActief = groep("beheer").some((m) => isActive(m.href));
 %>
 <div class="shell">
   <header class="topbar">
@@ -68,12 +73,20 @@
     <div class="menu-achter" id="menu-achter" hidden></div>
     <nav class="sidenav" id="sidenav">
       <div class="sidenav-kop"><span class="msr" style="color:var(--oranje)">directions_car</span><strong>Wagenpark</strong><button type="button" class="menu-sluit" id="menu-sluit" aria-label="Menu sluiten"><span class="msr">close</span></button></div>
-      <% menu.forEach((m) => { if (!can(m.min) || m.als === false) return; %>
+      <% const regel = (m) => { %>
         <a href="<%= m.href %>" class="side-link <%= isActive(m.href) %>">
           <span class="msr"><%= m.icon %></span><span class="label"><%= m.label %></span>
           <% if (m.badge) { %><span class="side-badge <%= m.hot ? 'hot' : '' %>"><%= m.badge %></span><% } %>
         </a>
-      <% }) %>
+      <% }; %>
+      <% groep("dag").forEach(regel) %>
+      <% if (groep("reg").length) { %><div class="sidenav-sep"></div><% groep("reg").forEach(regel) %><% } %>
+      <% if (groep("beheer").length) { %>
+        <div class="sidenav-sep"></div>
+        <button type="button" class="side-groep" id="side-beheer-knop" aria-controls="side-beheer" aria-expanded="<%= beheerActief ? "true" : "false" %>" data-vast="<%= beheerActief ? "1" : "" %>"><span class="label">Beheer</span><span class="msr">expand_more</span></button>
+        <div class="side-sub" id="side-beheer" <%= beheerActief ? "" : "hidden" %>><% groep("beheer").forEach(regel) %></div>
+        <script>(function () { try { var k = document.getElementById("side-beheer-knop"), s = document.getElementById("side-beheer"); if (!k.dataset.vast && localStorage.getItem("wp_menu_beheer") === "open") { s.hidden = false; k.setAttribute("aria-expanded", "true"); } } catch (e) {} })();</script>
+      <% } %>
       <% if (user && (currentBestuurder || !can("directie"))) { %>
         <% if (can("directie")) { %><div class="sidenav-sep"></div><% } %>
         <a href="/mijn-auto" class="side-link <%= isActive('/mijn-auto') %>"><span class="msr">person_pin_circle</span><span class="label">Mijn auto</span></a>

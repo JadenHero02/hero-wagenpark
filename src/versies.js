@@ -4,8 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.3.6", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "het menu is in drie groepen gezet: bovenaan het dagelijkse werk (Dashboard, Wagenpark, Bestuurders, Taken, Uitleen, Wachtlijst), daaronder registreren (Incidenten, Boetes, Contacten), en onderaan het kopje Beheer met Archief, Verduurzaming, Processen, Rollen en Instellingen. Beheer staat standaard dicht, klapt open met één klik, onthoudt per browser de stand en staat vanzelf open als je op een beheerpagina zit", commit: "" },
+    { soort: "verbeterd", tekst: "Export staat niet meer in het menu: de exportknop staat op Wagenpark, met de huidige zoekterm en filters. De volledige export met alle tabbladen blijft bereikbaar op /export", commit: "" },
+  ] },
   { versie: "0.3.5", datum: "2026-09-17", punten: [
-    { soort: "verbeterd", tekst: "de uitleg bij Bijtelling zegt nu dat de bijtelling is wat de auto de bestuurder kost, via het loon; de zin over een eigen bijdrage is weg (Abdullah: je betaalt alleen de bijtelling)", commit: "" },
+    { soort: "verbeterd", tekst: "de uitleg bij Bijtelling zegt nu dat de bijtelling is wat de auto de bestuurder kost, via het loon; de zin over een eigen bijdrage is weg (Abdullah: je betaalt alleen de bijtelling)", commit: "5de5114" },
   ] },
   { versie: "0.3.4", datum: "2026-09-17", punten: [
     { soort: "nieuw", tekst: "bijtelling bij Over deze auto (vraag van Abdullah): het percentage, de cataloguswaarde, de bruto bijtelling per jaar en per maand en een indicatie van wat het netto kost. De app rekent het uit met de RDW-gegevens en de regels van de Belastingdienst: 22% voor auto's met uitstoot (25% van vóór 2017), voor elektrische auto's het verlaagde tarief van het jaar van eerste toelating over de eerste € 30.000 (of het hogere bedrag van dat jaar) en 22% over de rest, 60 maanden vast en daarna het tarief van het lopende jaar. Staat Bijtelling op Nee, dan zegt de app dat er geen bijtelling is", commit: "" },
