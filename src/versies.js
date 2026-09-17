@@ -4,9 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.3.7", datum: "2026-09-17", punten: [
+    { soort: "opgelost", tekst: "op Rollen stond bij Admin nog vast \"Annemiek\", terwijl zij nu beheerder is; de kolom toont nu wie er echt admin is. In \"Wat mag welke rol\" klopt de regel Boetes weer: directie ziet ze, beheerders alleen als celdirecteur of HR", commit: "" },
+  ] },
   { versie: "0.3.6", datum: "2026-09-17", punten: [
-    { soort: "verbeterd", tekst: "het menu is in drie groepen gezet: bovenaan het dagelijkse werk (Dashboard, Wagenpark, Bestuurders, Taken, Uitleen, Wachtlijst), daaronder registreren (Incidenten, Boetes, Contacten), en onderaan het kopje Beheer met Archief, Verduurzaming, Processen, Rollen en Instellingen. Beheer staat standaard dicht, klapt open met één klik, onthoudt per browser de stand en staat vanzelf open als je op een beheerpagina zit", commit: "" },
-    { soort: "verbeterd", tekst: "Export staat niet meer in het menu: de exportknop staat op Wagenpark, met de huidige zoekterm en filters. De volledige export met alle tabbladen blijft bereikbaar op /export", commit: "" },
+    { soort: "verbeterd", tekst: "het menu is in drie groepen gezet: bovenaan het dagelijkse werk (Dashboard, Wagenpark, Bestuurders, Taken, Uitleen, Wachtlijst), daaronder registreren (Incidenten, Boetes, Contacten), en onderaan het kopje Beheer met Archief, Verduurzaming, Processen, Rollen en Instellingen. Beheer staat standaard dicht, klapt open met één klik, onthoudt per browser de stand en staat vanzelf open als je op een beheerpagina zit", commit: "0b41fb3" },
+    { soort: "verbeterd", tekst: "Export staat niet meer in het menu: de exportknop staat op Wagenpark, met de huidige zoekterm en filters. De volledige export met alle tabbladen blijft bereikbaar op /export", commit: "0b41fb3" },
   ] },
   { versie: "0.3.5", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "de uitleg bij Bijtelling zegt nu dat de bijtelling is wat de auto de bestuurder kost, via het loon; de zin over een eigen bijdrage is weg (Abdullah: je betaalt alleen de bijtelling)", commit: "5de5114" },

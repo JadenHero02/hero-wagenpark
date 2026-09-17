@@ -10,7 +10,7 @@
      ["Wagenpark, bestuurders, contacten, archief", OK, OK, OK, EIGEN("alleen eigen auto")],
      ["Dashboard, taken, uitleen, processen", OK, OK, OK, NEE],
      ["Incidenten", OK, OK, OK, EIGEN("alleen eigen")],
-     ["Boetes (alleen HR en admin)", OK, NEE, NEE, EIGEN("alleen eigen")],
+     ["Boetes", OK, OK, EIGEN("celdirecteuren en HR"), EIGEN("alleen eigen")],
      ["Pincode tankpas, na extra bevestiging", OK, NEE, OK, EIGEN("alleen eigen auto")],
      ["Exporteren naar Excel", OK, OK, OK, NEE],
      ["Doen", null],
@@ -29,7 +29,7 @@
 <details class="card" style="margin-bottom:16px;padding:0" <%= totaal <= 3 ? "open" : "" %>>
   <summary style="list-style:none;cursor:pointer;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px"><h2><span class="msr" style="color:var(--oranje)">shield_person</span> Wat mag welke rol</h2><span class="muted small">klik om te <span class="matrix-open">openen</span><span class="matrix-dicht">sluiten</span> · rechten worden op de server afgedwongen</span></summary>
   <table class="list matrix">
-    <thead><tr><th></th><th><span class="pill rol-admin">Admin</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">Annemiek</div></th><th><span class="pill rol-directie">Directie</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0"><%= groepen[1].rijen.length %> personen</div></th><th><span class="pill rol-beheerder">Beheerder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">celdirecteuren</div></th><th><span class="pill rol-bestuurder">Bestuurder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">iedereen met een auto</div></th></tr></thead>
+    <thead><tr><th></th><th><span class="pill rol-admin">Admin</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0"><%= groepen[0].rijen.length ? groepen[0].rijen.map(r => r.naam.split(" ")[0]).join(", ") : "niemand" %></div></th><th><span class="pill rol-directie">Directie</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0"><%= groepen[1].rijen.length %> personen</div></th><th><span class="pill rol-beheerder">Beheerder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">celdirecteuren</div></th><th><span class="pill rol-bestuurder">Bestuurder</span><div class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">iedereen met een auto</div></th></tr></thead>
     <tbody>
     <% MATRIX.forEach(r => { if (r[1] === null) { %><tr class="groep"><td colspan="5"><%= r[0] %></td></tr><% } else { %><tr><td><%= r[0] %></td><td><%- r[1] %></td><td><%- r[2] %></td><td><%- r[3] %></td><td><%- r[4] %></td></tr><% } }) %>
     </tbody>
