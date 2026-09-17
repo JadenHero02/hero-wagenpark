@@ -15,7 +15,7 @@
         <td><%= c.merk || c.vestiging || "" %></td>
         <td class="nowrap"><%= c.telefoon || "" %></td>
         <td class="small"><%= c.adres || "" %></td>
-        <td class="small muted"><%= c.opmerking || "" %></td>
+        <td class="small muted"><% if (c.opmerking && c.opmerking.length > 120) { %><details class="meer"><summary><%= c.opmerking.slice(0, 90).replace(/\s+\S*$/, "") %>… <span>meer</span></summary><%= c.opmerking %></details><% } else { %><%= c.opmerking || "" %><% } %></td>
         <td class="nowrap"><% if (can("beheerder")) { %><a href="/contacten/<%= c.id %>/bewerken" class="btn ghost small"><span class="msr">edit</span>Bewerken</a><% } %></td>
       </tr>
     <% }) %>

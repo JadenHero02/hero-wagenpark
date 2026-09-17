@@ -25,7 +25,6 @@
     <div class="rows">
       <% totaal.forEach(m => { %><div><span class="k"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:<%= kleur[m.milieu] || kleur.onbekend %>;margin-right:8px;vertical-align:-1px"></i><%= naam(m.milieu) %></span><span class="v"><strong><%= pct(m.n, totN) %>%</strong> <span class="muted small">(<%= m.n %>)</span></span></div><% }) %>
     </div>
-    <div class="muted small" style="margin-top:10px"><%= counts.doc_ok %> van <%= counts.met_kenteken %> auto's hebben een kentekenbewijs in de app.</div>
   </div>
   <div class="card">
     <div class="card-head"><h2><span class="msr" style="color:var(--blauw)">location_on</span> Per vestiging</h2></div>

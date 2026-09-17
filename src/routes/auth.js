@@ -21,7 +21,7 @@ router.post("/login/dev", async (req, res) => {
   const employee = employees.enabled() ? await employees.findEmployee(email) : null;
   const user = await auth.upsertUser({ email, name: employee ? employee.name : email.split("@")[0], isAdmin: employee ? employee.isAdmin : false });
   auth.setSessionCookie(req, res, await auth.createSession(user.id));
-  res.redirect(safeNext(req.body.next));
+  res.redirect(safeNext((req.body || {}).next));
 });
 
 router.post("/logout", async (req, res) => {

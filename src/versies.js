@@ -4,6 +4,10 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.38", datum: "2026-09-17", punten: [
+    { soort: "opgelost", tekst: "in de donkere weergave was een open terugroepactie op de voertuigpagina onleesbaar: wit vlak met lichte tekst. Nu een donkerrood vlak", commit: "" },
+    { soort: "verbeterd", tekst: "op de telefoon toont Taken de kolommen Soort en Voor niet meer, zodat de tabel minder breed is; lange opmerkingen bij Contacten klappen in met \"meer\"; de regel over kentekenbewijzen staat niet meer op Verduurzaming", commit: "" },
+  ] },
   { versie: "0.2.37", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "de paginatitel is overal gelijk aan de naam in het menu: Wagenpark, Processen, Uitleen, Rollen, Taken, Wachtlijst, Incidenten en Boetes. De oude omschrijving staat er klein boven", commit: "" },
     { soort: "verbeterd", tekst: "Taken is korter: de tientallen bandenwisseltaken staan als één regel met voortgang en de knop Wie nog; lange omschrijvingen zoals een terugroepactie klap je uit met \"meer\". De knoppen heten nu Afronden en Vervallen, met uitleg", commit: "" },

@@ -17,7 +17,7 @@
 </form>
 <div class="card" style="padding:0">
   <table class="list">
-    <thead><tr><th>Deadline</th><th>Taak</th><th>Auto</th><th>Bestuurder</th><th>Soort</th><th>Voor</th><th></th></tr></thead>
+    <thead><tr><th>Deadline</th><th>Taak</th><th>Auto</th><th>Bestuurder</th><th class="hide-sm">Soort</th><th class="hide-sm">Voor</th><th></th></tr></thead>
     <tbody>
     <% bandenGroepen.forEach(g => { const seizoen = g.sz.split("-")[1]; const naam = seizoen === "winter" ? "Winterbanden" : "Zomerbanden"; const totaal = Number(g.open) + Number(g.klaar); %>
       <tr>
@@ -25,8 +25,8 @@
         <td><strong><%= naam %> laten monteren · <%= g.open %> auto's nog te doen</strong><div class="muted small"><%= g.klaar %> van <%= totaal %> gedaan. Elke bestuurder heeft een eigen taak in Mijn auto.</div><div class="voortgang" style="margin-top:8px;max-width:260px"><i style="width:<%= totaal ? Math.round(g.klaar / totaal * 100) : 0 %>%"></i></div></td>
         <td class="muted small"><%= totaal %> auto's</td>
         <td></td>
-        <td class="small">Bandenwissel</td>
-        <td class="small">Bestuurder</td>
+        <td class="small hide-sm">Bandenwissel</td>
+        <td class="small hide-sm">Bestuurder</td>
         <td class="nowrap"><a href="/taken?soort=banden<%= f.vestiging ? "&vestiging=" + f.vestiging : "" %>" class="btn small">Wie nog</a></td>
       </tr>
     <% }) %>
@@ -36,8 +36,8 @@
         <td><strong><%= t.titel %></strong><% if (t.omschrijving && t.omschrijving.length > 160) { %><details class="meer"><summary class="muted small"><%= t.omschrijving.slice(0, 120).replace(/\s+\S*$/, "") %>… <span>meer</span></summary><div class="muted small"><%= t.omschrijving %></div></details><% } else if (t.omschrijving) { %><div class="muted small"><%= t.omschrijving %></div><% } %><% if (t.status !== "open") { %><div class="small"><span class="pill grey"><%= t.status %></span> <span class="muted"><%= t.afgerond_door_naam || "de app" %> · <%= h.formatDate(t.afgerond_op, true) %></span></div><% } %></td>
         <td><% if (t.voertuig_id) { %><a href="/voertuigen/<%= t.voertuig_id %>"><span class="plate"><%= t.kenteken || "besteld" %></span></a><div class="muted small"><%= t.merk %> <%= t.model || "" %><%= t.vestiging ? " · " + t.vestiging : "" %></div><% } %></td>
         <td><% if (t.bestuurder_id) { %><a href="/bestuurders/<%= t.bestuurder_id %>"><%= t.bestuurder %></a><% } %></td>
-        <td class="small"><%= h.label("taak", t.soort) %></td>
-        <td class="small"><%= t.voor === "bestuurder" ? "Bestuurder" : "Beheerder" %></td>
+        <td class="small hide-sm"><%= h.label("taak", t.soort) %></td>
+        <td class="small hide-sm"><%= t.voor === "bestuurder" ? "Bestuurder" : "Beheerder" %></td>
         <td class="nowrap">
           <% if (can("beheerder")) { %>
             <% if (t.status === "open") { %>
