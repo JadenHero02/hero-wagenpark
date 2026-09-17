@@ -48,8 +48,9 @@ function relativeDate(value) {
   if (d === 0) return "vandaag";
   if (d === -1) return "gisteren";
   if (d === 1) return "morgen";
-  if (d < 0) return d > -7 ? `${-d} dagen geleden` : d > -60 ? `${Math.round(-d / 7)} weken geleden` : `${Math.round(-d / 30)} maanden geleden`;
-  return d < 7 ? `over ${d} dagen` : d < 60 ? `over ${Math.round(d / 7)} weken` : `over ${Math.round(d / 30)} maanden`;
+  const n = (x, enk, mv) => `${x} ${x === 1 ? enk : mv}`;
+  if (d < 0) return d > -7 ? `${n(-d, "dag", "dagen")} geleden` : d > -60 ? `${n(Math.round(-d / 7), "week", "weken")} geleden` : `${n(Math.round(-d / 30), "maand", "maanden")} geleden`;
+  return d < 7 ? `over ${n(d, "dag", "dagen")}` : d < 60 ? `over ${n(Math.round(d / 7), "week", "weken")}` : `over ${n(Math.round(d / 30), "maand", "maanden")}`;
 }
 // Bouwjaar/maand netjes opslaan als "2024-08" of "2024": accepteert "Aug 2024", "Mei 2021", "Sept 2019", "08-2024", "2024-08", "2024"
 const MAANDEN = { jan: 1, feb: 2, mrt: 3, mar: 3, maa: 3, apr: 4, mei: 5, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, okt: 10, oct: 10, nov: 11, dec: 12 };
