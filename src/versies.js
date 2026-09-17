@@ -5,6 +5,7 @@
 
 const VERSIES = [
   { versie: "0.3.2", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "de donkere weergave is nu gewoon zwart: geen blauwe tint meer in de vlakken, ook de balk en het menu zijn zwart met een dunne lijn. Zwart, drie grijzen en wit, oranje voor de actieknop, Hero-blauw alleen voor links en focus", commit: "" },
     { soort: "verbeterd", tekst: "boetes zijn zichtbaar voor celdirecteuren, directie, HR en de admin (vraag van Annemiek). Invoeren en \"Staat in AFAS\" bevestigen blijft alleen voor HR en de admin. Een bestuurder ziet nog steeds alleen zijn eigen boetes in Mijn auto", commit: "" },
   ] },
   { versie: "0.3.1", datum: "2026-09-17", punten: [

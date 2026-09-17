@@ -7,92 +7,106 @@
   --hero-blauw: #073889; --op-blauw: #ffffff;
   --radius: 12px; --shadow: 0 1px 2px rgba(3,21,63,.04);
 }
-/* Donker thema. Niet "alles wat wit was donker", maar lagen: een bijna zwarte achtergrond met koele tint, kaarten die er iets bovenop
-   liggen met een hairline en een lichtrand aan de bovenkant, witte koppen, Hero-blauw alleen als accent (links, actief, focus),
-   de balk en het menu als één kader in diep Hero-blauw, en pillen met een donkere tint en heldere tekst. Keuze in localStorage (wp_thema). */
+/* Donker thema: gewoon zwart. Geen blauwe tint in de vlakken; zwart, drie grijzen en wit. De balk en het menu zijn ook zwart,
+   met een dunne lijn ertussen en alleen de oranje streep bij het actieve onderdeel. Hero-blauw blijft over voor links en focus,
+   oranje voor de actieknop. Kaarten liggen als iets lichter grijs op het zwart. Keuze in localStorage (wp_thema). */
 [data-thema="donker"] {
-  --bg: #0b0f18; --wit: #131927; --vlak-2: #0e131f; --vlak-hover: #1a2233;
-  --grijs-thin: #242d3f; --grijs-light: #5d6a84; --grijs: #96a1b8;
-  --blauw-black: #e4e8f1; --kop: #f5f7fb;
-  --blauw: #8fb5ff; --blauw-bold: #b3ccff; --blauw-soft: #1d2b47; --blauw-hair: #182137;
-  --hero-blauw: #071f56; --kader-lijn: rgba(255,255,255,.08); --accent: #2f63c9;
-  --oranje: #f46015; --oranje-bold: #ffb27a; --oranje-thin: #3a2313; --oranje-tekst: #ff9a5a;
-  --groen: #4cd35d; --groen-soft: #16301e; --groen-text: #82e58f;
-  --rood: #d9414f; --rood-soft: #3b1a20; --rood-tekst: #ff8c96;
-  --geel: #ffc63a; --geel-soft: #3a3014;
-  --shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 1px 2px rgba(0,0,0,.5);
+  --bg: #050505; --wit: #111111; --vlak-2: #0a0a0a; --vlak-hover: #181818;
+  --grijs-thin: #242424; --grijs-light: #6a6a6a; --grijs: #9b9b9b;
+  --blauw-black: #e6e6e6; --kop: #ffffff;
+  --blauw: #8ab4f8; --blauw-bold: #adc8ff; --blauw-soft: #1a1f2a; --blauw-hair: #181818;
+  --hero-blauw: #0a0a0a; --kader-lijn: #232323; --accent: #0f5ad6;
+  --oranje: #f46015; --oranje-bold: #ffb27a; --oranje-thin: #2a1a10; --oranje-tekst: #ff8a3d;
+  --groen: #3fcf57; --groen-soft: #0f2415; --groen-text: #7fe08c;
+  --rood: #d9414f; --rood-soft: #2a1114; --rood-tekst: #ff8c96;
+  --geel: #ffc63a; --geel-soft: #2a2410;
+  --shadow: 0 1px 2px rgba(0,0,0,.6);
   color-scheme: dark;
 }
 [data-thema="donker"] body { background: var(--bg); }
-[data-thema="donker"] ::selection { background: #2f63c9; color: #ffffff; }
+[data-thema="donker"] ::selection { background: var(--accent); color: #ffffff; }
 [data-thema="donker"] h1, [data-thema="donker"] h2, [data-thema="donker"] h3 { color: var(--kop); }
 [data-thema="donker"] .eyebrow, [data-thema="donker"] .lbl .msr { color: var(--oranje-tekst); }
 [data-thema="donker"] a:hover { color: #ffffff; }
-/* Kader: balk en menu in diep Hero-blauw, met een hairline tussen menu en inhoud */
-[data-thema="donker"] .topbar { background: var(--hero-blauw); border-bottom: 1px solid var(--kader-lijn); box-shadow: 0 1px 0 rgba(0,0,0,.4); }
+/* Kader: balk en menu zwart, één dunne lijn naar de inhoud */
+[data-thema="donker"] .topbar { background: var(--hero-blauw); border-bottom: 1px solid var(--kader-lijn); }
+[data-thema="donker"] .brand-app { border-left-color: #2a2a2a; }
 [data-thema="donker"] .sidenav { background: var(--hero-blauw); border-right: 1px solid var(--kader-lijn); }
-[data-thema="donker"] .side-link { color: rgba(255,255,255,.78); } [data-thema="donker"] .side-link .msr { color: rgba(255,255,255,.55); }
-[data-thema="donker"] .side-link:hover, [data-thema="donker"] .side-link:focus-visible { background: rgba(255,255,255,.07); color: #ffffff; border-left-color: transparent; }
-[data-thema="donker"] .side-link.on { background: rgba(47,99,201,.35); color: #ffffff; border-left-color: var(--oranje); }
-[data-thema="donker"] .topsearch { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); }
-[data-thema="donker"] .topsearch:focus-within { background: var(--wit); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,99,201,.3); }
-[data-thema="donker"] .avatar { background: #ffffff; color: #071f56; }
-[data-thema="donker"] .zoek-lijst, [data-thema="donker"] .usermenu-list { box-shadow: 0 16px 40px rgba(0,0,0,.6); border-color: #2b3549; }
-[data-thema="donker"] .versie-bubble { box-shadow: 0 8px 24px rgba(0,0,0,.5); }
-[data-thema="donker"] .versie-nieuw { background: #f5f7fb; color: #03153f; }
+[data-thema="donker"] .side-link { color: #b5b5b5; } [data-thema="donker"] .side-link .msr { color: #7a7a7a; }
+[data-thema="donker"] .side-link:hover, [data-thema="donker"] .side-link:focus-visible { background: #161616; color: #ffffff; border-left-color: transparent; }
+[data-thema="donker"] .side-link:hover .msr, [data-thema="donker"] .side-link.on .msr { color: #ffffff; }
+[data-thema="donker"] .side-link.on { background: #1c1c1c; color: #ffffff; border-left-color: var(--oranje); }
+[data-thema="donker"] .side-badge { color: #7a7a7a; } [data-thema="donker"] .side-badge.hot { color: #ffffff; }
 [data-thema="donker"] .sidenav-sep, [data-thema="donker"] .sidenav-kop { border-color: var(--kader-lijn); }
-/* Vlakken: kaarten liggen bovenop de achtergrond, invoervelden liggen erin */
+[data-thema="donker"] .versie-link { color: #7a7a7a; } [data-thema="donker"] .versie-link:hover, [data-thema="donker"] .versie-link.on { color: #ffffff; background: #161616; }
+[data-thema="donker"] .topsearch { background: #161616; border-color: #2a2a2a; color: #9b9b9b; }
+[data-thema="donker"] .topsearch input::placeholder { color: #7a7a7a; }
+[data-thema="donker"] .topsearch:focus-within { background: #111111; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,90,214,.35); }
+[data-thema="donker"] .menu-knop:hover { background: #1c1c1c; }
+[data-thema="donker"] .avatar { background: #ffffff; color: #000000; }
+[data-thema="donker"] .zoek-lijst, [data-thema="donker"] .usermenu-list { background: #141414; border-color: #2a2a2a; box-shadow: 0 16px 40px rgba(0,0,0,.7); }
+[data-thema="donker"] .thema-keuze button.on { background: #1c1c1c; border-color: #3a3a3a !important; color: #ffffff; }
+[data-thema="donker"] .versie-bubble { background: #141414; border-color: #2a2a2a; box-shadow: 0 8px 24px rgba(0,0,0,.6); }
+[data-thema="donker"] .versie-bubble::after { background: #141414; border-color: #2a2a2a; }
+[data-thema="donker"] .versie-nieuw { background: #ffffff; color: #000000; }
+/* Vlakken */
 [data-thema="donker"] .card, [data-thema="donker"] .tile, [data-thema="donker"] .lopend-kaart { border-color: var(--grijs-thin); }
-[data-thema="donker"] .tile:hover, [data-thema="donker"] .lopend-kaart:hover { border-color: #3a4a6e; background: var(--vlak-hover); }
+[data-thema="donker"] .tile:hover, [data-thema="donker"] .lopend-kaart:hover { border-color: #3a3a3a; background: var(--vlak-hover); }
 [data-thema="donker"] .tile .big { color: var(--kop); } [data-thema="donker"] .tile .big.warn { color: var(--oranje-tekst); }
 [data-thema="donker"] .card .card, [data-thema="donker"] .rdw-actie { background: var(--vlak-2); }
-[data-thema="donker"] table.list th { color: var(--grijs-light); border-bottom-color: #2b3549; }
+[data-thema="donker"] table.list th { color: var(--grijs-light); border-bottom-color: #2a2a2a; }
 [data-thema="donker"] table.list tr.click:hover td { background: var(--vlak-hover); }
 [data-thema="donker"] table.list tr.click:focus-visible td { background: var(--vlak-hover); box-shadow: inset 0 0 0 2px var(--accent); }
 [data-thema="donker"] table.matrix tr.groep td { background: var(--vlak-2); }
 [data-thema="donker"] .rows .k, [data-thema="donker"] .kv dt { color: var(--grijs); }
-/* Knoppen: standaardknop rustig met hairline, oranje blijft de actie, focus met blauwe ring */
-[data-thema="donker"] .btn { background: transparent; border-color: #34405a; color: #dfe5f1; }
-[data-thema="donker"] .btn:hover { background: var(--vlak-hover); border-color: #4a5a7e; color: #ffffff; }
-[data-thema="donker"] .btn.ghost { border-color: transparent; color: var(--blauw); } [data-thema="donker"] .btn.ghost:hover { border-color: #34405a; background: var(--vlak-hover); }
+/* Knoppen */
+[data-thema="donker"] .btn { background: transparent; border-color: #333333; color: #e6e6e6; }
+[data-thema="donker"] .btn:hover { background: var(--vlak-hover); border-color: #4a4a4a; color: #ffffff; }
+[data-thema="donker"] .btn.ghost { border-color: transparent; color: var(--blauw); } [data-thema="donker"] .btn.ghost:hover { border-color: #333333; background: var(--vlak-hover); }
 [data-thema="donker"] .btn.primary { background: var(--oranje); border-color: var(--oranje); color: #ffffff; } [data-thema="donker"] .btn.primary:hover { background: #ff7a3a; border-color: #ff7a3a; }
-[data-thema="donker"] .btn.blue { background: var(--accent); border-color: var(--accent); } [data-thema="donker"] .btn.blue:hover { background: #3d74dc; }
-[data-thema="donker"] .btn:focus-visible, [data-thema="donker"] .chip:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(47,99,201,.45); }
-[data-thema="donker"] .chip { background: transparent; border-color: #34405a; color: #dfe5f1; } [data-thema="donker"] .chip:hover { background: var(--vlak-hover); }
-[data-thema="donker"] .chip.on { background: var(--accent); border-color: var(--accent); color: #ffffff; }
-/* Pillen: donkere tint, heldere tekst; rood en blauw als vlak alleen waar het echt alarm is */
-[data-thema="donker"] .pill { background: var(--blauw-soft); color: var(--blauw-bold); }
+[data-thema="donker"] .btn.blue { background: var(--accent); border-color: var(--accent); color: #ffffff; } [data-thema="donker"] .btn.blue:hover { background: #2a6fe0; }
+[data-thema="donker"] .btn:focus-visible, [data-thema="donker"] .chip:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(15,90,214,.45); }
+[data-thema="donker"] .chip { background: transparent; border-color: #333333; color: #e6e6e6; } [data-thema="donker"] .chip:hover { background: var(--vlak-hover); }
+[data-thema="donker"] .chip.on { background: #ffffff; border-color: #ffffff; color: #000000; }
+/* Pillen: donkere tint, heldere tekst */
+[data-thema="donker"] .pill { background: #1c1c1c; color: #d4d4d4; }
 [data-thema="donker"] .pill.ok { background: var(--groen-soft); color: var(--groen-text); }
 [data-thema="donker"] .pill.warn { background: var(--oranje-thin); color: var(--oranje-bold); }
-[data-thema="donker"] .pill.bad { background: #7a1f2b; color: #ffd9dc; }
+[data-thema="donker"] .pill.bad { background: #6b1b26; color: #ffd9dc; }
 [data-thema="donker"] .pill.soft { background: var(--rood-soft); color: var(--rood-tekst); }
-[data-thema="donker"] .pill.grey { background: #232c3f; color: #cfd6e4; }
-[data-thema="donker"] .pill.rol-directie { background: var(--accent); } [data-thema="donker"] .pill.rol-directie.wacht { color: var(--blauw); border-color: var(--accent); background: transparent; }
+[data-thema="donker"] .pill.grey { background: #1c1c1c; color: #d4d4d4; }
+[data-thema="donker"] .pill.blue-soft { background: var(--blauw-soft); color: var(--blauw-bold); }
+[data-thema="donker"] .pill.rol-directie { background: var(--accent); color: #ffffff; } [data-thema="donker"] .pill.rol-directie.wacht { color: var(--blauw); border-color: var(--accent); background: transparent; }
+[data-thema="donker"] .pill.rol-beheerder { background: var(--blauw-soft); color: var(--blauw-bold); } [data-thema="donker"] .pill.rol-beheerder.wacht { border-color: #2a3a5a; }
 [data-thema="donker"] .pill.rol-admin.wacht { color: var(--oranje-tekst); }
 [data-thema="donker"] .flash { background: var(--groen-soft); color: var(--groen-text); border: 1px solid #1f4a2c; }
 [data-thema="donker"] .flash.error { background: var(--rood-soft); color: var(--rood-tekst); border-color: #5a2630; }
 /* Processen en voortgang */
-[data-thema="donker"] .stepper .nr { background: var(--accent); color: #ffffff; } [data-thema="donker"] .stepper li.app .nr { background: #232c3f; color: var(--grijs); }
-[data-thema="donker"] .pk-icoon { background: var(--blauw-soft); color: var(--blauw-bold); } [data-thema="donker"] .pk-icoon.oranje { background: var(--oranje-thin); color: var(--oranje-bold); } [data-thema="donker"] .pk-icoon.groen { background: var(--groen-soft); color: var(--groen-text); } [data-thema="donker"] .pk-icoon.grijs { background: #232c3f; color: #cfd6e4; }
-[data-thema="donker"] .voortgang { background: #232c3f; }
+[data-thema="donker"] .stepper .nr { background: #ffffff; color: #000000; } [data-thema="donker"] .stepper li.app .nr { background: #1c1c1c; color: var(--grijs); }
+[data-thema="donker"] .stepper li::before { background: #2a2a2a; }
+[data-thema="donker"] .pk-icoon { background: #1c1c1c; color: #ffffff; } [data-thema="donker"] .pk-icoon.oranje { background: var(--oranje-thin); color: var(--oranje-bold); } [data-thema="donker"] .pk-icoon.groen { background: var(--groen-soft); color: var(--groen-text); } [data-thema="donker"] .pk-icoon.grijs { background: #1c1c1c; color: #d4d4d4; } [data-thema="donker"] .pk-icoon.blauw { background: var(--blauw-soft); color: var(--blauw-bold); }
+[data-thema="donker"] .pk-titel strong, [data-thema="donker"] .pk-stappen summary { color: #ffffff; }
+[data-thema="donker"] .voortgang { background: #242424; }
 [data-thema="donker"] .lk-volgende .msr { color: var(--oranje-tekst); }
 /* Invoer */
-[data-thema="donker"] form.form input, [data-thema="donker"] form.form select, [data-thema="donker"] form.form textarea, [data-thema="donker"] .filters select, [data-thema="donker"] .filters input[type=search] { background: var(--vlak-2); border-color: #2b3549; color: var(--blauw-black); }
-[data-thema="donker"] form.form input:focus, [data-thema="donker"] form.form select:focus, [data-thema="donker"] form.form textarea:focus, [data-thema="donker"] .filters select:focus, [data-thema="donker"] .filters input[type=search]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,99,201,.3); }
+[data-thema="donker"] form.form input, [data-thema="donker"] form.form select, [data-thema="donker"] form.form textarea, [data-thema="donker"] .filters select, [data-thema="donker"] .filters input[type=search] { background: var(--vlak-2); border-color: #2a2a2a; color: var(--blauw-black); }
+[data-thema="donker"] form.form input:focus, [data-thema="donker"] form.form select:focus, [data-thema="donker"] form.form textarea:focus, [data-thema="donker"] .filters select:focus, [data-thema="donker"] .filters input[type=search]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,90,214,.35); }
 [data-thema="donker"] form.form input::placeholder, [data-thema="donker"] .filters input::placeholder { color: var(--grijs-light); }
 [data-thema="donker"] form.form .check { color: var(--blauw-black); }
-/* Kenteken blijft een echt kenteken: geel met zwarte letters, iets gedempt zodat het niet schreeuwt op donker */
-[data-thema="donker"] .plate { background: #e9c91c; border-color: #0a0a0a; box-shadow: none; color: #0f0f0f; }
-/* Inloggen */
-[data-thema="donker"] .login-body { background: radial-gradient(1200px 600px at 50% -10%, #0e2f7a 0%, #071f56 45%, #050f2b 100%); }
-[data-thema="donker"] .login-card { background: var(--wit); border: 1px solid #2b3549; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+/* Kenteken blijft een echt kenteken */
+[data-thema="donker"] .plate { background: #e9c91c; border-color: #000000; box-shadow: none; color: #0f0f0f; }
+/* Inloggen: zwart met een zachte lichtval, wit logo */
+[data-thema="donker"] .login-body { background: radial-gradient(900px 500px at 50% -10%, #1a1a1a 0%, #0a0a0a 55%, #000000 100%); }
+[data-thema="donker"] .login-card { background: #111111; border: 1px solid #2a2a2a; box-shadow: 0 24px 60px rgba(0,0,0,.7); }
 /* Losse plekken die in de templates zelf een kleur zetten */
-[data-thema="donker"] .install-kaart { background: linear-gradient(135deg, #0e2f7a, #071f56); border: 1px solid var(--kader-lijn); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
-[data-thema="donker"] .rdw-actie.open { border-color: #7a1f2b; background: var(--rood-soft); }
-[data-thema="donker"] .apk-knoppen .btn.primary { color: #ffffff; }
-[data-thema="donker"] .menu-achter { background: rgba(0,0,0,.6); }
+[data-thema="donker"] .install-kaart { background: #141414; border: 1px solid #2a2a2a; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+[data-thema="donker"] .install-kaart .ik-icoon { background: #ffffff; } [data-thema="donker"] .install-kaart .ik-icoon .msr { color: #000000; }
+[data-thema="donker"] .install-kaart ol { background: #0a0a0a; }
+[data-thema="donker"] .install-kaart .ik-voet .btn { border-color: #333333; background: transparent; }
+[data-thema="donker"] .rdw-actie.open { border-color: #6b1b26; background: var(--rood-soft); }
+[data-thema="donker"] .menu-achter { background: rgba(0,0,0,.7); }
 [data-thema="donker"] .sidenav { box-shadow: none; }
-@media (max-width: 860px) { [data-thema="donker"] .sidenav { box-shadow: 0 12px 40px rgba(0,0,0,.6); } }
+@media (max-width: 860px) { [data-thema="donker"] .sidenav { box-shadow: 0 12px 40px rgba(0,0,0,.7); } [data-thema="donker"] .sidenav-kop { color: #ffffff; } [data-thema="donker"] .menu-sluit { color: #b5b5b5; } }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { margin: 0; padding: 0; }
