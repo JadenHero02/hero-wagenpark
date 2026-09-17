@@ -26,6 +26,21 @@
   </div>
   <div class="card">
     <div class="lbl"><span class="msr">upload_file</span>Uploaden</div>
+    <!-- Sleepvak (idee van Huub): laat bestanden vallen, de app zegt wat het is, jij bevestigt -->
+    <div class="sleepvak" id="sleepvak" tabindex="0" role="button" aria-label="Bestanden kiezen of hierheen slepen">
+      <span class="msr">cloud_upload</span>
+      <strong>Sleep hier je bestanden</strong>
+      <span class="muted small">of tik om te kiezen. Foto's van schade, APK-rapport, kentekenbewijs, verzekering, boete: de app ziet zelf wat het is en jij bevestigt.</span>
+      <input type="file" id="sleep-input" multiple accept=".pdf,.jpg,.jpeg,.png,.heic,.webp,.doc,.docx,.xlsx,.txt,image/*,application/pdf" hidden>
+    </div>
+    <div id="sleep-bezig" class="muted small" hidden><span class="msr" style="font-size:16px;vertical-align:-3px">hourglass_top</span> Even kijken wat het is…</div>
+    <form method="POST" action="/voertuigen/<%= v.id %>/documenten" enctype="multipart/form-data" id="sleep-form" hidden>
+      <input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten">
+      <input type="hidden" name="herkend" value="1">
+      <div id="sleep-lijst" class="sleep-lijst"></div>
+      <div class="actions" style="margin-top:12px"><button type="submit" class="btn primary"><span class="msr">check</span>Opslaan</button><button type="button" class="btn ghost" id="sleep-annuleer">Annuleren</button></div>
+    </form>
+    <details class="meer" style="margin-top:12px"><summary class="muted small">Liever zelf de soort kiezen? <span>Gewone upload</span></summary>
     <form method="POST" action="/voertuigen/<%= v.id %>/documenten" enctype="multipart/form-data" class="form" style="grid-template-columns:1fr;margin-top:10px">
       <input type="hidden" name="terug" value="/voertuigen/<%= v.id %>/documenten">
       <label>Soort<select name="soort"><% Object.entries(LABELS.document).forEach(([k, l]) => { %><option value="<%= k %>" <%= soort === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
@@ -33,7 +48,62 @@
       <label>Omschrijving<input name="omschrijving" placeholder="optioneel"></label>
       <div class="buttons" style="justify-content:flex-start"><button type="submit" class="btn primary"><span class="msr">upload</span>Uploaden</button></div>
     </form>
+    </details>
     <% if (soort === "apk_rapport") { %><p class="muted small" style="margin-top:10px">Na het uploaden keurt een beheerder het rapport goed en zet de nieuwe APK-datum. Dan sluiten de APK-taken.</p><% } %>
   </div>
 </div>
+<script>
+(function () {
+  // Sleepvak: bestanden naar /herken, voorstel per bestand tonen, dan opslaan met soort_i en omschrijving_i
+  var vak = document.getElementById("sleepvak"), input = document.getElementById("sleep-input"), form = document.getElementById("sleep-form"), lijst = document.getElementById("sleep-lijst"), bezig = document.getElementById("sleep-bezig");
+  var soorten = <%- JSON.stringify(LABELS.document) %>, gekozen = [];
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function fmt(d) { return d && /^\d{4}-\d{2}-\d{2}$/.test(d) ? d.slice(8) + "-" + d.slice(5, 7) + "-" + d.slice(0, 4) : d; }
+  function toon(data) {
+    lijst.innerHTML = "";
+    data.bestanden.forEach(function (b, i) {
+      var opties = Object.keys(soorten).map(function (k) { return '<option value="' + k + '"' + (k === b.soort ? " selected" : "") + ">" + esc(soorten[k]) + "</option>"; }).join("");
+      var extra = [];
+      if (b.velden && b.velden.apk_vervaldatum) extra.push("APK geldig tot " + fmt(b.velden.apk_vervaldatum));
+      if (b.velden && b.velden.bedrag) extra.push("€ " + b.velden.bedrag.toLocaleString("nl-NL", { minimumFractionDigits: 2 }));
+      if (b.velden && b.velden.datum) extra.push(fmt(b.velden.datum));
+      if (b.velden && b.velden.kenteken_anders) extra.push("let op: ander kenteken op het document");
+      var zeker = b.via === "ai" ? (b.zekerheid >= 0.8 ? '<span class="pill ok">herkend</span>' : '<span class="pill warn">controleer</span>') : '<span class="pill grey">op naam</span>';
+      lijst.insertAdjacentHTML("beforeend", '<div class="sleep-rij">' +
+        '<div class="sleep-naam"><span class="msr">' + (/^image\//.test(b.mimetype) ? "image" : "description") + "</span><strong>" + esc(b.naam) + "</strong> " + zeker + (extra.length ? '<div class="muted small">' + esc(extra.join(" · ")) + "</div>" : "") + "</div>" +
+        '<label>Soort<select name="soort_' + i + '">' + opties + "</select></label>" +
+        '<label>Omschrijving<input name="omschrijving_' + i + '" value="' + esc(b.omschrijving || "") + '" placeholder="optioneel"></label>' +
+        (b.velden && b.velden.apk_vervaldatum ? '<input type="hidden" name="apk_vervaldatum_' + i + '" value="' + esc(b.velden.apk_vervaldatum) + '">' : "") +
+      "</div>");
+    });
+    if (!data.ai) lijst.insertAdjacentHTML("beforeend", '<p class="muted small">De soort is geraden op de bestandsnaam. Zodra de AI-sleutel is ingesteld kijkt de app naar de inhoud.</p>');
+    form.hidden = false; vak.hidden = true;
+  }
+  function verwerk(files) {
+    gekozen = Array.prototype.slice.call(files).filter(function (f) { return f.size; });
+    if (!gekozen.length) return;
+    var fd = new FormData(); gekozen.forEach(function (f) { fd.append("bestanden", f); });
+    bezig.hidden = false; vak.classList.remove("over");
+    fetch(location.pathname + "/herken", { method: "POST", body: fd, credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (data) {
+      bezig.hidden = true;
+      if (data.fout) { alert(data.fout); return; }
+      toon(data);
+    }).catch(function () { bezig.hidden = true; alert("Herkennen lukte niet. Gebruik de gewone upload hieronder."); });
+  }
+  vak.addEventListener("click", function () { input.click(); });
+  vak.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } });
+  input.addEventListener("change", function () { verwerk(input.files); });
+  ["dragenter", "dragover"].forEach(function (ev) { vak.addEventListener(ev, function (e) { e.preventDefault(); vak.classList.add("over"); }); });
+  ["dragleave", "drop"].forEach(function (ev) { vak.addEventListener(ev, function (e) { e.preventDefault(); vak.classList.remove("over"); }); });
+  vak.addEventListener("drop", function (e) { if (e.dataTransfer && e.dataTransfer.files) verwerk(e.dataTransfer.files); });
+  // Opslaan: de gekozen bestanden meesturen met de bevestigde soort en omschrijving
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var fd = new FormData(form); gekozen.forEach(function (f) { fd.append("bestanden", f); });
+    var knop = form.querySelector("button[type=submit]"); knop.disabled = true;
+    fetch(form.action, { method: "POST", body: fd, credentials: "same-origin", redirect: "follow" }).then(function () { location.href = form.action; }).catch(function () { knop.disabled = false; alert("Opslaan lukte niet."); });
+  });
+  document.getElementById("sleep-annuleer").addEventListener("click", function () { form.hidden = true; vak.hidden = false; lijst.innerHTML = ""; input.value = ""; gekozen = []; });
+})();
+</script>
 <%- include("../partials/footer") %>

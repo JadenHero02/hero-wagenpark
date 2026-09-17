@@ -8,6 +8,7 @@ const multer = require("multer");
 const db = require("../db");
 const auth = require("../auth");
 const taken = require("../taken");
+const herken = require("../herken");
 const { clean, cleanDate, formatDate, LABELS } = require("../helpers");
 
 const router = express.Router();
@@ -37,6 +38,18 @@ async function bewaar({ voertuigId, files, soort, omschrijving = null, incidentI
   return ids;
 }
 
+// Herkennen: de bestanden komen binnen, de app zegt per bestand wat het is; er wordt nog niets opgeslagen
+router.post("/voertuigen/:id/documenten/herken", (req, res, next) => upload.array("bestanden", 10)(req, res, (err) => (err ? res.status(400).json({ fout: err.code === "LIMIT_FILE_SIZE" ? "Bestand is groter dan 10 MB." : err.message }) : next())), async (req, res) => {
+  const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
+  if (!v) return res.status(404).json({ fout: "Auto niet gevonden." });
+  if (!await toegang(req, res, v.id) || !mags(req, res)) return res.status(403).json({ fout: "Geen toegang." });
+  const files = (req.files || []).filter((f) => f && f.size);
+  const fout = files.find((f) => !TOEGESTAAN.test(f.mimetype));
+  if (fout) return res.status(400).json({ fout: `Bestandstype niet toegestaan: ${fout.originalname}. Gebruik pdf, jpg, png, Word of Excel.` });
+  const voorstellen = await herken.herken(files, { kenteken: v.kenteken, merk: v.merk, model: v.model });
+  res.json({ ai: herken.beschikbaar(), bestanden: files.map((f, i) => ({ naam: f.originalname, grootte: f.size, mimetype: f.mimetype, ...voorstellen[i], label: LABELS.document[voorstellen[i].soort] })) });
+});
+
 // Lijst en upload per auto
 router.get("/voertuigen/:id/documenten", async (req, res, next) => {
   const v = await db.one("SELECT v.*, ve.naam AS vestiging FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id WHERE v.id = $1", [req.params.id]);
@@ -49,13 +62,17 @@ router.post("/voertuigen/:id/documenten", (req, res, next) => upload.array("best
   const v = await db.one("SELECT * FROM voertuigen WHERE id = $1", [req.params.id]);
   if (!v) return next();
   if (!await toegang(req, res, v.id) || !mags(req, res)) return res.status(403).send("Geen toegang.");
-  const soort = LABELS.document[req.body.soort] ? req.body.soort : "overig";
   const terug = req.body.terug && String(req.body.terug).startsWith("/") ? req.body.terug : `/voertuigen/${v.id}/documenten`;
+  const files = (req.files || []).filter((f) => f && f.size);
+  const perBestand = files.map((f, i) => ({ f, soort: LABELS.document[req.body[`soort_${i}`]] ? req.body[`soort_${i}`] : LABELS.document[req.body.soort] ? req.body.soort : "overig", omschrijving: clean(req.body[`omschrijving_${i}`]) || clean(req.body.omschrijving) }));
+  const soorten = [...new Set(perBestand.map((p) => p.soort))];
+  const soort = soorten.length === 1 ? soorten[0] : "overig";
   try {
-    const ids = await db.tx((t) => bewaar({ voertuigId: v.id, files: req.files, soort, omschrijving: clean(req.body.omschrijving), userId: req.user.id }, t));
+    const ids = [];
+    await db.tx(async (t) => { for (const p of perBestand) ids.push(...(await bewaar({ voertuigId: v.id, files: [p.f], soort: p.soort, omschrijving: p.omschrijving, userId: req.user.id }, t))); });
     if (!ids.length) { res.flash("Kies een bestand.", "error"); return res.redirect(terug); }
-    await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1,$2,$3,'document',$4)", [v.id, req.bestuurder ? req.bestuurder.id : null, req.user.id, `${ids.length} ${ids.length === 1 ? "document" : "documenten"} (${LABELS.document[soort]}) geüpload door ${req.user.name}`]);
-    if (soort === "apk_rapport") {
+    await db.run("INSERT INTO logboek (voertuig_id, bestuurder_id, user_id, soort, omschrijving) VALUES ($1,$2,$3,'document',$4)", [v.id, req.bestuurder ? req.bestuurder.id : null, req.user.id, `${ids.length} ${ids.length === 1 ? "document" : "documenten"} (${soorten.map((s) => LABELS.document[s]).join(", ")}) geüpload door ${req.user.name}${req.body.herkend === "1" ? ", soort herkend door de app" : ""}`]);
+    if (soorten.includes("apk_rapport")) {
       await db.run("UPDATE taken SET status = 'afgerond', afgerond_door = $2, afgerond_op = local_now() WHERE status = 'open' AND voertuig_id = $1 AND soort = 'apk_rapport' AND voor = 'bestuurder'", [v.id, req.user.id]);
       await taken.maak({ voertuig_id: v.id, soort: "apk_rapport", titel: `APK-rapport beoordelen · ${taken.autoNaam(v)}`, omschrijving: `${req.user.name} heeft het keuringsrapport geüpload. Controleer het en zet de nieuwe APK-datum.`, deadline: taken.addDays(taken.nlNow().date, 3), voor: "beheerder", sleutel: `apk_beoordelen:${v.id}:${ids[0]}` });
       res.flash("Rapport geüpload. Een beheerder keurt het goed en zet de nieuwe APK-datum.");

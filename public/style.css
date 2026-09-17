@@ -426,3 +426,16 @@ form.form .buttons { grid-column: 1 / -1; display: flex; gap: 10px; justify-cont
 [data-thema="donker"] [style*="color:var(--oranje)"] { color: var(--oranje-tekst) !important; }
 /* Inlogkaart: blauw logo op licht, wit logo op donker */
 .login-card .logo-donker { display: none; } [data-thema="donker"] .login-card .logo-licht { display: none; } [data-thema="donker"] .login-card .logo-donker { display: block; }
+
+/* Sleepvak voor documenten: bestanden laten vallen, de app herkent de soort */
+.sleepvak { margin-top: 10px; border: 2px dashed var(--blauw-soft); border-radius: 14px; padding: 26px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; background: var(--blauw-hair); color: var(--blauw-black); }
+.sleepvak .msr { font-size: 40px; color: var(--blauw); } .sleepvak strong { font-size: 16px; color: var(--blauw); }
+.sleepvak:hover, .sleepvak.over, .sleepvak:focus-visible { border-color: var(--oranje); background: var(--oranje-thin); outline: none; }
+.sleepvak.over .msr { color: var(--oranje-bold); }
+.sleep-lijst { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.sleep-rij { display: grid; grid-template-columns: 1fr; gap: 8px; padding: 12px; border: 1px solid var(--grijs-thin); border-radius: 12px; background: var(--wit); }
+.sleep-rij .sleep-naam { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13.5px; } .sleep-rij .sleep-naam .msr { color: var(--grijs); font-size: 20px; } .sleep-rij .sleep-naam .muted { flex-basis: 100%; }
+.sleep-rij label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--grijs); }
+.sleep-rij select, .sleep-rij input { padding: 8px 10px; border: 1px solid var(--grijs-thin); border-radius: 8px; font: inherit; font-size: 14px; color: var(--blauw-black); background: var(--wit); }
+[data-thema="donker"] .sleepvak { background: #0d0d0d; border-color: #333333; } [data-thema="donker"] .sleepvak:hover, [data-thema="donker"] .sleepvak.over { background: var(--oranje-thin); border-color: var(--oranje); }
+[data-thema="donker"] .sleep-rij select, [data-thema="donker"] .sleep-rij input { background: var(--vlak-2); border-color: #2a2a2a; }

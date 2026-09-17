@@ -8,3 +8,9 @@ node_modules/
 Thumbs.db
 data/
 uploads/
+
+# Video- en skill-gereedschap (lokaal)
+.agents/
+.claude/skills/
+skills-lock.json
+brag-output*/

@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.3.3", datum: "2026-09-17", punten: [
+    { soort: "nieuw", tekst: "sleep hier je bestand (idee van Huub): op de documentenpagina laat je foto's en documenten in één vak vallen, en de app zegt per bestand wat het is: foto van schade, APK-rapport met de nieuwe vervaldatum, kentekenbewijs, verzekering, boete met bedrag. Jij bevestigt met één klik of kiest zelf anders. Zonder AI-sleutel raadt de app op de bestandsnaam; met de sleutel (ANTHROPIC_API_KEY) kijkt hij naar de inhoud van foto's en pdf's", commit: "" },
+  ] },
   { versie: "0.3.2", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "de donkere weergave is nu gewoon zwart: geen blauwe tint meer in de vlakken, ook de balk en het menu zijn zwart met een dunne lijn. Zwart, drie grijzen en wit, oranje voor de actieknop, Hero-blauw alleen voor links en focus", commit: "" },
     { soort: "verbeterd", tekst: "boetes zijn zichtbaar voor celdirecteuren, directie, HR en de admin (vraag van Annemiek). Invoeren en \"Staat in AFAS\" bevestigen blijft alleen voor HR en de admin. Een bestuurder ziet nog steeds alleen zijn eigen boetes in Mijn auto", commit: "" },
