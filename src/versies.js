@@ -4,9 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.3.5", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "de uitleg bij Bijtelling zegt nu dat de bijtelling is wat de auto de bestuurder kost, via het loon; de zin over een eigen bijdrage is weg (Abdullah: je betaalt alleen de bijtelling)", commit: "" },
+  ] },
   { versie: "0.3.4", datum: "2026-09-17", punten: [
     { soort: "nieuw", tekst: "bijtelling bij Over deze auto (vraag van Abdullah): het percentage, de cataloguswaarde, de bruto bijtelling per jaar en per maand en een indicatie van wat het netto kost. De app rekent het uit met de RDW-gegevens en de regels van de Belastingdienst: 22% voor auto's met uitstoot (25% van vóór 2017), voor elektrische auto's het verlaagde tarief van het jaar van eerste toelating over de eerste € 30.000 (of het hogere bedrag van dat jaar) en 22% over de rest, 60 maanden vast en daarna het tarief van het lopende jaar. Staat Bijtelling op Nee, dan zegt de app dat er geen bijtelling is", commit: "" },
-    { soort: "nieuw", tekst: "op de voertuigpagina staat de bijtelling in de kop en bij Waarde in de RDW-kaart; bij Bewerken kan de beheerder het percentage en de fiscale waarde overschrijven als de RDW-catalogusprijs niet klopt (opties, lease). De Excel-export krijgt de kolommen Bijtelling % en Bijtelling bruto per maand", commit: "" },
+    { soort: "nieuw", tekst: "op de voertuigpagina staat de bijtelling in de kop en bij Waarde in de RDW-kaart; bij Bewerken kan de beheerder het percentage en de fiscale waarde overschrijven als de RDW-catalogusprijs niet klopt (opties, lease). De Excel-export krijgt de kolommen Bijtelling % en Bijtelling bruto per maand", commit: "ba2ae68" },
   ] },
   { versie: "0.3.3", datum: "2026-09-17", punten: [
     { soort: "nieuw", tekst: "sleep hier je bestand (idee van Huub): op de documentenpagina laat je foto's en documenten in één vak vallen, en de app zegt per bestand wat het is: foto van schade, APK-rapport met de nieuwe vervaldatum, kentekenbewijs, verzekering, boete met bedrag. Jij bevestigt met één klik of kiest zelf anders. Zonder AI-sleutel raadt de app op de bestandsnaam; met de sleutel (ANTHROPIC_API_KEY) kijkt hij naar de inhoud van foto's en pdf's", commit: "ad98ca5" },

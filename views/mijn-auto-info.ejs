@@ -45,7 +45,7 @@
         <%- rij("Bruto bijtelling per maand", bt.brutoMaand !== null ? `<strong>${h.euro(bt.brutoMaand)}</strong>` : null) %>
         <%- rij("Netto ongeveer per maand", bt.nettoMaandLaag !== null ? `€ ${bt.nettoMaandLaag} tot € ${bt.nettoMaandHoog}` : null) %>
       </div>
-      <% if (bt.brutoMaand !== null) { %><p class="muted small" style="margin:8px 0 0">De bruto bijtelling komt bij je loon; wat je netto betaalt hangt af van je belastingtarief (<%= String(bt.tariefLaag).replace(".", ",") %>% of <%= String(bt.tariefHoog).replace(".", ",") %>% in 2026). Een eigen bijdrage gaat er nog vanaf. Dit is een indicatie, de salarisadministratie rekent het precies uit.</p><% } %>
+      <% if (bt.brutoMaand !== null) { %><p class="muted small" style="margin:8px 0 0">De bijtelling is wat de auto je kost: de bruto bijtelling komt bij je loon en je betaalt er belasting over. Wat dat netto is hangt af van je belastingtarief (<%= String(bt.tariefLaag).replace(".", ",") %>% of <%= String(bt.tariefHoog).replace(".", ",") %>% in 2026). Dit is een indicatie, de salarisadministratie rekent het precies uit.</p><% } %>
     <% } %>
   </div>
 
