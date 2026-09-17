@@ -89,13 +89,14 @@ function fromBody(b) {
   return {
     kenteken: fmtKenteken(b.kenteken), merk: clean(b.merk) || "Onbekend", model: clean(b.model), bouwjaar: bouwjaarNorm(b.bouwjaar),
     eigendom: LABELS.eigendom[b.eigendom] ? b.eigendom : "onbekend", bijtelling: b.bijtelling === "" || b.bijtelling === undefined ? null : yes(b.bijtelling),
+    bijtelling_pct: cleanNumber(b.bijtelling_pct), bijtelling_grondslag: cleanNumber(b.bijtelling_grondslag),
     milieu: clean(b.milieu), banden: clean(b.banden), status: LABELS.status[b.status] ? b.status : "op_voorraad", is_leenauto: yes(b.is_leenauto),
     vestiging_id: Number(b.vestiging_id) || null, apk_vervaldatum: cleanDate(b.apk_vervaldatum), contract_einde: cleanDate(b.contract_einde),
     leasemaatschappij: clean(b.leasemaatschappij), verwachte_levering: clean(b.verwachte_levering), tankpas_nummer: clean(b.tankpas_nummer),
     onderhoud_notitie: clean(b.onderhoud_notitie), schade_notitie: clean(b.schade_notitie), opmerkingen: clean(b.opmerkingen), notitie: clean(b.notitie),
   };
 }
-const COLS = ["kenteken","merk","model","bouwjaar","eigendom","bijtelling","milieu","banden","status","is_leenauto","vestiging_id","apk_vervaldatum","contract_einde","leasemaatschappij","verwachte_levering","tankpas_nummer","onderhoud_notitie","schade_notitie","opmerkingen","notitie"];
+const COLS = ["kenteken","merk","model","bouwjaar","eigendom","bijtelling","bijtelling_pct","bijtelling_grondslag","milieu","banden","status","is_leenauto","vestiging_id","apk_vervaldatum","contract_einde","leasemaatschappij","verwachte_levering","tankpas_nummer","onderhoud_notitie","schade_notitie","opmerkingen","notitie"];
 
 router.post("/", auth.requireRole("beheerder"), async (req, res) => {
   const v = fromBody(req.body);

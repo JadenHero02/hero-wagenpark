@@ -25,6 +25,30 @@
     <% } %>
   </div>
 
+  <% const bt = bijtelling.bereken(v); %>
+  <div class="card">
+    <div class="lbl"><span class="msr">account_balance</span>Bijtelling</div>
+    <% if (!bt.vanToepassing) { %>
+      <p style="margin:6px 0 0"><strong>Geen bijtelling.</strong></p>
+      <p class="muted small" style="margin:4px 0 0"><%= bt.toelichting %></p>
+    <% } else if (bt.pct === null) { %>
+      <p class="muted" style="margin:6px 0 0"><%= bt.toelichting %></p>
+    <% } else { %>
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:6px">
+        <span style="font-size:26px;font-weight:800;color:var(--blauw)"><%= bt.pct %>%</span>
+        <% if (bt.drempel !== null && bt.grondslag && bt.grondslag > bt.drempel) { %><span class="muted">tot € <%= bt.drempel.toLocaleString("nl-NL") %>, daarboven 22%</span><% } %>
+      </div>
+      <p class="small" style="margin:6px 0 8px"><%= bt.toelichting %></p>
+      <div class="rows">
+        <%- rij("Cataloguswaarde", bt.grondslag ? h.euro(bt.grondslag).replace(",00", "") + (bt.grondslagBron === "handmatig" ? " (fiscale waarde)" : "") : "nog niet bekend") %>
+        <%- rij("Bruto bijtelling per jaar", bt.brutoJaar !== null ? h.euro(bt.brutoJaar) : null) %>
+        <%- rij("Bruto bijtelling per maand", bt.brutoMaand !== null ? `<strong>${h.euro(bt.brutoMaand)}</strong>` : null) %>
+        <%- rij("Netto ongeveer per maand", bt.nettoMaandLaag !== null ? `€ ${bt.nettoMaandLaag} tot € ${bt.nettoMaandHoog}` : null) %>
+      </div>
+      <% if (bt.brutoMaand !== null) { %><p class="muted small" style="margin:8px 0 0">De bruto bijtelling komt bij je loon; wat je netto betaalt hangt af van je belastingtarief (<%= String(bt.tariefLaag).replace(".", ",") %>% of <%= String(bt.tariefHoog).replace(".", ",") %>% in 2026). Een eigen bijdrage gaat er nog vanaf. Dit is een indicatie, de salarisadministratie rekent het precies uit.</p><% } %>
+    <% } %>
+  </div>
+
   <% (v.rdw_opgehaald_op ? openActies : []).forEach(a => { %>
   <div class="card" style="border-left:5px solid var(--rood)">
     <div class="lbl" style="color:var(--rood)"><span class="msr">campaign</span>Terugroepactie van de fabrikant</div>

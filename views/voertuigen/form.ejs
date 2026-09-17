@@ -14,6 +14,8 @@
   <label>Milieu<select name="milieu"><option value="">–</option><% Object.entries(LABELS.milieu).forEach(([k, l]) => { %><option value="<%= k %>" <%= v.milieu === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
   <label>Banden<select name="banden"><option value="">–</option><% Object.entries(LABELS.banden).forEach(([k, l]) => { %><option value="<%= k %>" <%= v.banden === k ? "selected" : "" %>><%= l %></option><% }) %></select></label>
   <label>Bijtelling<select name="bijtelling"><option value="" <%= v.bijtelling === null || v.bijtelling === undefined ? "selected" : "" %>>–</option><option value="1" <%= v.bijtelling === true ? "selected" : "" %>>Ja</option><option value="0" <%= v.bijtelling === false ? "selected" : "" %>>Nee</option></select></label>
+  <label>Bijtelling % <span class="hint">leeg = de app rekent het uit (RDW)</span><input type="number" name="bijtelling_pct" step="0.01" min="0" max="100" value="<%= v.bijtelling_pct === null || v.bijtelling_pct === undefined ? "" : v.bijtelling_pct %>" placeholder="bijv. 22"></label>
+  <label>Fiscale waarde <span class="hint">leeg = catalogusprijs van de RDW</span><input type="number" name="bijtelling_grondslag" step="1" min="0" value="<%= v.bijtelling_grondslag === null || v.bijtelling_grondslag === undefined ? "" : Math.round(v.bijtelling_grondslag) %>" placeholder="bijv. 45000"></label>
   <label class="check"><input type="checkbox" name="is_leenauto" <%= v.is_leenauto ? "checked" : "" %>> Leenauto (poolauto)</label>
   <label>APK vervalt<input type="date" name="apk_vervaldatum" value="<%= v.apk_vervaldatum || "" %>"></label>
   <label>Contract eindigt<input type="date" name="contract_einde" value="<%= v.contract_einde || "" %>"></label>

@@ -8,6 +8,7 @@ const express = require("express");
 const db = require("./src/db");
 const auth = require("./src/auth");
 const helpers = require("./src/helpers");
+const bijtelling = require("./src/bijtelling");
 const versies = require("./src/versies");
 
 const app = express();
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
   res.locals.publicBase = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get("host")}`;
   res.locals.assetVersion = ASSET_VERSION;
   res.locals.h = helpers;
+  res.locals.bijtelling = bijtelling;
   res.locals.title = "Wagenpark";
   res.locals.badges = {};
   res.locals.versie = { huidige: versies.huidige(), commit: versies.commit(), omgeving: versies.omgeving() };

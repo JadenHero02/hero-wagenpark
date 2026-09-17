@@ -10,6 +10,7 @@ const db = require("../db");
 const auth = require("../auth");
 const { zoekVoertuigen } = require("./voertuigen");
 const { LABELS, label } = require("../helpers");
+const bijtelling = require("../bijtelling");
 
 const router = express.Router();
 const directie = auth.requireRole("directie");
@@ -63,7 +64,7 @@ router.get("/export.xlsx", directie, async (req, res) => {
   const detail = await db.all("SELECT v.*, ve.naam AS vestiging FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id ORDER BY v.status, v.kenteken NULLS LAST");
   const perId = Object.fromEntries(detail.map((d) => [d.id, d]));
   blad(wb, "Wagenpark", voertuigen, [...VOERTUIG_KOLOMMEN,
-    ["Bijtelling", (r) => jn(perId[r.id].bijtelling)], ["Leasemaatschappij", (r) => perId[r.id].leasemaatschappij], ["Contract eindigt", (r) => datum(perId[r.id].contract_einde)],
+    ["Bijtelling", (r) => jn(perId[r.id].bijtelling)], ["Bijtelling %", (r) => { const b = bijtelling.bereken(perId[r.id]); return b.vanToepassing ? b.pct : 0; }], ["Bijtelling bruto per maand", (r) => bijtelling.bereken(perId[r.id]).brutoMaand], ["Leasemaatschappij", (r) => perId[r.id].leasemaatschappij], ["Contract eindigt", (r) => datum(perId[r.id].contract_einde)],
     ["Verwachte levering", (r) => perId[r.id].verwachte_levering], ["Tankpasnummer", (r) => perId[r.id].tankpas_nummer], ["APK-afspraak", (r) => datum(perId[r.id].apk_afspraak)],
     ["Onderhoud (tekst)", (r) => perId[r.id].onderhoud_notitie], ["Schade (tekst)", (r) => perId[r.id].schade_notitie], ["Opmerkingen", (r) => perId[r.id].opmerkingen]]);
   blad(wb, "Bestuurders", await db.all("SELECT b.*, ve.naam AS vestiging, v.kenteken, t.soort AS toewijzing_soort FROM bestuurders b LEFT JOIN vestigingen ve ON ve.id = b.vestiging_id LEFT JOIN toewijzingen t ON t.bestuurder_id = b.id AND t.status = 'actief' LEFT JOIN voertuigen v ON v.id = t.voertuig_id WHERE b.actief ORDER BY b.naam"), [

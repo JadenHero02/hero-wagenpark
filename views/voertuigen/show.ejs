@@ -11,7 +11,7 @@
         <% if (v.vestiging) { %><span><span class="msr">location_on</span><%= v.vestiging %></span><% } %>
         <% if (v.bouwjaar) { %><span><%= h.bouwjaarFmt(v.bouwjaar) %></span><% } %>
         <% if (v.eigendom && v.eigendom !== "onbekend") { %><span><%= h.label("eigendom", v.eigendom) %></span><% } %>
-        <% if (v.bijtelling !== null) { %><span>bijtelling <%= v.bijtelling ? "ja" : "nee" %></span><% } %>
+        <% const btKort = bijtelling.kort(v); if (btKort) { %><span><span class="msr">account_balance</span><%= btKort %></span><% } %>
         <% if (v.banden) { %><span><%= h.label("banden", v.banden) %></span><% } %>
         <% if (v.notitie) { %><span><%= v.notitie %></span><% } %>
       </div>
@@ -166,6 +166,10 @@
         <div class="rdw-kop">Waarde en gewicht</div>
         <dl class="kv rdw-kv">
           <dt>Catalogusprijs</dt><dd><%= v.rdw_catalogusprijs ? h.euro(v.rdw_catalogusprijs) : "–" %></dd>
+          <% const bt = bijtelling.bereken(v); %>
+          <dt>Bijtelling</dt><dd><%= !bt.vanToepassing ? "geen" : bt.pct === null ? "–" : bt.pct + "%" + (bt.drempel !== null && bt.grondslag > bt.drempel ? " tot € " + bt.drempel.toLocaleString("nl-NL") + ", daarboven 22%" : "") + (bt.pctBron === "handmatig" ? " (handmatig)" : "") %></dd>
+          <% if (bt.brutoMaand !== null) { %><dt>Bruto per maand</dt><dd><%= h.euro(bt.brutoMaand) %><span class="muted" style="font-weight:400"> · <%= h.euro(bt.brutoJaar) %> per jaar</span></dd><% } %>
+          <% if (bt.kortingTot) { %><dt>Tarief vast tot</dt><dd><%= bt.kortingTot.toLocaleDateString("nl-NL", { month: "long", year: "numeric" }) %></dd><% } %>
           <dt>Bruto BPM</dt><dd><%= x.bruto_bpm ? h.euro(x.bruto_bpm) : "–" %></dd>
           <dt>Massa rijklaar</dt><dd><%= x.massa_rijklaar ? h.num(x.massa_rijklaar) + " kg" : "–" %></dd>
           <dt>Max. toegestaan</dt><dd><%= x.max_massa ? h.num(x.max_massa) + " kg" : "–" %></dd>
