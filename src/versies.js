@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.3.2", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "boetes zijn zichtbaar voor celdirecteuren, directie, HR en de admin (vraag van Annemiek). Invoeren en \"Staat in AFAS\" bevestigen blijft alleen voor HR en de admin. Een bestuurder ziet nog steeds alleen zijn eigen boetes in Mijn auto", commit: "" },
+  ] },
   { versie: "0.3.1", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "de donkere weergave is opnieuw ontworpen. Geen blauwzwarte soep meer, maar lagen: een bijna zwarte achtergrond, kaarten die er iets bovenop liggen met een dunne rand, witte koppen, Hero-blauw alleen als accent voor links en het actieve menu, de balk en het menu als één kader in diep Hero-blauw, pillen met een donkere tint en heldere tekst, rustige knoppen met de oranje actieknop, invoervelden die in de kaart liggen met een blauwe focusring, en het kenteken als echt geel bordje. Ook de inlogpagina en de kleur van de browserbalk volgen het thema", commit: "" },
   ] },

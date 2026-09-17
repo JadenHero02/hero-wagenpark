@@ -21,7 +21,7 @@ async function laad(id) {
     WHERE b.id = $1`, [id]);
 }
 
-router.get("/", auth.requireHr, async (req, res) => {
+router.get("/", auth.requireBoetes, async (req, res) => {
   const status = LABELS.boete[req.query.status] ? req.query.status : null;
   const rows = await db.all(`SELECT b.*, v.kenteken, v.merk, v.model, ve.naam AS vestiging, bs.naam AS bestuurder, u.name AS bevestigd_door_naam
     FROM boetes b JOIN voertuigen v ON v.id = b.voertuig_id LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id LEFT JOIN bestuurders bs ON bs.id = b.bestuurder_id LEFT JOIN users u ON u.id = b.bevestigd_door
@@ -51,7 +51,7 @@ router.get("/:id", async (req, res, next) => {
   const b = await laad(req.params.id);
   if (!b) return next();
   const own = req.bestuurder && b.bestuurder_id === req.bestuurder.id;
-  if (!own && !req.isHr) return res.status(403).render("error", { title: "Geen toegang", message: "Deze boete is niet van jou." });
+  if (!own && !req.magBoetes) return res.status(403).render("error", { title: "Geen toegang", message: "Deze boete is niet van jou." });
   const bestuurders = req.isHr ? await db.all("SELECT id, naam FROM bestuurders WHERE actief ORDER BY naam") : [];
   const logboek = await db.all("SELECT l.*, u.name AS door FROM logboek l LEFT JOIN users u ON u.id = l.user_id WHERE l.soort = 'boete' AND l.voertuig_id = $1 AND l.created_at >= $2::date ORDER BY l.created_at DESC LIMIT 10", [b.voertuig_id, b.created_at.slice(0, 10)]);
   res.render("boetes/show", { title: `Boete · ${b.kenteken}`, b, bestuurders, logboek, LABELS });

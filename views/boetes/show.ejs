@@ -25,7 +25,7 @@
     <% } %>
   </div>
   <div>
-    <% if (magBoetes && b.status === "nieuw") { %>
+    <% if (isHr && b.status === "nieuw") { %>
     <div class="card">
       <div class="lbl"><span class="msr">edit</span>Controleren</div>
       <form method="POST" action="/boetes/<%= b.id %>/bestuurder" class="form" style="grid-template-columns:1fr;margin-top:10px">
@@ -46,7 +46,7 @@
         </form>
       </details>
     </div>
-    <% } else if (magBoetes && b.status === "uitzondering_gevraagd") { %>
+    <% } else if (isHr && b.status === "uitzondering_gevraagd") { %>
     <div class="card">
       <div class="lbl"><span class="msr">gavel</span>Uitzondering beoordelen</div>
       <p style="margin-top:8px"><strong><%= b.gevraagd_door_naam || "Een beheerder" %></strong> vraagt om deze boete niet door te belasten: <em><%= b.uitzondering_reden %></em></p>

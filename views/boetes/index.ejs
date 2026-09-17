@@ -1,7 +1,7 @@
 <%- include("../partials/header") %>
 <div class="page-head">
   <div><div class="eyebrow">Boetes en eigen risico</div><h1>Boetes</h1><div class="sub"><%= counts.nieuw %> nog niet in AFAS · <%= counts.uitzondering %> uitzondering gevraagd · <%= h.euro(counts.doorbelast_jaar) %> via de loonstrook dit jaar</div></div>
-  <% if (magBoetes) { %><div class="actions"><a href="/boetes/nieuw" class="btn primary"><span class="msr">add</span>Boete invoeren</a></div><% } %>
+  <% if (isHr) { %><div class="actions"><a href="/boetes/nieuw" class="btn primary"><span class="msr">add</span>Boete invoeren</a></div><% } %>
 </div>
 <div class="filters">
   <div class="chips">

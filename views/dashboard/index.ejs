@@ -81,7 +81,7 @@
         <% if (can("beheerder")) { %>
           <a href="/uitleen/toewijzen" class="btn"><span class="msr">person_add</span>Toewijzen</a>
           <a href="/uitleen/toewijzen?soort=uitleen" class="btn"><span class="msr">key</span>Uitlenen</a>
-          <% if (magBoetes) { %><a href="/boetes/nieuw" class="btn"><span class="msr">receipt_long</span>Boete</a><% } %>
+          <% if (isHr) { %><a href="/boetes/nieuw" class="btn"><span class="msr">receipt_long</span>Boete</a><% } %>
           <a href="/incidenten/nieuw" class="btn"><span class="msr">car_crash</span>Incident</a>
           <a href="/voertuigen/nieuw" class="btn primary"><span class="msr">add</span>Nieuw voertuig</a>
         <% } else { %>
