@@ -135,7 +135,7 @@ router.get("/mijn-auto/auto/:id", async (req, res, next) => {
   const eigen = b ? await db.one("SELECT 1 FROM toewijzingen WHERE voertuig_id = $1 AND bestuurder_id = $2 AND status = 'actief'", [v.id, b.id]) : null;
   if (!eigen && !res.locals.can("directie")) return res.status(403).render("error", { title: "Geen toegang", message: "Je kunt alleen je eigen auto bekijken." });
   const garages = await db.all("SELECT * FROM contacten WHERE soort = 'garage' ORDER BY naam");
-  const garage = garages.find((g) => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(" ")[0])) || garages.find((g) => (g.merk || "").toLowerCase() === "alle") || null;
+  const garage = garages.find((g) => g.merk && v.merk && g.merk.toLowerCase().includes(v.merk.toLowerCase().split(/[s-]/)[0])) || garages.find((g) => (g.merk || "").toLowerCase() === "alle") || null;
   res.render("mijn-auto-info", { title: `Over ${v.kenteken || v.merk}`, v, garage, meekijken: als });
 });
 

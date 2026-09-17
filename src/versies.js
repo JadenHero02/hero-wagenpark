@@ -6,6 +6,7 @@
 const VERSIES = [
   { versie: "0.2.35", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "modelnamen zoals de fabrikant ze schrijft: de RDW levert alles in hoofdletters (\"530E XDRIVE\"), de app maakt er nu \"530e xDrive\", \"i5 eDrive40\", \"Q4 45 e-tron\" en \"V-Klasse\" van. Twaalf bestaande auto's zijn gelijkgetrokken, met een regel in het logboek", commit: "" },
+    { soort: "opgelost", tekst: "de garage voor Mercedes-Benz werd niet gevonden zodra het merk met een streepje geschreven stond; de app zoekt nu op het eerste woord vóór een spatie of streepje", commit: "" },
   ] },
   { versie: "0.2.34", datum: "2026-09-17", punten: [
     { soort: "nieuw", tekst: "terugroepacties met tekst: de app haalt bij de RDW op wát er mis is, wat het gevolg is en wat de dealer eraan doet. Staat er een actie open, dan krijgt de bestuurder een taak en een mail met die tekst en de knop om de dealer te bellen; in Over deze auto staat een rood blok met de uitleg. Zodra de fabrikant herstel meldt, gaat de taak vanzelf dicht. Op de voertuigpagina staan alle acties, open en afgehandeld, in de kaart Kentekenregister", commit: "" },
