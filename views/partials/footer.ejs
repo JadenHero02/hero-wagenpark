@@ -65,7 +65,7 @@
   var knoppen = document.querySelectorAll("[data-thema-knop]");
   function pas(keuze) {
     var donker = keuze === "donker" || (keuze === "systeem" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    document.documentElement.setAttribute("data-thema", donker ? "donker" : "licht");
+    document.documentElement.setAttribute("data-thema", donker ? "donker" : "licht"); var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", donker ? "#071f56" : "#073889");
     knoppen.forEach(function (k) { k.classList.toggle("on", k.getAttribute("data-thema-knop") === keuze); });
   }
   var huidig = "systeem"; try { huidig = localStorage.getItem("wp_thema") || "systeem"; } catch (e) {}

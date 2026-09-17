@@ -4,6 +4,9 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.3.1", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "de donkere weergave is opnieuw ontworpen. Geen blauwzwarte soep meer, maar lagen: een bijna zwarte achtergrond, kaarten die er iets bovenop liggen met een dunne rand, witte koppen, Hero-blauw alleen als accent voor links en het actieve menu, de balk en het menu als één kader in diep Hero-blauw, pillen met een donkere tint en heldere tekst, rustige knoppen met de oranje actieknop, invoervelden die in de kaart liggen met een blauwe focusring, en het kenteken als echt geel bordje. Ook de inlogpagina en de kleur van de browserbalk volgen het thema", commit: "" },
+  ] },
   { versie: "0.3.0", datum: "2026-09-17", punten: [
     { soort: "nieuw", tekst: "onderhoud: de app weet per auto wanneer de kleine en de grote beurt zijn. De tijd is leidend (bijvoorbeeld elke 12 maanden klein, elke 24 groot); is er een kilometerstand bekend, dan kan die de beurt naar voren halen. Zonder beurt in de app schat hij vanaf de eerste toelating en zegt dat erbij. Een maand vooraf krijgt de bestuurder dezelfde kaart als bij de APK: garage bellen, datum vastleggen; daarna \"beurt gedaan\" met de kilometerstand van de bon, waarmee het schema doorloopt. Valt de APK binnen zes weken, dan stelt de app voor die te combineren", commit: "" },
     { soort: "nieuw", tekst: "op de voertuigpagina staat Volgende beurt bij Deadlines, met de pagina Onderhoud voor afspraak, beurt gedaan, het schema per auto (beheerder) en de historie. Op het dashboard staan beurten in Komende weken en over tijd in Vandaag voor jou. Standaardschema per brandstof; per auto aan te passen, bij lease uit het contract", commit: "" },
