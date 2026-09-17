@@ -4,8 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.3.8", datum: "2026-09-17", punten: [
+    { soort: "verbeterd", tekst: "Contacten is een rustige bellijst geworden: twee blokken (Bij Hero en Leveranciers), één regel per contact met naam, waarvoor, en het telefoonnummer als belknop. Adres, website, e-mail, notitie en Bewerken staan achter een klik op de naam. Geen tabelkoppen meer; iemand die celdirecteur én wagenparkbeheer is staat één keer. Remco Souwer staat als contactpersoon bij MKB Autobeheer", commit: "" },
+    { soort: "verbeterd", tekst: "op Uitleen zijn Laatste besluiten en Eerder uitgeleend ingeklapt met het aantal erbij; open ze met één klik. Zo blijft de aandacht bij wat wacht en wat nu uitgeleend is", commit: "" },
+  ] },
   { versie: "0.3.7", datum: "2026-09-17", punten: [
-    { soort: "opgelost", tekst: "op Rollen stond bij Admin nog vast \"Annemiek\", terwijl zij nu beheerder is; de kolom toont nu wie er echt admin is. In \"Wat mag welke rol\" klopt de regel Boetes weer: directie ziet ze, beheerders alleen als celdirecteur of HR", commit: "" },
+    { soort: "opgelost", tekst: "op Rollen stond bij Admin nog vast \"Annemiek\", terwijl zij nu beheerder is; de kolom toont nu wie er echt admin is. In \"Wat mag welke rol\" klopt de regel Boetes weer: directie ziet ze, beheerders alleen als celdirecteur of HR", commit: "eb6378f" },
   ] },
   { versie: "0.3.6", datum: "2026-09-17", punten: [
     { soort: "verbeterd", tekst: "het menu is in drie groepen gezet: bovenaan het dagelijkse werk (Dashboard, Wagenpark, Bestuurders, Taken, Uitleen, Wachtlijst), daaronder registreren (Incidenten, Boetes, Contacten), en onderaan het kopje Beheer met Archief, Verduurzaming, Processen, Rollen en Instellingen. Beheer staat standaard dicht, klapt open met één klik, onthoudt per browser de stand en staat vanzelf open als je op een beheerpagina zit", commit: "0b41fb3" },

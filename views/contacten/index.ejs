@@ -1,27 +1,61 @@
 <%- include("../partials/header") %>
+<%
+  // Contacten als bellijst: twee blokken (Bij Hero en Leveranciers), één regel per contact met een belknop.
+  // Adres, website, e-mail, opmerking en Bewerken zitten achter een klik op de naam.
+  const HERO = ["wagenparkbeheer", "celdirecteur"];
+  const LEVERANCIERS = ["garage", "tankpas", "verzekeraar", "bestickering", "wasstraat", "overig"];
+  const alle = Object.values(groups).flat();
+  // Bij Hero: dezelfde persoon (e-mail) maar één keer, met alle functies in de onderregel
+  const hero = [];
+  alle.filter(c => HERO.includes(c.soort)).sort((a, b) => HERO.indexOf(a.soort) - HERO.indexOf(b.soort) || a.naam.localeCompare(b.naam)).forEach(c => {
+    const zelfde = c.email && hero.find(x => x.email && x.email.toLowerCase() === c.email.toLowerCase());
+    const functie = c.soort === "celdirecteur" ? "Celdirecteur" + (c.vestiging ? " " + c.vestiging : "") : h.label("contact", c.soort);
+    if (zelfde) { zelfde.functies.push(functie); zelfde.opmerking = zelfde.opmerking || c.opmerking; zelfde.ids.push(c.id); return; }
+    hero.push({ ...c, functies: [functie], ids: [c.id] });
+  });
+  const kort = (t) => { if (!t) return ""; const eerste = t.split(" · ")[0].trim(); return eerste.length > 70 ? eerste.slice(0, 66).replace(/\s+\S*$/, "") + "…" : eerste; };
+  const site = (w) => (w ? (w.startsWith("http") ? w : "https://" + w) : null);
+  const siteNaam = (w) => (w ? w.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") : "");
+%>
 <div class="page-head">
-  <div><div class="eyebrow">Wagenpark</div><h1>Contacten</h1><div class="sub">Garages per merk, verzekeraar, tankpas, bestickering, wasstraat, en wie je belt per vestiging</div></div>
+  <div><div class="eyebrow">Wagenpark</div><h1>Contacten</h1><div class="sub">Wie je belt: bij Hero, de garages per merk, tankpas en de rest. Klik op een naam voor adres en meer.</div></div>
   <% if (can("beheerder")) { %><div class="actions"><a href="/contacten/nieuw" class="btn primary"><span class="msr">add</span>Nieuw contact</a></div><% } %>
 </div>
-<% Object.entries(groups).forEach(([soort, list]) => { %>
-<div class="card">
-  <div class="lbl"><span class="msr">contacts</span><%= h.label("contact", soort) %></div>
-  <table class="list" style="margin-top:6px">
-    <thead><tr><th>Naam</th><th>Merk / vestiging</th><th>Telefoon</th><th>Adres</th><th>Opmerking</th><th></th></tr></thead>
-    <tbody>
-    <% list.forEach(c => { %>
-      <tr>
-        <td><strong><%= c.naam %></strong><% if (c.website) { %><div class="small"><a href="<%= c.website.startsWith("http") ? c.website : "https://" + c.website %>" target="_blank" rel="noopener"><%= c.website %></a></div><% } %><% if (c.email) { %><div class="small muted"><%= c.email %></div><% } %></td>
-        <td><%= c.merk || c.vestiging || "" %></td>
-        <td class="nowrap"><%= c.telefoon || "" %></td>
-        <td class="small"><%= c.adres || "" %></td>
-        <td class="small muted"><% if (c.opmerking && c.opmerking.length > 120) { %><details class="meer"><summary><%= c.opmerking.slice(0, 90).replace(/\s+\S*$/, "") %>… <span>meer</span></summary><%= c.opmerking %></details><% } else { %><%= c.opmerking || "" %><% } %></td>
-        <td class="nowrap"><% if (can("beheerder")) { %><a href="/contacten/<%= c.id %>/bewerken" class="btn ghost small"><span class="msr">edit</span>Bewerken</a><% } %></td>
-      </tr>
-    <% }) %>
-    </tbody>
-  </table>
+
+<% const regel = (c, sub, ids) => { %>
+  <details class="contact">
+    <summary>
+      <div class="contact-naam"><strong><%= c.naam %></strong><% if (sub) { %><span><%= sub %></span><% } %></div>
+      <% if (c.telefoon) { %><a href="tel:<%= c.telefoon.replace(/[^\d+]/g, "") %>" class="btn small contact-bel" onclick="event.stopPropagation()"><span class="msr">call</span><%= h.telefoonFmt(c.telefoon) %></a><% } else { %><span class="muted small">geen nummer</span><% } %>
+      <span class="msr contact-pijl">expand_more</span>
+    </summary>
+    <div class="contact-meer">
+      <% if (c.adres) { %><div><span class="msr">location_on</span><a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(c.adres) %>" target="_blank" rel="noopener"><%= c.adres %></a></div><% } %>
+      <% if (c.website) { %><div><span class="msr">language</span><a href="<%= site(c.website) %>" target="_blank" rel="noopener"><%= siteNaam(c.website) %></a></div><% } %>
+      <% if (c.email) { %><div><span class="msr">mail</span><a href="mailto:<%= c.email %>"><%= c.email %></a></div><% } %>
+      <% if (c.opmerking) { %><div><span class="msr">notes</span><span class="muted"><%= c.opmerking %></span></div><% } %>
+      <% if (!c.adres && !c.website && !c.email && !c.opmerking) { %><div class="muted">Alleen een telefoonnummer bekend.</div><% } %>
+      <% if (can("beheerder")) { %><div class="actions" style="margin-top:8px"><% (ids || [c.id]).forEach((id, i) => { %><a href="/contacten/<%= id %>/bewerken" class="btn ghost small"><span class="msr">edit</span>Bewerken<%= ids && ids.length > 1 ? " (" + (i === 0 ? c.functies[0] : c.functies[i]).toLowerCase() + ")" : "" %></a><% }) %></div><% } %>
+    </div>
+  </details>
+<% }; %>
+
+<% if (hero.length) { %>
+<div class="card contacten-blok">
+  <div class="lbl"><span class="msr">badge</span>Bij Hero</div>
+  <% hero.forEach(c => regel(c, c.functies.join(" · "), c.ids)) %>
 </div>
-<% }) %>
-<% if (!Object.keys(groups).length) { %><div class="card"><div class="empty">Nog geen contacten.</div></div><% } %>
+<% } %>
+
+<% const lev = LEVERANCIERS.filter(s => (groups[s] || []).length); if (lev.length) { %>
+<div class="card contacten-blok">
+  <div class="lbl"><span class="msr">store</span>Leveranciers</div>
+  <% lev.forEach(soort => { %>
+    <div class="contact-kop"><%= soort === "garage" ? "Garages" : soort === "tankpas" ? "Tankpas en laadpas" : h.label("contact", soort) %></div>
+    <% groups[soort].forEach(c => regel(c, [c.merk || c.vestiging, kort(c.opmerking)].filter(Boolean).join(" · "))) %>
+  <% }) %>
+</div>
+<% } %>
+
+<% if (!alle.length) { %><div class="card"><div class="empty">Nog geen contacten.</div></div><% } %>
 <%- include("../partials/footer") %>

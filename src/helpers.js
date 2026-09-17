@@ -118,4 +118,16 @@ const label = (group, key) => (LABELS[group] && LABELS[group][key]) || key || ""
 // Voor tekst die een template met <%- %> invoegt
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label, esc, bouwjaarNorm, bouwjaarFmt, tankpasLeverancier };
+// Nederlands telefoonnummer leesbaar: +31 6 ... wordt 06 12 34 56 78, 0229276600 wordt 0229 276 600, 0851234567 wordt 085 123 4567
+function telefoonFmt(t) {
+  if (!t) return "";
+  let d = String(t).replace(/[^\d+]/g, "");
+  if (d.startsWith("+31")) d = "0" + d.slice(3);
+  else if (d.startsWith("0031")) d = "0" + d.slice(4);
+  if (!/^0\d{9}$/.test(d)) return String(t).trim();
+  if (d.startsWith("06")) return `06 ${d.slice(2, 4)} ${d.slice(4, 6)} ${d.slice(6, 8)} ${d.slice(8)}`;
+  if (/^0(8[58]|90|10|13|15|20|23|24|26|30|33|35|36|38|40|43|44|45|46|50|53|55|58|70|71|72|73|74|75|76|77|78|79)/.test(d)) return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`;
+  return `${d.slice(0, 4)} ${d.slice(4, 7)} ${d.slice(7)}`;
+}
+
+module.exports = { clean, cleanNumber, cleanDate, yes, formatDate, daysUntil, relativeDate, num, euro, kenteken, initials, LABELS, label, esc, bouwjaarNorm, bouwjaarFmt, tankpasLeverancier, telefoonFmt };

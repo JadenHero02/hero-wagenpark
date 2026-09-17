@@ -66,20 +66,20 @@
     </table>
   </div>
   <div>
-    <div class="card">
-      <div class="card-head"><h2>Laatste besluiten</h2></div>
+    <details class="card inklap">
+      <summary><h2>Laatste besluiten</h2><span class="muted small"><%= besloten.length %></span><span class="msr inklap-pijl">expand_more</span></summary>
       <div class="rows">
         <% besloten.forEach(l => { %><div><span><a href="/uitleen/verzoeken/<%= l.id %>"><%= l.wie %></a><% if (l.kenteken) { %> · <span class="plate"><%= l.kenteken %></span><% } %> <span class="muted small"><%= h.formatDate(l.van) %> – <%= h.formatDate(l.tot) %></span></span><span class="v"><span class="pill <%= l.status === 'goedgekeurd' ? 'ok' : 'soft' %>"><%= h.label("leenverzoek", l.status) %></span></span></div><% }) %>
         <% if (!besloten.length) { %><div class="muted">Nog geen besluiten.</div><% } %>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><h2>Eerder uitgeleend</h2></div>
+    </details>
+    <details class="card inklap">
+      <summary><h2>Eerder uitgeleend</h2><span class="muted small"><%= historie.length %></span><span class="msr inklap-pijl">expand_more</span></summary>
       <div class="rows">
         <% historie.forEach(t => { %><div><span><a href="/voertuigen/<%= t.voertuig_id %>"><span class="plate"><%= t.kenteken %></span></a> <%= t.wie || "" %></span><span class="v muted small"><%= h.formatDate(t.van) %> – <%= h.formatDate(t.tot) %></span></div><% }) %>
         <% if (!historie.length) { %><div class="muted">Nog geen historie.</div><% } %>
       </div>
-    </div>
+    </details>
   </div>
 </div>
 <%- include("../partials/footer") %>

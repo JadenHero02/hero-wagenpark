@@ -235,6 +235,30 @@ table.list td { padding: 10px; border-bottom: 1px solid var(--grijs-thin); verti
 table.list tr:last-child td { border-bottom: 0; }
 table.list tr.click:hover td { background: var(--blauw-hair); cursor: pointer; }
 table.list tr.click:focus-visible { outline: none; } table.list tr.click:focus-visible td { background: var(--blauw-hair); box-shadow: inset 0 0 0 2px var(--hero-blauw); }
+/* Inklapbare kaart: kop met pijl, standaard dicht (Uitleen: laatste besluiten, eerder uitgeleend) */
+details.card.inklap { padding-top: 12px; padding-bottom: 12px; }
+details.card.inklap > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+details.card.inklap > summary::-webkit-details-marker { display: none; }
+details.card.inklap > summary h2 { flex: 1; margin: 0; }
+details.card.inklap > summary .inklap-pijl { color: var(--grijs); font-size: 22px; transition: transform .15s; }
+details.card.inklap:not([open]) > summary .inklap-pijl { transform: rotate(-90deg); }
+details.card.inklap[open] > summary { margin-bottom: 10px; }
+/* Contacten als bellijst: één regel per contact, details achter de naam */
+.contacten-blok { padding-top: 12px; padding-bottom: 6px; }
+.contact-kop { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--grijs); margin: 14px 0 2px; }
+.contact-kop:first-of-type { margin-top: 8px; }
+details.contact { border-top: 1px solid var(--grijs-thin); }
+details.contact:first-of-type, .contact-kop + details.contact { border-top: 0; }
+details.contact > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 9px 0; }
+details.contact > summary::-webkit-details-marker { display: none; }
+details.contact > summary:hover strong { color: var(--blauw); }
+.contact-naam { flex: 1; min-width: 0; } .contact-naam strong { display: block; } .contact-naam span { display: block; font-size: 12.5px; color: var(--grijs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.contact-bel { white-space: nowrap; }
+.contact-pijl { color: var(--grijs); font-size: 20px; transition: transform .15s; }
+details.contact:not([open]) .contact-pijl { transform: rotate(-90deg); }
+.contact-meer { background: var(--blauw-hair); border-radius: 8px; padding: 10px 12px; margin: 0 0 10px; font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+.contact-meer > div { display: flex; align-items: flex-start; gap: 8px; } .contact-meer .msr { font-size: 18px; color: var(--grijs); flex-shrink: 0; }
+@media (max-width: 600px) { .contact-naam span { white-space: normal; } .contact-bel .msr + * { display: none; } }
 details.meer summary { list-style: none; cursor: pointer; } details.meer summary::-webkit-details-marker { display: none; } details.meer summary span { color: var(--blauw-bold); font-weight: 600; } details.meer[open] summary { display: none; }
 table.list td.num, table.list th.num { text-align: right; }
 .rows > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--grijs-thin); font-size: 13.5px; }
