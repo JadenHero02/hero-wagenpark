@@ -2,6 +2,7 @@
 // Voertuiggegevens van de RDW, via de open data (opendata.rdw.nl, gratis, geen sleutel nodig).
 // Op kenteken: merk, model, eerste toelating (bouwjaar en -maand), brandstof, APK-vervaldatum, kleur, catalogusprijs, WA-verzekerd,
 // plus de uitgebreide gegevens (inrichting, tenaamstelling, massa, vermogen, verbruik, tellerstandoordeel, indicatoren) als JSON in rdw_extra.
+// Bij het bijwerken komen daar ook de terugroepacties (met tekst en status) en de APK-keuringen met geconstateerde gebreken bij.
 //
 //   const g = await rdw.opvragen("TD-600-K");              // null als het kenteken onbekend is
 //   const r = await rdw.bijwerken(voertuig, userId);        // vult lege velden, zet de APK-datum van de RDW, logt wat er veranderde
@@ -15,11 +16,12 @@ const strip = (k) => String(k || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 const titel = (s) => String(s || "").toLowerCase().replace(/(^|[\s-])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\bBmw\b/, "BMW").replace(/\bVw\b/, "VW").replace(/\bMg\b/, "MG");
 const datum = (s) => (s && /^\d{8}$/.test(s) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}` : null);
 
-async function get(dataset, kenteken) {
+async function get(dataset, params) {
+  const qs = typeof params === "string" ? `kenteken=${encodeURIComponent(params)}` : Object.entries(params).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 8000);
   try {
-    const r = await fetch(`${BASIS}/${dataset}.json?kenteken=${encodeURIComponent(kenteken)}`, { signal: ctl.signal, headers: { accept: "application/json" } });
+    const r = await fetch(`${BASIS}/${dataset}.json?${qs}`, { signal: ctl.signal, headers: { accept: "application/json" } });
     if (!r.ok) throw new Error(`RDW antwoordde ${r.status}`);
     return r.json();
   } finally { clearTimeout(timer); }
@@ -55,6 +57,40 @@ function extraVan(v, brandstof) {
   };
 }
 
+// Terugroepacties: per kenteken de referentiecodes met status (t49b-isb7), de tekst per code (j9yg-7rg9).
+// De tekst verandert niet meer en dezelfde code komt bij meer auto's voor, dus die blijft in het geheugen.
+const actieTekst = new Map();
+async function terugroepacties(k) {
+  const statussen = await get("t49b-isb7", k);
+  const uit = [];
+  for (const st of statussen) {
+    const code = st.referentiecode_rdw;
+    if (!code) continue;
+    if (!actieTekst.has(code)) {
+      const [a] = await get("j9yg-7rg9", { referentiecode_rdw: code });
+      actieTekst.set(code, a ? { omschrijving: a.omschrijving_defect || null, gevolg: a.materi_le_gevolgen || null, herstel: a.beschrijving_van_het_herstel || null, risico: a.risicobeoordeling_rdw || null, datum: datum(a.publicatiedatum_rdw), telefoon: a.meer_informatie_via_telefoonnummer || null } : {});
+    }
+    uit.push({ code, status: st.status || null, open: st.code_status === "O", ...actieTekst.get(code) });
+  }
+  return uit.sort((a, b) => (b.open - a.open) || String(b.datum || "").localeCompare(String(a.datum || "")));
+}
+
+// APK-keuringen (sgfe-77wx) met de geconstateerde gebreken (a34c-vvps); de omschrijving per gebrek (hx2c-gt7k) blijft in het geheugen.
+const gebrekTekst = new Map();
+async function apkKeuringen(k) {
+  const [meldingen, gebreken] = await Promise.all([get("sgfe-77wx", k), get("a34c-vvps", k)]);
+  const ids = [...new Set(gebreken.map((g) => g.gebrek_identificatie).filter((id) => id && !gebrekTekst.has(id)))];
+  if (ids.length) {
+    const rows = await get("hx2c-gt7k", { $where: `gebrek_identificatie in(${ids.map((id) => `'${id.replace(/'/g, "")}'`).join(",")})`, $limit: 500 });
+    for (const r of rows) gebrekTekst.set(r.gebrek_identificatie, r.gebrek_omschrijving || r.gebrek_identificatie);
+  }
+  const perDatum = new Map();
+  const slot = (m) => { const key = `${m.meld_datum_door_keuringsinstantie}${m.meld_tijd_door_keuringsinstantie || ""}`; if (!perDatum.has(key)) perDatum.set(key, { datum: datum(m.meld_datum_door_keuringsinstantie), soort: m.soort_melding_ki_omschrijving || null, vervaldatum: null, gebreken: [] }); return perDatum.get(key); };
+  for (const m of meldingen) { const e = slot(m); e.vervaldatum = datum(m.vervaldatum_keuring) || e.vervaldatum; }
+  for (const g of gebreken) { const e = slot(g); const id = g.gebrek_identificatie; if (id && !e.gebreken.some((x) => x.id === id)) e.gebreken.push({ id, omschrijving: gebrekTekst.get(id) || id }); }
+  return [...perDatum.values()].sort((a, b) => String(b.datum).localeCompare(String(a.datum))).slice(0, 10);
+}
+
 async function opvragen(kenteken) {
   const k = strip(kenteken);
   if (k.length < 6) return null;
@@ -77,6 +113,9 @@ async function opvragen(kenteken) {
 async function bijwerken(v, userId = null, t = db) {
   const g = await opvragen(v.kenteken);
   if (!g) return { gevonden: false, gewijzigd: [] };
+  const oud = v.rdw_extra || {};
+  try { g.extra.terugroepacties = await terugroepacties(g.kenteken); } catch (err) { g.extra.terugroepacties = oud.terugroepacties || null; console.error(`RDW terugroepacties ${g.kenteken}:`, err.message); }
+  try { g.extra.apk_keuringen = await apkKeuringen(g.kenteken); } catch (err) { g.extra.apk_keuringen = oud.apk_keuringen || null; console.error(`RDW keuringen ${g.kenteken}:`, err.message); }
   const sets = [], params = [v.id], gewijzigd = [];
   const zet = (kolom, waarde, tekst) => { params.push(waarde); sets.push(`${kolom} = $${params.length}`); if (tekst) gewijzigd.push(tekst); };
   // Merk komt van de RDW. Stond er een bijnaam uit de Excel ("Lavendelbus"), dan gaat die naar de notitie
@@ -91,6 +130,9 @@ async function bijwerken(v, userId = null, t = db) {
   if (g.bouwjaar && v.bouwjaar !== g.bouwjaar) zet("bouwjaar", g.bouwjaar, `bouwjaar ${v.bouwjaar || "leeg"} naar ${g.bouwjaar}`);
   if (g.milieu && v.milieu !== g.milieu) zet("milieu", g.milieu, `milieu ${v.milieu || "leeg"} naar ${g.milieu}`);
   if (g.apk_vervaldatum && g.apk_vervaldatum !== v.apk_vervaldatum) zet("apk_vervaldatum", g.apk_vervaldatum, `APK ${formatDate(v.apk_vervaldatum) || "onbekend"} naar ${formatDate(g.apk_vervaldatum)}`);
+  const openNu = (g.extra.terugroepacties || []).filter((a) => a.open).map((a) => a.code), openWas = (oud.terugroepacties || []).filter((a) => a.open).map((a) => a.code);
+  for (const code of openNu.filter((c) => !openWas.includes(c))) gewijzigd.push(`terugroepactie ${code} open`);
+  for (const code of openWas.filter((c) => !openNu.includes(c))) gewijzigd.push(`terugroepactie ${code} afgehandeld`);
   zet("rdw_kleur", g.kleur); zet("rdw_voertuigsoort", g.voertuigsoort); zet("rdw_catalogusprijs", g.catalogusprijs); zet("rdw_wam_verzekerd", g.wam_verzekerd);
   zet("rdw_eerste_toelating", g.eerste_toelating); zet("rdw_brandstof", g.brandstof); zet("rdw_extra", JSON.stringify(g.extra));
   sets.push("rdw_opgehaald_op = local_now()");
@@ -118,4 +160,4 @@ async function alles(userId = null) {
   return uitkomst;
 }
 
-module.exports = { opvragen, bijwerken, alles, strip };
+module.exports = { opvragen, bijwerken, alles, strip, terugroepacties, apkKeuringen };

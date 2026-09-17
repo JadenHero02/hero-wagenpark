@@ -4,8 +4,12 @@
 // Soorten: nieuw, verbeterd, opgelost. Het commitnummer is het korte hash (git log --oneline).
 
 const VERSIES = [
+  { versie: "0.2.34", datum: "2026-09-17", punten: [
+    { soort: "nieuw", tekst: "terugroepacties met tekst: de app haalt bij de RDW op wát er mis is, wat het gevolg is en wat de dealer eraan doet. Staat er een actie open, dan krijgt de bestuurder een taak en een mail met die tekst en de knop om de dealer te bellen; in Over deze auto staat een rood blok met de uitleg. Zodra de fabrikant herstel meldt, gaat de taak vanzelf dicht. Op de voertuigpagina staan alle acties, open en afgehandeld, in de kaart Kentekenregister", commit: "" },
+    { soort: "nieuw", tekst: "APK-keuringen van de RDW op de voertuigpagina: per keuring de datum, tot wanneer hij geldig was en welke gebreken de keurmeester vond, bijvoorbeeld \"achterlicht werkt niet\". Goedgekeurd zonder gebreken staat er ook. Alleen wat de keurmeester meldt; schade zit niet in de RDW-gegevens", commit: "" },
+  ] },
   { versie: "0.2.33", datum: "2026-09-16", punten: [
-    { soort: "verbeterd", tekst: "boetes lopen via AFAS: HR voert de boete in de app in, de app zoekt op wie er reed, HR zet hem in AFAS en bevestigt dat met \"Staat in AFAS\". De app mailt HR niet meer, wel de bestuurder met de celdirecteur in kopie. Statussen heten nu \"Nog niet in AFAS\" en \"In AFAS, via de loonstrook\"", commit: "" },
+    { soort: "verbeterd", tekst: "boetes lopen via AFAS: HR voert de boete in de app in, de app zoekt op wie er reed, HR zet hem in AFAS en bevestigt dat met \"Staat in AFAS\". De app mailt HR niet meer, wel de bestuurder met de celdirecteur in kopie. Statussen heten nu \"Nog niet in AFAS\" en \"In AFAS, via de loonstrook\"", commit: "0114add" },
   ] },
   { versie: "0.2.32", datum: "2026-09-16", punten: [
     { soort: "nieuw", tekst: "de app is op het beginscherm van je telefoon te zetten: met een Hero-icoon Wagenpark, en hij opent dan schermvullend zonder adresbalk. In Mijn auto legt een blauwe kaart in drie stappen uit hoe (iPhone en Android); met Later verdwijnt hij een week. Dit is ook de basis voor de iOS-app", commit: "" },

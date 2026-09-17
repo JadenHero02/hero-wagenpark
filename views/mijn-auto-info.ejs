@@ -3,6 +3,7 @@
   // Over deze auto: wat de bestuurder over zijn auto wil weten, uit het kentekenregister van de RDW en de app.
   // Bewust zonder de beheerdersgegevens (BPM, massa, catalogusprijs): die staan op de voertuigpagina.
   const x = v.rdw_extra || {};
+  const openActies = (x.terugroepacties || []).filter(a => a.open);
   const d = h.daysUntil(v.apk_vervaldatum);
   const pk = x.vermogen_kw ? Math.round(x.vermogen_kw * 1.36) : null;
   const bouwjaar = v.rdw_eerste_toelating ? String(v.rdw_eerste_toelating).slice(0, 4) : h.bouwjaarFmt ? h.bouwjaarFmt(v.bouwjaar) : v.bouwjaar;
@@ -19,10 +20,21 @@
     <div class="rdw-status" style="margin-top:14px">
       <% if (v.rdw_wam_verzekerd === false) { %><span class="pill bad"><span class="msr">gpp_bad</span>Niet WA-verzekerd, bel wagenparkbeheer</span><% } else if (v.rdw_wam_verzekerd) { %><span class="pill ok"><span class="msr">verified_user</span>WA-verzekerd</span><% } %>
       <% if (v.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'ok' %>"><span class="msr">event_available</span>APK tot <%= h.formatDate(v.apk_vervaldatum) %></span><% } %>
-      <% if (x.terugroepactie) { %><span class="pill bad"><span class="msr">campaign</span>Open terugroepactie</span><% } %>
+      <% if (openActies.length || (x.terugroepactie && !(x.terugroepacties || []).length)) { %><span class="pill bad"><span class="msr">campaign</span>Open terugroepactie</span><% } %>
     </div>
     <% } %>
   </div>
+
+  <% (v.rdw_opgehaald_op ? openActies : []).forEach(a => { %>
+  <div class="card" style="border-left:5px solid var(--rood)">
+    <div class="lbl" style="color:var(--rood)"><span class="msr">campaign</span>Terugroepactie van de fabrikant</div>
+    <p style="margin:6px 0"><strong><%= a.omschrijving || "De fabrikant roept deze auto terug." %></strong></p>
+    <% if (a.gevolg) { %><p class="small" style="margin:0 0 6px"><%= a.gevolg %></p><% } %>
+    <% if (a.herstel) { %><p class="small muted" style="margin:0 0 8px">Oplossing: <%= a.herstel %></p><% } %>
+    <p class="small" style="margin:0 0 8px">Bel de dealer voor een afspraak; de reparatie is gratis.<%= a.code ? " Noem RDW-code " + a.code + "." : "" %></p>
+    <div class="actions"><% if (garage && garage.telefoon) { %><a href="tel:<%= garage.telefoon.replace(/\s/g, "") %>" class="btn small primary"><span class="msr">call</span>Bel <%= garage.naam %></a><% } %><% if (a.telefoon) { %><a href="tel:<%= a.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span>Fabrikant <%= a.telefoon %></a><% } %></div>
+  </div>
+  <% }) %>
 
   <% if (!v.rdw_opgehaald_op) { %>
     <div class="card"><div class="muted">De gegevens van de RDW zijn nog niet opgehaald. Probeer het morgen opnieuw.</div></div>

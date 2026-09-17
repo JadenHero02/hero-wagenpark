@@ -132,7 +132,8 @@
       <% if (v.rdw_wam_verzekerd === false) { %><span class="pill bad"><span class="msr">gpp_bad</span>Niet WA-verzekerd</span><% } else if (v.rdw_wam_verzekerd) { %><span class="pill ok"><span class="msr">verified_user</span>WA-verzekerd</span><% } %>
       <% if (v.apk_vervaldatum) { %><span class="pill <%= d < 0 ? 'bad' : d < 30 ? 'warn' : 'ok' %>"><span class="msr">event_available</span>APK tot <%= h.formatDate(v.apk_vervaldatum) %></span><% } %>
       <% if (x.tellerstand_oordeel) { %><span class="pill <%= x.tellerstand_oordeel === 'Logisch' ? 'ok' : x.tellerstand_oordeel === 'Onlogisch' ? 'bad' : 'grey' %>"><span class="msr">speed</span>Tellerstand <%= x.tellerstand_oordeel.toLowerCase() %><%= x.tellerstand_jaar ? " (" + x.tellerstand_jaar + ")" : "" %></span><% } %>
-      <% if (x.terugroepactie) { %><span class="pill bad"><span class="msr">campaign</span>Open terugroepactie</span><% } %>
+      <% const acties = x.terugroepacties || [], openActies = acties.filter(a => a.open); %>
+      <% if (openActies.length || (x.terugroepactie && !acties.length)) { %><span class="pill bad"><span class="msr">campaign</span>Open terugroepactie<%= openActies.length > 1 ? " (" + openActies.length + ")" : "" %></span><% } %>
       <% if (x.export) { %><span class="pill warn"><span class="msr">flight_takeoff</span>Geëxporteerd</span><% } %>
       <% if (x.taxi) { %><span class="pill warn"><span class="msr">local_taxi</span>Taxi</span><% } %>
       <% if (x.tenaamstellen_mogelijk === false) { %><span class="pill warn"><span class="msr">block</span>Tenaamstellen niet mogelijk</span><% } %>
@@ -173,6 +174,27 @@
       </div>
     </div>
     <% if (!x.inrichting && !x.massa_rijklaar) { %><div class="muted small" style="margin-top:8px">De uitgebreide gegevens komen bij de volgende nachtelijke ronde, of nu met Vernieuwen.</div><% } %>
+    <% if (acties.length) { %>
+    <div class="rdw-kop" style="margin-top:18px">Terugroepacties</div>
+    <div class="rdw-lijst">
+      <% acties.forEach(a => { %>
+      <div class="rdw-actie <%= a.open ? 'open' : '' %>">
+        <div class="rdw-actie-kop"><span class="pill <%= a.open ? 'bad' : 'ok' %>"><span class="msr"><%= a.open ? "campaign" : "check_circle" %></span><%= a.open ? "Open" : "Afgehandeld" %></span><span class="muted small"><%= a.code %><%= a.datum ? " · " + h.formatDate(a.datum) : "" %><%= a.risico ? " · risico " + ({ HOOG: "hoog", GEM: "gemiddeld", LAAG: "laag" }[a.risico] || a.risico.toLowerCase()) : "" %></span></div>
+        <div><strong><%= a.omschrijving || a.status || "Geen omschrijving" %></strong></div>
+        <% if (a.gevolg) { %><div class="small"><%= a.gevolg %></div><% } %>
+        <% if (a.herstel) { %><div class="small muted">Oplossing: <%= a.herstel %></div><% } %>
+        <% if (!a.open && a.status) { %><div class="small muted"><%= a.status %></div><% } %>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+    <% const keuringen = x.apk_keuringen || []; %>
+    <% if (keuringen.length) { %>
+    <div class="rdw-kop" style="margin-top:18px">APK-keuringen</div>
+    <div class="rows">
+      <% keuringen.forEach(k => { %><div><span class="k"><%= h.formatDate(k.datum) %><% if (k.soort && k.soort !== "periodieke controle") { %> <span class="muted small"><%= k.soort %></span><% } %><% if (k.vervaldatum) { %> <span class="muted small">· geldig tot <%= h.formatDate(k.vervaldatum) %></span><% } %></span><span class="v"><% if (k.gebreken.length) { %><span class="pill warn"><%= k.gebreken.length %> gebrek<%= k.gebreken.length > 1 ? "en" : "" %></span> <span class="small"><%= k.gebreken.map(g => g.omschrijving).join(", ") %></span><% } else { %><span class="pill ok">goedgekeurd, geen gebreken</span><% } %></span></div><% }) %>
+    </div>
+    <% } else if (heeftRdw && x.apk_keuringen) { %><div class="muted small" style="margin-top:14px">Nog geen APK-keuring bij de RDW bekend.</div><% } %>
   <% } %>
 </div>
 

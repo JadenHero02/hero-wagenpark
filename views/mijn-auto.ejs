@@ -60,6 +60,7 @@
           <% if (t.soort === "apk") { %><a href="/voertuigen/<%= v.id %>/apk" class="btn small primary"><span class="msr">event_available</span>Afspraak vastleggen</a>
           <% } else if (t.soort === "apk_rapport") { %><a href="/voertuigen/<%= v.id %>/documenten?soort=apk_rapport" class="btn small primary"><span class="msr">upload_file</span>Rapport uploaden</a>
           <% } else { %><form method="POST" action="/taken/<%= t.id %>/afronden"><input type="hidden" name="terug" value="/mijn-auto"><button class="btn small primary" type="submit"><span class="msr">check</span>Gedaan</button></form><% } %>
+          <% if (t.soort === "terugroep") { %><% if (garage && garage.telefoon) { %><a href="tel:<%= garage.telefoon.replace(/\s/g, "") %>" class="btn small"><span class="msr">call</span>Bel <%= garage.naam %></a><% } %><a href="/mijn-auto/auto/<%= v.id %><%= meekijken ? "?als=" + meekijken.id : "" %>" class="btn small ghost"><span class="msr">info</span>Wat is er aan de hand</a><% } %>
         </div>
       </div>
     <% }) %>

@@ -1,7 +1,7 @@
 // src/taken.js
 // De takenmotor. Maakt automatisch taken aan en stuurt de bijbehorende mails, op basis van de termijnen in instellingen:
 //   APK (90/30/7 dagen vooraf en verstreken), APK-rapport na de afspraak, bandenwissel rond 1 oktober en 1 april,
-//   contracteinde, rijbewijs, leenauto morgen inleveren en leenauto te laat. En elke werkdag de dagmail voor de beheerders.
+//   contracteinde, rijbewijs, leenauto morgen inleveren en leenauto te laat, open terugroepactie van de RDW. En elke werkdag de dagmail voor de beheerders.
 // Draait bij het opstarten en daarna elk half uur (zie server.js). Elke taak heeft een sleutel zodat hij maar één keer ontstaat;
 // elke herinnering heeft een ref in mail_log zodat hij maar één keer wordt verstuurd.
 //
@@ -165,6 +165,29 @@ async function rondeUitleen(today) {
   }
 }
 
+// ---- Terugroepactie (RDW): taak voor de bestuurder zolang hij openstaat, met de tekst van de RDW; klaar zodra de producent herstel meldt ----
+async function rondeTerugroep(today) {
+  const rows = await db.all("SELECT v.*, ve.naam AS vestiging FROM voertuigen v LEFT JOIN vestigingen ve ON ve.id = v.vestiging_id WHERE v.status IN ('actief','uitgeleend','op_voorraad') AND jsonb_typeof(v.rdw_extra->'terugroepacties') = 'array' AND jsonb_array_length(v.rdw_extra->'terugroepacties') > 0");
+  for (const v of rows) {
+    for (const a of v.rdw_extra.terugroepacties) {
+      const sleutel = `terugroep:${v.id}:${a.code}`;
+      if (!a.open) { await sluit(sleutel); continue; }
+      const b = await bestuurderVan(v.id);
+      const garage = await garageVoor(v.merk);
+      const omschrijving = [a.omschrijving, a.herstel ? "Oplossing: " + a.herstel : null, "Bel de dealer voor een afspraak; de reparatie is gratis. Zet de taak op Gedaan als de afspraak staat."].filter(Boolean).join(" ");
+      const id = await maak({ voertuig_id: v.id, bestuurder_id: b ? b.id : null, soort: "terugroep", titel: `Terugroepactie · ${autoNaam(v)}`, omschrijving, deadline: addDays(today, 30), voor: b ? "bestuurder" : "beheerder", sleutel });
+      if (!id || await mail.sentBefore("terugroep", sleutel)) continue;
+      const beheer = await mail.beheerders(v.vestiging_id);
+      await mail.send({
+        to: b ? mail.bestuurderEmail(b) : beheer, cc: b ? beheer : [], subject: `Terugroepactie voor ${v.kenteken}: bel de dealer`, soort: "terugroep", ref: sleutel,
+        html: mail.layout({ titel: "De fabrikant roept deze auto terug", intro: "De RDW meldt een openstaande terugroepactie voor jouw auto. Bel de dealer voor een afspraak; de reparatie is gratis. Zet daarna in de app de taak op Gedaan.",
+          regels: [["Auto", autoNaam(v)], ["Wat is er", a.omschrijving || "zie de dealer"], ...(a.gevolg ? [["Gevolg", a.gevolg]] : []), ...(a.herstel ? [["Oplossing", a.herstel]] : []), ["RDW-code", a.code], ...(garage ? [["Dealer", `${garage.naam}${garage.telefoon ? " · " + garage.telefoon : ""}`]] : []), ...(a.telefoon ? [["Fabrikant", a.telefoon]] : [])],
+          knop: { tekst: "Naar Mijn auto", url: `${base()}/mijn-auto` } }),
+      });
+    }
+  }
+}
+
 // ---- Dagmail: elke werkdag om dagmail_uur, per beheerder ----
 async function dagmail(now) {
   if (now.weekday === 0 || now.weekday === 6) return;
@@ -199,7 +222,7 @@ async function run() {
   running = true;
   const now = nlNow();
   try { await rondeRdw(now.date); } catch (err) { console.error("RDW-ronde mislukt:", err.message); }
-  for (const [naam, fn] of [["apk", rondeApk], ["contract", rondeContract], ["rijbewijs", rondeRijbewijs], ["banden", rondeBanden], ["uitleen", rondeUitleen]]) {
+  for (const [naam, fn] of [["apk", rondeApk], ["contract", rondeContract], ["rijbewijs", rondeRijbewijs], ["banden", rondeBanden], ["uitleen", rondeUitleen], ["terugroep", rondeTerugroep]]) {
     try { await fn(now.date); } catch (err) { console.error(`Takenronde ${naam} mislukt:`, err.message); }
   }
   try { await dagmail(now); } catch (err) { console.error("Dagmail mislukt:", err.message); }

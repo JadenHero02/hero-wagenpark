@@ -200,6 +200,10 @@ table.matrix tr.groep td { background: var(--bg); color: var(--grijs); font-size
 .rdw-status { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 14px; }
 .rdw-status .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; padding: 5px 11px; } .rdw-status .pill .msr { font-size: 16px; }
 .rdw-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 28px; }
+.rdw-lijst { display: grid; gap: 10px; }
+.rdw-actie { padding: 10px 12px; border: 1px solid var(--grijs-thin); border-radius: 10px; display: grid; gap: 4px; }
+.rdw-actie.open { border-color: var(--rood); background: color-mix(in srgb, var(--rood) 5%, white); }
+.rdw-actie-kop { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .rdw-kop { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--grijs); padding-bottom: 6px; margin-bottom: 8px; border-bottom: 1px solid var(--grijs-thin); }
 .kv.rdw-kv { grid-template-columns: 130px 1fr; gap: 5px 12px; font-size: 13.5px; } .kv.rdw-kv dd { font-weight: 600; color: var(--blauw-black); }
 /* APK-pagina: drie grote knoppen naar de garage (bellen, website, route), met een regeltje eronder */
